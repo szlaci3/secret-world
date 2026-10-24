@@ -2,11 +2,12 @@ import { z } from 'zod'
 import { collisionShapeSchema } from './collision-schema'
 import { createNavigation, isWalkable } from '../controls/navigation'
 
-const vector3 = z.tuple([z.number().finite(), z.number().finite(), z.number().finite()])
+const coordinate = z.number().finite().min(-1000).max(1000)
+const vector3 = z.tuple([coordinate, coordinate, coordinate])
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a six-digit hex color')
 const intensity = z.number().finite().min(0).max(10)
-const dimension = z.number().finite().positive().max(20)
-const identifier = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+const dimension = z.number().finite().min(0.01).max(20)
+const identifier = z.string().max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 const transform = {
   id: identifier,
   position: vector3,
@@ -36,7 +37,7 @@ export const worldSchema = z.strictObject({
   id: identifier,
   name: z.string().trim().min(1).max(80),
   ground: z.strictObject({
-    size: z.tuple([z.number().finite().positive().max(100), z.number().finite().positive().max(100)]),
+    size: z.tuple([z.number().finite().min(0.1).max(100), z.number().finite().min(0.1).max(100)]),
     color,
   }),
   camera: z.strictObject({

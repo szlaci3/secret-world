@@ -3,7 +3,7 @@
 `secret-world` is a small Japanese garden project built with React, TypeScript,
 Vite, Three.js, and React Three Fiber.
 
-## Current scope: Task 5
+## Current scope: Task 6 — implementation plan complete
 
 The app renders a **walkable Japanese garden**, using a validated JSON world
 fixture: stepping stones, a pond, rocks, pine and maple trees, stone lanterns,
@@ -12,7 +12,10 @@ Walking stays inside the garden and stops/slides at the pond bank and solid prop
 The torii opening and paths remain walkable. See the
 [six-task implementation plan](docs/implementation-plan.md) for acceptance gates.
 Sun shadows, sky fill, lily pads, moss details, responsive overlays, and graphics
-loading/recovery states are implemented. World importing remains Task 6.
+loading/recovery states are implemented. **Worlds** lets you choose either example
+or load validated JSON from a local file or pasted text. Rejected input preserves
+the current world. The imported world lasts until reload; no AI provider is connected.
+See the [complete version 1 world format](docs/world-format.md) for generator handoff.
 
 ## Run locally
 
@@ -34,6 +37,7 @@ npm.cmd run inspect:garden
 npm.cmd run inspect:walking
 npm.cmd run inspect:collisions
 npm.cmd run inspect:experience
+npm.cmd run inspect:worlds
 npm.cmd run measure:performance
 npm.cmd run preview
 ```
@@ -58,6 +62,9 @@ covered by the navigation unit tests; traversal timings are a desktop smoke chec
 visible keyboard focus, resizing while walking, touch overview, delayed renderer
 loading, native WebGL context loss, and failed module-download recovery. It saves
 the corresponding screenshots under `artifacts/`.
+`inspect:worlds` runs the full browser gate and adds file/paste imports, malformed/
+unsupported/blocked-spawn rejection, live-canvas preservation, imported-world
+walking, both example worlds, overview-only worlds, and narrow picker checks.
 
 Run `measure:performance` separately from browser QA. It records actual WebGL draw
 calls and browser frame timing to `artifacts/performance.json`. The recorded
@@ -94,6 +101,11 @@ switches to lighter rendering for the rest of the canvas session.
 
 - `src/world/garden.json` holds JSON scene values, with no React or Three imports.
 - `src/world/schema.ts` validates unknown input and derives the TypeScript type.
+- `src/world/load-world.ts` caps UTF-8 input at 1 MiB, parses JSON, and validates
+  it before replacement. The file picker also checks byte size before reading.
+- `src/components/WorldPicker.tsx` provides the native modal, file/paste editor,
+  validation feedback, and example selection. All examples use the same loader.
+- `src/world/maple-courtyard.json` is the second, smaller 15-object garden.
 - `src/scene/WorldScene.tsx` renders validated world settings.
 - `src/scene/GardenCanvas.tsx` is the lazy-loaded renderer, with context health and
   a movement-frame quality budget. `InstancedPaths.tsx` batches stones by color.
@@ -122,9 +134,11 @@ Each reusable shape's local origin is at its ground contact. Supported kinds:
 | `lantern` | `stoneColor`, `glowColor` |
 | `entrance` | `woodColor`, `roofColor` |
 
-The fixture contains 30 placed objects. Empty foundation worlds remain valid
+The Quiet Garden fixture contains 30 placed objects. Empty foundation worlds remain valid
 under schema version 1. There is a 200-object limit, and dimensions and scale
-components must be greater than zero and at most 20.
+components must be 0.01–20. Ground dimensions are 0.1–100 m, coordinate components
+are -1000–1000 m, and IDs are at most 80 characters. These bounds prevent extreme
+or numerically degenerate data from reaching rendering/collision calculations.
 
 Optional `environment.skyLight` supplies `skyColor`, `groundColor`, and `intensity`
 for hemisphere fill. Each of up to 12 pond `lilyPads` supplies a normalized X/Z
@@ -149,7 +163,7 @@ coordinates. Each shape uses a `center` of `[x, z]` and either:
 - `{ "kind": "box", "center": [0, 0], "size": [width, depth] }`
 - `{ "kind": "ellipse", "center": [0, 0], "radii": [xRadius, zRadius] }`
 
-Centers range from -40 to 40; sizes/radii must be positive and at most 40.
+Centers range from -40 to 40; sizes/radii must be 0.01–40.
 The owning object's scale and Y rotation transform the footprint into world
 space, then the player radius expands it. An omitted or empty `collision` array
 means nonblocking; paths deliberately omit it. All solid and water objects in

@@ -6,6 +6,7 @@ import { preview } from 'vite'
 import { checkWalking } from './check-walking.mjs'
 import { checkCollisions } from './check-collisions.mjs'
 import { checkExperience } from './check-experience.mjs'
+import { checkWorlds } from './check-worlds.mjs'
 
 // Inspect production output using an installed Edge on Windows, or Playwright's
 // Chromium elsewhere. Override with SECRET_WORLD_BROWSER_CHANNEL when needed.
@@ -46,6 +47,7 @@ try {
   if (process.argv.includes('--walk')) await checkWalking(page)
   if (process.argv.includes('--collisions')) await checkCollisions(page)
   if (process.argv.includes('--experience')) await checkExperience(page, browser, `http://127.0.0.1:${address.port}`)
+  if (process.argv.includes('--worlds')) await checkWorlds(page)
   assert.deepEqual(errors, [], 'Unexpected browser errors during inspection')
 } finally {
   if (browser) await browser.close()

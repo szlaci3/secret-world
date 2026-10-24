@@ -2,6 +2,25 @@
 * { box-sizing: border-box; }
 body { margin: 0; }
 button { font: inherit; }
+.header-actions { display: flex; align-items: center; gap: 1.5rem; }
+.world-button, .world-dialog button { min-height: 44px; padding: .6rem 1rem; border: 1px solid #24392e40; border-radius: 3px; background: #f3f2eb; color: #24392e; font-size: .85rem; cursor: pointer; }
+.world-button:hover, .world-dialog button:hover { background: #e2e6da; }
+.world-button:disabled, .world-dialog button:disabled { opacity: .6; cursor: default; }
+.world-dialog { width: 42rem; max-width: calc(100vw - 2rem); max-height: calc(100svh - 2rem); overflow: auto; padding: 1.5rem; border: 1px solid #24392e40; border-radius: 8px; background: #f3f2eb; color: #24392e; box-shadow: 0 12px 60px #12271e40; }
+.world-dialog::backdrop { background: #152a2477; }
+.dialog-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.dialog-heading h2 { font: 400 1.8rem Georgia, serif; margin: 0; }
+.world-dialog .quiet-button { background: transparent; border-color: transparent; }
+.world-dialog p { font-size: .85rem; line-height: 1.6; }
+.world-examples { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0 1.5rem; }
+.world-dialog form { display: grid; gap: .75rem; }
+.world-dialog label { font-size: .85rem; font-weight: 600; }
+.file-label input { display: block; max-width: 100%; margin-top: .6rem; font: inherit; font-size: .8rem; }
+.world-dialog textarea { width: 100%; min-height: 8rem; resize: vertical; padding: .75rem; border: 1px solid #24392e50; border-radius: 3px; background: #fffdf6; color: #24392e; font: .8rem/1.5 Consolas, monospace; }
+.world-dialog .import-note { color: #506052; font-size: .75rem; margin: 0; }
+.world-dialog .import-error { white-space: pre-line; overflow-wrap: anywhere; border-left: 3px solid #a04b35; padding-left: .75rem; margin: .25rem 0; color: #823b2a; }
+.world-dialog .load-world { justify-self: start; background: #24392e; color: #fffdf3; }
+.world-dialog .load-world:hover { background: #36543f; }
 main { min-height: 100svh; display: flex; flex-direction: column; }
 .masthead { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.6rem 4%; }
 .wordmark { color: inherit; font-size: 1.35rem; font-weight: 600; text-decoration: none; letter-spacing: -.06em; }
@@ -12,7 +31,7 @@ main { min-height: 100svh; display: flex; flex-direction: column; }
 .scene { position: absolute; inset: 0; }
 .intro { position: relative; pointer-events: none; padding: 2.5rem 3rem; max-width: 33rem; }
 .eyebrow { text-transform: uppercase; margin: 0 0 1rem; }
-h1 { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-weight: 400; font-size: clamp(2.6rem, 5vw, 4.5rem); line-height: 1.05; margin: 0; letter-spacing: -.05em; }
+h1 { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-weight: 400; font-size: clamp(2.6rem, 5vw, 4.5rem); line-height: 1.05; margin: 0; letter-spacing: -.05em; overflow-wrap: anywhere; }
 .intro > p:last-child { font-size: .9rem; line-height: 1.6; margin: 1rem 0 0; }
 .is-walking .intro { opacity: 0; }
 .walk-panel { position: absolute; bottom: 1.5rem; left: 2rem; max-width: calc(100% - 4rem); padding: 1rem; background: #f3f2ebf5; border: 1px solid #24392e20; border-radius: 4px; box-shadow: 0 3px 18px #24392e08; }
@@ -30,10 +49,13 @@ footer span:last-child { text-align: right; }
 .scene-notice p { max-width: 26rem; font-size: .9rem; line-height: 1.7; }
 .scene-notice h2 { font: 400 1.7rem Georgia, serif; margin: 0; }
 .loading-mark { font-size: 2.5rem; color: #6a7e60; }
-a:focus-visible, button:focus-visible { outline: 3px solid #a86643; outline-offset: 5px; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #a86643; outline-offset: 5px; }
 @media (max-width: 760px) {
   .masthead { padding: 1.25rem; }
   .stage { font-size: .6rem; }
+  .header-actions .stage { display: none; }
+  .header-actions { gap: .5rem; }
+  .world-dialog { padding: 1rem; }
   .garden { display: grid; grid-template-rows: auto auto auto; align-content: start; min-height: auto; margin: 0 .75rem; }
   .scene { position: relative; inset: auto; grid-row: 2; min-width: 0; height: clamp(21rem, 48svh, 28rem); }
   .intro { grid-row: 1; padding: 1.5rem 1.25rem .5rem; max-width: none; }

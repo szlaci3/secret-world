@@ -3,8 +3,10 @@ import type { ReactNode } from 'react'
 import gardenData from './world/garden.json'
 import { parseWorld } from './world/schema'
 import type { WalkActions, WalkStatus } from './controls/WalkSession'
+import { WorldPicker } from './components/WorldPicker'
+import type { WorldDefinition } from './world/schema'
 
-const world = parseWorld(gardenData)
+const initialWorld = parseWorld(gardenData)
 const GardenCanvas = lazy(() => import('./scene/GardenCanvas'))
 
 class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
@@ -15,6 +17,7 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
 }
 
 export default function App() {
+  const [world, setWorld] = useState(initialWorld)
   const [status, setStatus] = useState<WalkStatus>({ phase: 'overview', error: null })
   const [sceneState, setSceneState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [touchOnly, setTouchOnly] = useState(() => window.matchMedia('(hover: none) and (pointer: coarse)').matches)
@@ -37,6 +40,13 @@ export default function App() {
   }, [])
   // A reload also clears the browser's cached failure for a rejected module URL.
   const retry = () => window.location.reload()
+  const selectWorld = (next: WorldDefinition) => {
+    // Called only after the loader accepts the complete replacement.
+    actions.current?.exit()
+    setStatus({ phase: 'overview', error: null })
+    setSceneState('loading')
+    setWorld(next)
+  }
   useEffect(() => {
     const query = window.matchMedia('(hover: none) and (pointer: coarse)')
     const update = () => setTouchOnly(query.matches)
@@ -57,10 +67,13 @@ export default function App() {
     <main>
       <header className="masthead">
         <a href="#garden" className="wordmark">SecretWorld<span className="brand-dot" aria-hidden="true">.</span></a>
-        <span className="stage">World study / 001</span>
+        <div className="header-actions">
+          <span className="stage">World study</span>
+          <WorldPicker disabled={walking || status.phase === 'requesting' || sceneState === 'error'} onSelect={selectWorld} />
+        </div>
       </header>
       <section className={`garden${walking ? ' is-walking' : ''}`} id="garden" aria-labelledby="garden-title">
-        <div className="scene" role="region" aria-label={`A Japanese garden with a winding stone path, still pond, rocks, pine and maple trees, stone lanterns, and a torii entrance. ${walking ? 'First-person view.' : 'Garden overview.'}`} aria-busy={sceneState === 'loading'}>
+        <div className="scene" role="region" aria-label={`${world.name}. ${walking ? 'First-person view.' : 'Garden overview.'}`} aria-busy={sceneState === 'loading'}>
           <SceneBoundary onFailure={onFailure}>
             <Suspense fallback={null}>
               <GardenCanvas world={world} actions={actions} onStatus={onStatus} onReady={onReady} onFailure={onFailure} walking={walking} />
@@ -86,18 +99,18 @@ export default function App() {
             ) : (
               <button type="button" ref={enterButton} disabled={!ready || !world.walking || touchOnly || status.phase === 'requesting'}
                 aria-describedby="walk-instructions" onClick={() => actions.current?.enter()}>
-                {!ready ? 'Preparing garden…' : touchOnly ? 'Garden overview' : status.phase === 'requesting' ? 'Capturing mouse…' : 'Enter garden'}
+                {!ready ? 'Preparing garden…' : touchOnly || !world.walking ? 'Garden overview' : status.phase === 'requesting' ? 'Capturing mouse…' : 'Enter garden'}
               </button>
             )}
             <span className="walk-status" role="status">
               {status.error ?? (walking ? 'Walking · Mouse captured' : status.phase === 'requesting' ? 'Allow mouse capture to begin.' : 'Garden overview')}
             </span>
           </div>
-          <p id="walk-instructions">{touchOnly ? 'Enjoy the garden overview. Walking needs a keyboard and mouse.' : 'WASD or arrow keys to walk · Mouse to look · Esc or Tab to leave'}</p>
-          {!walking && !touchOnly && <p className="device-note">Each entry starts at the gate. Explore at your own pace.</p>}
+          <p id="walk-instructions">{!world.walking ? 'This world is an overview. Choose another world to take a walk.' : touchOnly ? 'Enjoy the garden overview. Walking needs a keyboard and mouse.' : 'WASD or arrow keys to walk · Mouse to look · Esc or Tab to leave'}</p>
+          {!walking && !touchOnly && world.walking && <p className="device-note">Each entry starts at the world’s starting point. Explore at your own pace.</p>}
         </div>
       </section>
-      <footer><span>05 / Light through the leaves</span><span>Follow the stones, or explore the grass. Stay a while.</span></footer>
+      <footer><span>06 / A world of your own</span><span>Follow the stones, or explore the grass. Stay a while.</span></footer>
     </main>
   )
 }

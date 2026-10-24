@@ -12,6 +12,7 @@
     "inspect:walking": "node scripts/inspect-garden.mjs --walk",
     "inspect:collisions": "node scripts/inspect-garden.mjs --walk --collisions",
     "inspect:experience": "node scripts/inspect-garden.mjs --walk --collisions --experience",
+    "inspect:worlds": "node scripts/inspect-garden.mjs --walk --collisions --experience --worlds",
     "measure:performance": "node scripts/measure-performance.mjs",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1"

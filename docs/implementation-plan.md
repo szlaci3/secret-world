@@ -28,7 +28,7 @@ Each task has its own acceptance gate. Complete tasks in order.
      provide clear loading/error states and tune rendering cost.
    - Verify: desktop/narrow viewports, keyboard access, visual inspection,
      and a recorded browser performance check.
-6. **World-loading handoff**
+6. **World-loading handoff (completed)**
    - Load replacement JSON through the versioned validation boundary, preserve
      the active world on rejection, add a second fixture, and document the
      supported format for future AI generation. AI provider integration is future work.
@@ -41,7 +41,8 @@ Task 1 provides the foundation; Task 2 adds the garden composition; Task 3 adds
 keyboard walking and pointer-lock mouse look. Task 4 adds boundaries, data-driven
 footprint collisions, and spatial spawn validation. Task 5 adds atmosphere,
 responsive layouts, loading/recovery states, and rendering-cost controls.
-JSON import UI and AI generation belong to later work.
+Task 6 adds validated file/paste importing, a second fixture, and the world-format
+handoff. All six tasks are complete. AI provider integration remains future work.
 
 ## Task 1 verification
 
@@ -141,3 +142,35 @@ JSON import UI and AI generation belong to later work.
   [the recorded method and limits](performance.md); hardware GPU and physical
   mobile performance are unverified.
 - `npm.cmd run smoke` and `git diff --check`: passed. Task 6 has not been started.
+
+## Task 6 verification
+
+- Added a single JSON admission boundary, capped at 1 MiB of UTF-8, with strict
+  version/field validation and bounded field-error messages. Files are size-checked
+  before reading. Numeric coordinates/dimensions and IDs now have finite, practical
+  bounds to prevent degenerate generated input from reaching Three.js/navigation.
+- Added the Worlds modal with example selection, local file reading, pasted JSON,
+  and explicit Load world. Rejection preserves the current world and live canvas;
+  acceptance replaces data and the walking session while reusing the renderer.
+  Changes are in tab memory only and reset on reload.
+- Added the 15-object Maple Courtyard fixture and the complete
+  [version 1 format and generator handoff](world-format.md). No AI provider or
+  arbitrary code/model/asset loading is connected.
+- `npm.cmd test`: 87 tests passed. New coverage includes both fixtures, UTF-8/BOM,
+  exact/oversized byte limits, malformed JSON, unsupported versions/kinds/fields,
+  extreme/degenerate numeric input, duplicate IDs, and obstructed spawns.
+- `npm.cmd run build`: TypeScript and production build passed. Initial shell is
+  approximately 332 KB / 101 KB gzip; lazy 3D chunk remains 925 KB / 245 KB gzip,
+  with the existing Vite large-chunk warning.
+- `npm.cmd run inspect:worlds`: passed in headless Edge software WebGL2, including
+  all walking/collision/responsive/recovery regression checks. New checks verify
+  modal keyboard/background isolation and Escape, rejection without canvas
+  replacement, oversized files, valid file and paste replacement, same-ID updates,
+  imported-world walking, both example buttons, overview-only worlds, and the
+  320-pixel picker. A focused follow-up also verified native graphics-context loss
+  while the picker is open: the modal closes and recovery receives focus.
+  No unexpected page/console errors in normal navigation.
+- Visually inspected `artifacts/world-maple-courtyard.png`,
+  `artifacts/world-import-error.png`, and `artifacts/world-picker-320.png`.
+- `npm.cmd run smoke` and `git diff --check`: passed. Hardware GPU, physical mobile,
+  hosted deployment, persistence, and AI generation are unverified/not implemented.
