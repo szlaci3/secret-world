@@ -50,7 +50,7 @@
   },
   "environment": {
     "background": "#dce4da",
-    "ambientIntensity": 0.85,
+    "ambientIntensity": 0.42,
     "sunlight": {
       "position": [
         -75,
@@ -63,7 +63,7 @@
     "skyLight": {
       "skyColor": "#dce8ec",
       "groundColor": "#9eaa82",
-      "intensity": 0.7
+      "intensity": 0.6
     },
     "fog": {
       "color": "#dce4da",

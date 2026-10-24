@@ -1,5 +1,29 @@
 # Rendering verification
 
+## Natural asset fidelity milestone (2026-10-24)
+
+Matched local production measurements against `14cda4e`, Edge 156.0.4314.42,
+headless SwiftShader, 1440 x 960, DPR 1, 2-second movement warmup and sample.
+Both runs entered the adaptive 835 x 497 reduced-detail mode. These short
+software-renderer samples are diagnostic, not hardware GPU benchmarks.
+
+| Measurement | Baseline | Improved assets |
+| --- | --- | --- |
+| First WebGL draw | 611 ms | 956 ms |
+| Animation-frame cadence | 37.7 FPS | 26.8 FPS |
+| p95 frame interval | 33.4 ms | 41.7 ms |
+| Mean draw calls per frame | 35.7 | 33.4 |
+| Idle overview / standing draws | 0 / 0 | 0 / 0 |
+
+The more detailed assets increase geometry cost: software cadence is about 29%
+lower despite fewer draw calls. Hardware desktop performance remains unverified.
+Optimizations include indexed geometry, instanced rocks, three shared tree
+variants, cached shadows, mipmapped generated surface noise, and a simpler
+fallback that removes fine relief, twigs and some petals/leaves. Full-detail
+stationary comparisons are documented in [visual-fidelity.md](visual-fidelity.md).
+The baseline and final JSON reports are in ignored `artifacts/performance-before.json`
+and `artifacts/performance.json`; rerun with `node scripts/measure-performance.mjs`.
+
 ## 128 × 128 meter baseline before the denser ground-cover update
 
 These measurements precede the increase from 84 to 252 small plant clusters

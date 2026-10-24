@@ -33,21 +33,6 @@ function Pond({ object }: { object: ObjectOf<'pond'> }) {
   )
 }
 
-function Rock({ object }: { object: ObjectOf<'rock'> }) {
-  return (
-    <group>
-      <mesh castShadow position-y={0.32} rotation={[0.15, 0.3, 0.1]} scale={[0.85, 0.65, 0.72]}>
-        <dodecahedronGeometry args={[0.8, 0]} />
-        <meshStandardMaterial color={object.color} roughness={1} flatShading />
-      </mesh>
-      {object.mossColor && <mesh castShadow position={[-0.08, 0.68, 0.02]} scale={[0.48, 0.075, 0.4]}>
-        <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial color={object.mossColor} roughness={1} />
-      </mesh>}
-    </group>
-  )
-}
-
 function Lantern({ object }: { object: ObjectOf<'lantern'> }) {
   return (
     <group>
@@ -124,7 +109,7 @@ function ObjectShape({ object }: { object: WorldObject }) {
   switch (object.type) {
     case 'path': return <Path object={object} />
     case 'pond': return <Pond object={object} />
-    case 'rock': return <Rock object={object} />
+    case 'rock': return null // Batched by Rocks.
     case 'tree': return null // Batched by Trees.
     case 'lantern': return <Lantern object={object} />
     case 'entrance': return <Entrance object={object} />

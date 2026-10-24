@@ -1,8 +1,9 @@
+import { SurfaceMaterial } from './SurfaceMaterial'
 import { useMemo } from 'react'
 import { hillHeight, terrainHeight, terrainSegments } from '../world/terrain'
 import type { WorldDefinition, WorldObject } from '../world/schema'
 
-export function Terrain({ ground }: { ground: WorldDefinition['ground'] }) {
+export function Terrain({ ground, lowDetail = false }: { ground: WorldDefinition['ground']; lowDetail?: boolean }) {
   const { positions, indices } = useMemo(() => {
     const [nx, nz] = terrainSegments(ground)
     const vertices: number[] = [], indices: number[] = []
@@ -21,7 +22,7 @@ export function Terrain({ ground }: { ground: WorldDefinition['ground'] }) {
       <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       <bufferAttribute attach="index" args={[new Uint32Array(indices), 1]} />
     </bufferGeometry>
-    <meshStandardMaterial color={ground.color} roughness={1} />
+    {lowDetail ? <meshStandardMaterial color={ground.color} roughness={1} /> : <SurfaceMaterial color={ground.color} grain={0.1} />}
   </mesh>
 }
 
