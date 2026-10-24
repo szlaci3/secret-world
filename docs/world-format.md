@@ -3,7 +3,9 @@
 This is the implemented JSON contract for hand-authored or future AI-generated
 worlds. `src/world/schema.ts` is the authoritative runtime schema;
 `src/world/load-world.ts` admits JSON text before application state changes.
-There is no AI provider, generation endpoint, model loading, or code execution.
+Gemini generation compiles a compact blueprint into this same contract through
+`netlify/functions/create-world.ts` and `src/world/generation.ts`. There is no
+model loading or generated code execution.
 
 ## Load a world
 
@@ -21,9 +23,10 @@ uses the replacement world's spawn. Worlds without `walking` offer an overview.
 The native modal supports Close and Escape and returns focus to Worlds.
 Graphics failure dismisses the picker so the focused recovery action remains usable.
 
-Changes are in this tab's memory only. Reloading, including graphics **Try again**,
-returns to The Quiet Garden. There is no server upload, browser-storage persistence,
-or automatic download of URLs from imported data. Keep your source JSON file.
+File/paste imports are in this tab's memory only. Reloading, including graphics
+**Try again**, returns to The Quiet Garden. Generated worlds can be explicitly
+saved in the browser and revisited from **Your worlds**. There is no automatic
+download of URLs from imported data. Keep your source JSON file for imports.
 
 ## Minimal complete world
 
@@ -228,7 +231,7 @@ reuses the canvas and disposes the previous walking session and input listeners.
 Imported worlds can use arbitrary valid IDs and get generic introductory copy.
 Only an exact match to a catalog fixture is marked as the current built-in world.
 
-## Future generator handoff
+## Generator handoff
 
 Give a generator this document plus one complete fixture. Request one raw JSON
 object with schemaVersion 1, supported fields/kinds only, explicit collision
@@ -241,5 +244,8 @@ Vary water count/size, route topology, tree density, hill placement, and shelter
 locations between worlds. Keep ponds on flat terrain and footpaths out of water.
 The shipped fixtures provide six contrasting examples. Catalog tests sample
 walkable connectivity and shoreline clearance; schema validity alone does not
-prove good composition, reachability, or visual alignment. Provider integration
-and automatic generation remain future work.
+prove good composition, reachability, or visual alignment. The implemented Gemini
+endpoint uses a compact blueprint rather than repeating full object definitions.
+Its compiler adds collisions, expands plant/tree clusters, normalizes steep hills
+and flat shores, and checks a connected walking region before admitting the result.
+See the README for configuration, budgets, local storage, and verification scope.

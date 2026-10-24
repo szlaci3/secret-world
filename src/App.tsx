@@ -29,6 +29,8 @@ export default function App() {
   const recoveryButton = useRef<HTMLButtonElement>(null)
   const focusOnReturn = useRef(false)
   const walking = status.phase === 'walking'
+  const backgroundRGB = world.environment.background.match(/[0-9a-f]{2}/gi)!.map(value => parseInt(value, 16))
+  const darkBackground = backgroundRGB[0] * 0.299 + backgroundRGB[1] * 0.587 + backgroundRGB[2] * 0.114 < 125
   const engaged = walking || status.phase === 'requesting'
   const pickerDisabled = engaged || !ready
   const worldDetails = useMemo(() => worldCatalog.find((entry) => entry.world === world ||
@@ -90,7 +92,7 @@ export default function App() {
       <header className="masthead">
         <a href="#garden" className="wordmark">SecretWorld<span className="brand-dot" aria-hidden="true">.</span></a>
         <div className="header-actions">
-          <span className="stage">{engaged ? 'A little further from everywhere' : 'Six places to wander'}</span>
+          <span className="stage">{engaged ? 'A little further from everywhere' : 'Find a place. Imagine another.'}</span>
           {narrow && <button type="button" ref={worldsButton} className="worlds-toggle" disabled={pickerDisabled}
             aria-haspopup="dialog" aria-controls="world-picker-mobile" aria-expanded={pickerOpen}
             onClick={() => setPickerOpen(true)}>Worlds</button>}
@@ -114,7 +116,7 @@ export default function App() {
             </div>}
             {walking && <div className="crosshair" aria-hidden="true">+</div>}
           </div>
-          <div className="intro">
+          <div className={`intro${darkBackground ? ' intro-light' : ''}`}>
             <p className="eyebrow">{worldDetails?.theme ?? 'A world of your own'}</p>
             <h1 id="garden-title">{world.name}</h1>
             <p>{worldDetails?.description ?? 'A new place to explore at your own pace.'}</p>

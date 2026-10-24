@@ -1,0 +1,47 @@
+import { describe, expect, it, vi } from 'vitest'
+import { createHandler, config } from '../../netlify/functions/create-world'
+import { testBlueprint } from './generation-fixture'
+
+const request = (body: unknown = { prompt: 'A moonlit glade' }, headers = {}) => new Request('https://world.test/api/create-world', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', origin: 'https://world.test', ...headers }, body: JSON.stringify(body),
+})
+const env = (name: string) => name === 'GEMINI_API_KEY' ? 'test-secret' : undefined
+const success = () => Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(testBlueprint()) }] } }] })
+
+describe('create-world endpoint', () => {
+  it('validates requests before making any paid call', async () => {
+    const fetcher = vi.fn()
+    const handler = createHandler(env, fetcher)
+    expect((await handler(new Request('https://world.test/api/create-world'))).status).toBe(405)
+    expect((await handler(request({}, { origin: 'https://evil.test' }))).status).toBe(403)
+    expect((await handler(request({ prompt: 'x'.repeat(601) }))).status).toBe(400)
+    expect((await handler(request({ prompt: 'x'.repeat(9000) }))).status).toBe(413)
+    expect((await handler(request({}, { 'Content-Type': 'text/plain' }))).status).toBe(415)
+    expect(fetcher).not.toHaveBeenCalled()
+  })
+  it('keeps the key server-side and returns a validated walkable world', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(success())
+    const response = await createHandler(env, fetcher)(request())
+    expect(response.status).toBe(200)
+    const text = await response.text()
+    expect(text).not.toContain('test-secret')
+    expect(JSON.parse(text).world.walking).toBeDefined()
+    const [url, init] = fetcher.mock.calls[0]
+    expect(url).not.toContain('test-secret')
+    expect(init?.headers).toHaveProperty('x-goog-api-key', 'test-secret')
+    expect(JSON.parse(init!.body as string).generationConfig.responseFormat.text.schema).toBeDefined()
+    expect(config.rateLimit.windowLimit).toBe(3)
+  })
+  it('handles missing configuration, quota, upstream failure, malformed and truncated output without retries', async () => {
+    expect((await createHandler(() => undefined)(request())).status).toBe(503)
+    for (const [response, expected] of [[new Response('', { status: 429 }), 429], [new Response('', { status: 500 }), 502],
+      [Response.json({ candidates: [{ finishReason: 'MAX_TOKENS' }] }), 422],
+      [Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{}' }] } }] }), 422]] as const) {
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(response)
+      expect((await createHandler(env, fetcher)(request())).status).toBe(expected)
+      expect(fetcher).toHaveBeenCalledTimes(1)
+    }
+    const fetcher = vi.fn<typeof fetch>().mockRejectedValue(new DOMException('timeout', 'TimeoutError'))
+    expect((await createHandler(env, fetcher)(request())).status).toBe(504)
+  })
+})

@@ -49,6 +49,7 @@ main { min-height: 100svh; display: flex; flex-direction: column; }
 h1 { font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-weight: 400; font-size: clamp(2.6rem, 4.5vw, 4.5rem); line-height: 1.05; margin: 0; letter-spacing: -.05em; overflow-wrap: anywhere; }
 .intro > p:last-child { font-size: .85rem; line-height: 1.65; margin: 1rem 0 0; max-width: 24rem; }
 .is-walking .intro { opacity: 0; }
+.intro-light { color: #fffdf3; text-shadow: 0 1px 14px #13211ccc; }
 .overview-hint { position: absolute; bottom: 1.5rem; left: 2rem; right: 2rem; margin: 0; font-size: .75rem; line-height: 1.6; color: #24392e; background: #f3f2ebe8; border-radius: 3px; padding: .7rem .9rem; width: fit-content; max-width: calc(100% - 4rem); }
 .walk-controls { position: absolute; bottom: 1.5rem; left: 2rem; right: 2rem; display: flex; align-items: center; flex-wrap: wrap; gap: .7rem 1rem; color: #fffdf3; text-shadow: 0 1px 5px #152a24; }
 .walk-controls p { font-size: .72rem; line-height: 1.6; margin: 0; background: #24392ed9; padding: .5rem .7rem; border-radius: 3px; }
@@ -86,3 +87,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   footer span:last-child { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) { .world-description { transition: none; } }
+.create-world { margin-bottom: 1.5rem; padding: 1rem .8rem; border: 1px solid #24392e25; border-radius: 6px; background: #e8ecdf; }
+.create-world h3 { font: 400 1.25rem Georgia, serif; margin: 0 0 .5rem; }
+.create-world form { display: grid; gap: .65rem; margin-top: .9rem; }
+.create-world label { font-size: .75rem; font-weight: 600; }
+.create-world textarea { width: 100%; resize: vertical; min-height: 6rem; padding: .6rem; border: 1px solid #24392e50; border-radius: 3px; background: #fffdf6; color: inherit; font-size: .8rem; line-height: 1.5; }
+.generated-result, .saved-worlds { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #24392e25; }
+.generated-result h4 { margin: 0 0 .5rem; font: 400 1.3rem Georgia, serif; overflow-wrap: anywhere; }
+.world-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .65rem; }
+.saved-worlds h3 span { font: .7rem 'Segoe UI', sans-serif; }
+.saved-world { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; margin-top: .6rem; }
+.saved-world-enter { flex: 1; min-width: 0; min-height: 44px; padding: .7rem .5rem; border: 1px solid #24392e25; border-radius: 3px; background: #fffdf6; color: inherit; text-align: left; font-size: .8rem; overflow-wrap: anywhere; }
+.delete-world { min-height: 44px; padding: .5rem; background: transparent; border: 0; color: #823b2a; font-size: .7rem; }

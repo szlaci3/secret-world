@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react'
 import { worldCatalog } from '../world/catalog'
 import { loadWorldJson, MAX_WORLD_BYTES } from '../world/load-world'
 import type { WorldDefinition } from '../world/schema'
+import { useWorldCreator } from './CreateWorld'
 
 export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, onClose }: {
   disabled: boolean
@@ -44,6 +45,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
     if (!result.ok) { reject(result.message); return }
     choose(result.world)
   }
+  const creator = useWorldCreator({ disabled: disabled || reading, onSelect: choose })
   const chooseFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0]
     event.currentTarget.value = ''
@@ -70,6 +72,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
       {narrow && <button type="button" className="quiet-button" onClick={() => dialog.current?.close()}>Close</button>}
     </div>
     <p className="picker-note">Six places. A little room to wander.</p>
+    {creator}
     <div className="world-examples" aria-label="Worlds">
       {worldCatalog.map(({ world, theme, description }, index) => (
         <button className="world-card" type="button" key={world.id} disabled={disabled || reading}
