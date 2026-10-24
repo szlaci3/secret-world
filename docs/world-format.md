@@ -10,7 +10,7 @@ model loading or generated code execution.
 ## Load a world
 
 1. Leave any active walk with Escape or Tab.
-2. Select **Worlds**. Choose The Open Meadow, the 128 × 128m built-in landscape. For file/paste imports, expand
+2. Select **Worlds**. Choose The Open Meadow or Silverwood Grove, the 128 × 128m built-in landscapes. For file/paste imports, expand
    **Open your own world JSON**, then select a `.json` file or paste JSON.
 3. Select **Load world** for file/paste input. Files populate the editor first;
    selecting a file does not replace the world by itself.
@@ -55,6 +55,7 @@ Current built-in and archived authoring examples (all dimensions in meters):
 | Fixture | Ground | Objects | Design |
 | --- | --- | --- | --- |
 | `open-meadow.json` | 128 × 128 | 337 | Long routes, two ponds, distant groves, windmill and cabin |
+| `silverwood-grove.json` | 128 × 128 | 297 | Gemini-generated snowy woodland, spruce groves, cabin and windmill |
 | `garden.json` | 18 × 18 | 60 | One pond, winding path, bamboo screen, tea pavilion |
 | `sandstone-oasis.json` | 24 × 22 | 64 | Three pools, dunes, palms and gateway ruins |
 | `frostlight-grove.json` | 24 × 22 | 60 | No water, spruce pockets, cabin and hillside lookout |
@@ -223,7 +224,7 @@ generated layouts because geometric/visual alignment is the author's responsibil
 
 ## Built-in catalog
 
-`src/world/catalog.ts` validates the single selectable 128m fixture with `parseWorld`
+`src/world/catalog.ts` validates the two selectable 128m fixtures with `parseWorld`
 and adds presentation-only theme/description metadata outside the versioned JSON
 contract. The picker sends each selection through the same `loadWorldJson` path
 as imports. The shared renderer, lighting, overview camera, and walking session

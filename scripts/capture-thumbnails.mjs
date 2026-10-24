@@ -19,7 +19,7 @@ try {
   await page.locator('.scene[aria-busy="false"]').waitFor()
   await page.addStyleTag({ content: '.intro, .overview-hint, .entry-recovery { visibility: hidden !important; }' })
   await mkdir('public/worlds', { recursive: true })
-  for (const filename of ['open-meadow']) {
+  for (const filename of ['open-meadow', 'silverwood-grove']) {
     const world = JSON.parse(await readFile(`src/world/${filename}.json`, 'utf8'))
     const card = page.getByRole('button', { name: world.name, exact: true })
     await card.click()

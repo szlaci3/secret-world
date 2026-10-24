@@ -27,7 +27,7 @@ try {
   const base = `http://127.0.0.1:${server.httpServer.address().port}`
   await page.goto(base)
   await page.locator('.scene[aria-busy="false"]').waitFor()
-  assert.equal(await page.locator('.world-card').count(), 1)
+  assert.equal(await page.locator('.world-card').count(), 2)
   await page.getByLabel('Title or description').fill('A violet woodland')
   await page.getByRole('button', { name: 'Generate world', exact: true }).click()
   assert.equal(await page.getByRole('button', { name: 'Creating…' }).isDisabled(), true)

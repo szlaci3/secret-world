@@ -80,7 +80,7 @@ export async function checkWorlds(page) {
   await load.click()
   assert.equal(await page.locator('h1').textContent(), 'Courtyard from JSON')
 
-  for (const filename of ['open-meadow', 'open-meadow']) {
+  for (const filename of ['open-meadow', 'silverwood-grove', 'open-meadow']) {
     const fixture = JSON.parse(await readFile(`src/world/${filename}.json`, 'utf8'))
     const card = sidebar.getByRole('button', { name: fixture.name, exact: true })
     await card.click()

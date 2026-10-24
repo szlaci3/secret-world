@@ -6,10 +6,10 @@ import { terrainHeight } from './terrain'
 import { isLevelPath } from './paths'
 
 describe('walkable world catalog', () => {
-  it('offers one landscape designed for 128-meter exploration', () => {
-    expect(worldCatalog).toHaveLength(1)
-    expect(new Set(worldCatalog.map(({ world }) => world.id)).size).toBe(1)
-    expect(worldCatalog.map(({ world }) => world.objects.filter((object) => object.type === 'pond').length)).toEqual([2])
+  it('offers two landscapes designed for 128-meter exploration', () => {
+    expect(worldCatalog).toHaveLength(2)
+    expect(new Set(worldCatalog.map(({ world }) => world.id)).size).toBe(2)
+    expect(worldCatalog.map(({ world }) => world.objects.filter((object) => object.type === 'pond').length)).toEqual([2, 0])
     // The original meadow had 84 plant clusters. Dense ground cover should
     // increase without increasing the tree/building/collision workload.
     expect(worldCatalog[0].world.objects.filter(object => object.type === 'plant')).toHaveLength(252)

@@ -21,6 +21,11 @@ a cabin, arches, and a lookout. Earlier small worlds are disabled in the picker;
 their source fixtures remain for geometry tests. New Gemini worlds use this same
 128-meter size rather than stretching an 18-meter layout.
 
+**Silverwood Grove** is the one additional Gemini-generated example: a snowy
+128 × 128m woodland with 297 objects, including 268 small plant clusters, spruce
+groves, a cabin, and a windmill. It passed the same schema, level-pavement, and
+walking-connectivity checks and is available beside the meadow.
+
 Terrain uses a bounded 32 × 32 grid: 1,089 vertices and 2,048 triangles (4m spacing). Object
 counts remain bounded, repeated trees, plants, and paths are instanced, and rendering
 stays on demand. Slow devices automatically use simpler vegetation, no shadows, and a 0.6 pixel ratio. Walking uses the same controls at 3.6 m/s for the larger landscape.
@@ -55,7 +60,7 @@ Use **Create World** in the sidebar (or the **Worlds** drawer). Enter a title or
 description and select **Generate world**. When ready, select **Enter world** to
 capture the mouse and walk using the existing controls. **Save world** adds it to
 **Your worlds**; select its name to revisit. **Delete**, then **Confirm delete**,
-removes the saved copy. The Open Meadow remains available below the creator.
+removes the saved copy. The Open Meadow and Silverwood Grove remain available below the creator.
 Up to 20 worlds are stored locally; no account or database is used. Unsaved results
 last until reload or replacement. Clearing browser data removes the saved collection.
 Storage failures leave the result available to explore and show a message.
@@ -132,7 +137,7 @@ generated world in `artifacts/` when present, otherwise a built-in fixture.
 the validated world to `artifacts/`. Neither check proves hosted deployment or
 Netlify's edge rate limiting; those require a deployed site with its Function secret.
 
-`capture:thumbnails` captures the current built-in landscape from the current production
+`capture:thumbnails` captures the current built-in landscapes from the current production
 build into `public/worlds/`. Run `build` first, capture, then build again to include
 refreshed images in `dist/`. The sidebar uses these static JPEGs, and never creates additional WebGL contexts for previews. Captures
 use a centered 16:9 crop with 1.7× magnification to make landmarks easier to see.
