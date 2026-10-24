@@ -1,4 +1,43 @@
-# Task 5 rendering verification
+# Rendering verification
+
+## 128 × 128 meter baseline before the denser ground-cover update
+
+These measurements precede the increase from 84 to 252 small plant clusters
+and the removal of seven hillside path slabs (current meadow: 337 objects).
+Mobile performance is outside the current verification scope.
+
+Recorded 2026-10-24 with the local production build, Edge 156.0.4314.42,
+headless SwiftShader software WebGL2, 1440 × 960 viewport. The active built-in
+is The Open Meadow: 176 objects over 16,384 m². These results do not establish
+hardware GPU, physical phone, cross-browser, or deployed performance.
+
+| Measurement | Observed |
+| --- | --- |
+| First WebGL draw | 774 ms |
+| Terrain vertices / triangles | 1,089 / 2,048 |
+| Active animation-frame cadence after warmup | 20.2 FPS |
+| p95 animation-frame interval | 58.3 ms |
+| Mean draw calls per rendered frame | 36.3 |
+| Idle overview / standing draw calls | 0 / 0 |
+| Adaptive canvas resolution | 835 × 497 |
+
+The initial 128m implementation measured about 8.5 FPS with 145.5 draw calls per
+frame in this software renderer. Tree instancing, a 32-segment terrain mesh,
+and simpler vegetation on slow devices reduced the workload. The slow-device
+fallback now disables shadows, uses 0.6 pixel density, and reduces tree crown
+detail and decorative stems. The full-detail overview remains available before
+fallback. Software rendering is still limited; 20 FPS is not a claim of smooth
+hardware performance. The 128m size is bounded by geometry/object budgets rather
+than a dense one-meter mesh across the whole map.
+
+Walking and visible terrain use the same triangle interpolation. Generation
+connectivity sampling is separately bounded at 64 samples per axis; the fixture
+compiler took approximately 236ms locally. Collision remains exact during walks.
+`node scripts/build-meadow.mjs` rebuilds the authored large-world fixture.
+
+The measurements below are historical small-world baselines, not current claims.
+
+## Original small-world verification
 
 Recorded 2026-10-24 using the local production build, installed Edge
 155.0.4283.62, headless SwiftShader software WebGL2, 1440 × 960, DPR 1.

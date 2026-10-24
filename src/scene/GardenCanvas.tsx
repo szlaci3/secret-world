@@ -47,10 +47,10 @@ export default function GardenCanvas({ world, actions, onStatus, onReady, onFail
   const [light, setLight] = useState(false)
   const reduce = useCallback(() => setLight(true), [])
   return (
-    <Canvas camera={world.camera} dpr={light ? 0.8 : [1, 1.5]} frameloop="demand" shadows={light ? false : 'basic'}
+    <Canvas camera={world.camera} dpr={light ? 0.6 : [1, 1.5]} frameloop="demand" shadows={light ? false : 'basic'}
       gl={{ antialias: true, powerPreference: 'low-power' }}
       fallback={<p className="graphics-message">The world needs a browser with WebGL support.</p>}>
-      <WorldScene world={world} walking={walking} />
+      <WorldScene world={world} walking={walking} lowDetail={light} />
       <WalkingControls world={world} ref={actions} onStatus={onStatus} onReady={onReady} />
       <ContextHealth onFailure={onFailure} />
       <RenderBudget walking={walking} light={light} onReduce={reduce} actions={actions} />

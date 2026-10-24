@@ -35,8 +35,9 @@ try {
   }))
   const data = await response.json()
   console.log(JSON.stringify({ status: response.status, seconds: (Date.now() - started) / 1000,
-    name: data.world?.name, objects: data.world?.objects.length, error: data.error }))
+    name: data.world?.name, objects: data.world?.objects.length, size: data.world?.ground.size, error: data.error }))
   assert.equal(response.status, 200, 'Live generation failed; see the safe error above.')
   await mkdir('artifacts', { recursive: true })
   await writeFile('artifacts/generated-world.json', JSON.stringify(data.world, null, 2))
+  if (data.world.ground.size.every(size => size === 128)) await writeFile('artifacts/generated-large-world.json', JSON.stringify(data.world, null, 2))
 } finally { await server.close() }

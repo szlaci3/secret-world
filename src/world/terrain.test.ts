@@ -4,6 +4,16 @@ import { parseWorld } from './schema'
 import garden from './garden.json'
 
 describe('bounded terrain and atmosphere', () => {
+  it('supports distant hills on bounded 128-meter terrain', () => {
+    const large = { size: [128, 128] as [number, number], hills: [{ center: [42, -38] as [number, number], radius: 24, height: 6 }] }
+    expect(terrainSegments(large)).toEqual([32, 32])
+    // The center lies between grid vertices: walking must use the actual mesh.
+    expect(terrainHeight(large, 42, -38)).toBeLessThan(6)
+    expect(terrainHeight(large, 42, -38)).toBeGreaterThan(5.7)
+    expect(terrainHeight(large, -63, 63)).toBe(0)
+    expect(() => parseWorld({ ...garden, ground: { ...large, color: '#889977' }, objects: [] })).not.toThrow()
+    expect(() => parseWorld({ ...garden, ground: { ...large, size: [129, 128], color: '#889977' }, objects: [] })).toThrow()
+  })
   const ground = { size: [20, 18] as [number, number], hills: [{ center: [0, 0] as [number, number], radius: 5, height: 1.5 }] }
   it('preserves flat legacy worlds and compact hill boundaries', () => {
     expect(terrainHeight({ size: [18, 18] }, 2, 3)).toBe(0)

@@ -1,5 +1,5 @@
 export const testBlueprint = () => ({
-  name: 'Moonlit glade', ground: { size: [24, 24], color: '#708060' },
+  name: 'Moonlit glade', ground: { size: [128, 128], color: '#708060' },
   environment: { background: '#bdcfdf', ambientIntensity: 0.8, sunlight: { position: [5, 10, 5], color: '#fff0dd', intensity: 2 } },
   assets: [{ type: 'plant', variety: 'flowers', color: '#557755', accentColor: '#ddbbff' },
     { type: 'pond', radii: [2, 1.5], waterColor: '#448899', bankColor: '#999977' },

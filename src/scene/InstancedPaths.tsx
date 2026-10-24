@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
-import { InstancedMesh, Object3D, Quaternion, Vector3 } from 'three'
+import { InstancedMesh, Object3D } from 'three'
 import type { WorldObject } from '../world/schema'
-import { terrainHeight } from '../world/terrain'
+import { isLevelPath } from '../world/paths'
 import type { TerrainGround } from '../world/terrain'
 
 type Path = Extract<WorldObject, { type: 'path' }>
@@ -13,11 +13,7 @@ function PathBatch({ objects, color, ground }: { objects: Path[]; color: string;
     const transform = new Object3D()
     objects.forEach((object, index) => {
       transform.position.set(object.position[0], object.position[1] + 0.045 * object.scale[1], object.position[2])
-      const [x, , z] = object.position
-      const normal = new Vector3(terrainHeight(ground, x - 0.1, z) - terrainHeight(ground, x + 0.1, z), 0.2,
-        terrainHeight(ground, x, z - 0.1) - terrainHeight(ground, x, z + 0.1)).normalize()
-      transform.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), normal)
-        .multiply(new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), object.rotation))
+      transform.rotation.set(0, object.rotation, 0)
       transform.scale.set(object.size[0] * object.scale[0], 0.09 * object.scale[1], object.size[1] * object.scale[2])
       transform.updateMatrix()
       mesh.current!.setMatrixAt(index, transform.matrix)
@@ -38,12 +34,12 @@ export function InstancedPaths({ objects, ground }: { objects: WorldObject[]; gr
   const groups = useMemo(() => {
     const colors = new Map<string, Path[]>()
     objects.forEach((object) => {
-      if (object.type !== 'path') return
+      if (object.type !== 'path' || !isLevelPath(ground, object)) return
       const group = colors.get(object.color) ?? []
       group.push(object)
       colors.set(object.color, group)
     })
     return [...colors]
-  }, [objects])
+  }, [objects, ground])
   return groups.map(([color, paths]) => <PathBatch key={color} color={color} objects={paths} ground={ground} />)
 }

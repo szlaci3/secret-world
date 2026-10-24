@@ -3,7 +3,7 @@ import { readFile, mkdir } from 'node:fs/promises'
 import { chromium } from 'playwright'
 import { preview } from 'vite'
 
-const world = JSON.parse(await readFile(new URL('../artifacts/generated-world.json', import.meta.url), 'utf8').catch(() => readFile(new URL('../src/world/garden.json', import.meta.url), 'utf8')))
+const world = JSON.parse(await readFile(new URL('../artifacts/generated-large-world.json', import.meta.url), 'utf8').catch(() => readFile(new URL('../src/world/open-meadow.json', import.meta.url), 'utf8')))
 world.id = 'generated-browser-test'
 world.name = 'Browser Test Woodland'
 const server = await preview({ preview: { host: '127.0.0.1', port: 0 } })
@@ -27,7 +27,7 @@ try {
   const base = `http://127.0.0.1:${server.httpServer.address().port}`
   await page.goto(base)
   await page.locator('.scene[aria-busy="false"]').waitFor()
-  assert.equal(await page.locator('.world-card').count(), 6)
+  assert.equal(await page.locator('.world-card').count(), 1)
   await page.getByLabel('Title or description').fill('A violet woodland')
   await page.getByRole('button', { name: 'Generate world', exact: true }).click()
   assert.equal(await page.getByRole('button', { name: 'Creating…' }).isDisabled(), true)
@@ -58,14 +58,14 @@ try {
   await page.getByLabel('Title or description').fill('A violet woodland')
   await page.getByRole('button', { name: 'Generate world', exact: true }).click()
   await page.getByRole('alert').filter({ hasText: 'usage limit' }).waitFor()
-  assert.equal(await page.locator('h1').textContent(), 'The Quiet Garden')
+  assert.equal(await page.locator('h1').textContent(), 'The Open Meadow')
   await page.setViewportSize({ width: 390, height: 844 })
   await page.getByRole('button', { name: 'Worlds', exact: true }).click()
   await page.getByLabel('Title or description').waitFor({ state: 'visible' })
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true)
   await page.screenshot({ path: 'artifacts/generation-mobile.png', fullPage: true })
   assert.deepEqual(errors, [])
-  console.log('Generation browser checks passed: pending, enter/walk, save, reload/revisit, delete, quota error, six worlds, mobile drawer. API response mocked; scene and storage real.')
+  console.log('Generation browser checks passed: pending, enter/walk, save, reload/revisit, delete, quota error, large built-in world, mobile drawer. API response mocked; scene and storage real.')
 } finally {
   await browser?.close()
   await new Promise(resolve => server.httpServer.close(resolve))

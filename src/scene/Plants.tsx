@@ -6,7 +6,7 @@ import type { WorldObject } from '../world/schema'
 type Plant = Extract<WorldObject, { type: 'plant' }>
 
 // Each cluster is one merged low-poly mesh; repeated clusters are instanced.
-function plantGeometry(plant: Plant) {
+function plantGeometry(plant: Plant, lowDetail: boolean) {
   const parts: BufferGeometry[] = []
   const add = (geometry: BufferGeometry, color: string, x: number, y: number, z: number, sx = 1, sy = 1, sz = 1, tilt = 0) => {
     const g = geometry.toNonIndexed()
@@ -17,7 +17,7 @@ function plantGeometry(plant: Plant) {
     g.setAttribute('color', new Float32BufferAttribute(colors, 3))
     parts.push(g)
   }
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < (lowDetail ? 3 : 5); i++) {
     const angle = i * 2.4, radius = i === 0 ? 0 : 0.28 + (i % 2) * 0.15
     const x = Math.cos(angle) * radius, z = Math.sin(angle) * radius, h = 0.55 + (i % 3) * 0.18
     switch (plant.variety) {
@@ -56,9 +56,9 @@ function plantGeometry(plant: Plant) {
   return result
 }
 
-function PlantBatch({ plants }: { plants: Plant[] }) {
+function PlantBatch({ plants, lowDetail }: { plants: Plant[]; lowDetail: boolean }) {
   const mesh = useRef<InstancedMesh>(null)
-  const geometry = useMemo(() => plantGeometry(plants[0]), [plants])
+  const geometry = useMemo(() => plantGeometry(plants[0], lowDetail), [plants, lowDetail])
   useEffect(() => () => geometry.dispose(), [geometry])
   useLayoutEffect(() => {
     const transform = new Object3D()
@@ -77,7 +77,7 @@ function PlantBatch({ plants }: { plants: Plant[] }) {
   </instancedMesh>
 }
 
-export function Plants({ objects }: { objects: WorldObject[] }) {
+export function Plants({ objects, lowDetail }: { objects: WorldObject[]; lowDetail: boolean }) {
   const batches = useMemo(() => {
     const groups = new Map<string, Plant[]>()
     for (const object of objects) if (object.type === 'plant') {
@@ -88,5 +88,5 @@ export function Plants({ objects }: { objects: WorldObject[] }) {
     }
     return [...groups]
   }, [objects])
-  return batches.map(([key, plants]) => <PlantBatch key={key} plants={plants} />)
+  return batches.map(([key, plants]) => <PlantBatch key={key} plants={plants} lowDetail={lowDetail} />)
 }

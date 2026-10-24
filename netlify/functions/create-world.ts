@@ -13,11 +13,14 @@ Interpret the user's title or description creatively using ONLY the supplied sch
 Return a blueprint: reusable assets (0-based indices) and explicitly composed placements. No code, URLs or new models.
 Design a focal landmark, a clear arrival clearing near x=0,z=depth*0.32, connected generous walking routes,
 and asymmetrical planting groups with negative space. Avoid uniform grids and random scatter.
-Ground is centered at origin, Y up; positions are [x,z], rotation in radians. Ground width/depth 16–36m.
-Choose 30–80 placements, max 100, max 40 non-plant/path/patch objects, max 4 ponds, 14 assets.
-For lush vegetation, use count and spread on plant/tree placements: e.g. count 8, spread 3 creates
-an intentional grove centered on that placement. Singles use count 1, spread 0. Total expanded instances <=100.
-Design 3–5 asymmetrical groves with open routes between them; use 3–6 trees per grove and 5–12 flowers/ferns per drift.
+Ground is centered at origin, Y up; positions are [x,z], rotation in radians. Ground width/depth MUST both be 128m. Positions span -64 to +64 on both axes.
+Choose 25–70 placement groups, max 100, max 64 non-plant/path/patch instances, max 4 ponds, 14 assets.
+For lush vegetation, use count and spread on plant/tree placements: e.g. count 8, spread 10 creates
+an intentional grove centered on that placement. ONLY tree and plant may have count >1; every pond,
+rock, path, structure, lantern and entrance MUST use count 1 and spread 0. To make two ponds,
+write two separate placements with distinct positions. Total expanded instances <=512; aim for 300–450, mostly instanced small plants.
+Spread 5–8 asymmetrical groves across the FULL 128m landscape, with open routes between them; use 3–6 trees per grove and 24–36 grass/flower/fern instances per drift.
+Aim for 240–320 small ground-cover plants in suitable environments. Avoid using extra buildings or trees to meet the density goal.
 Use 2–4 consistent plant palettes to benefit instancing. Vary terrain, water count and shape (including none),
 vegetation density/species, scale, landmarks, composition, fog, sky and light to match the prompt.
 Asset types: tree (pine/maple/spruce/palm); plant (grass/flowers/reeds/bamboo/cactus/fern/mushrooms);
@@ -26,8 +29,11 @@ Trees are 3–4m tall and 2–3m wide; plants 1–1.5m wide (bamboo 3m tall); ca
 pavilion 3x3m; arch 3.8m wide; beacon/windmill 5m tall. Scale 0.3–2; prefer 0.7–1.3.
 Keep objects within ground with margins for their full footprints. No overlapping buildings or trees in water.
 Pond radii are meters; banks extend 1.15x. Keep ponds entirely outside every hill radius with extra bank clearance.
-Hills radius 2–12m, height 0–3m and height/radius <=0.4; separate them. Keep structures on flat ground.
+Hills radius 8–32m, height 0–6m and height/radius <=0.4; separate them. Keep structures on flat ground.
 Paths use rectangular size [width,depth]; align adjacent segments into a route, avoid water, offset patches to avoid z-fighting.
+Pavement MUST stay horizontal on flat terrain. Never route pavement up or across hillsides; use an unpaved grassy opening there.
+Hillside slabs are removed by the compiler. Check the entire path footprint, not just its center, when reserving flat routes.
+Place 3–5 landmarks 20–40m apart and link them with long paths. Use pond radii 5–16m and vegetation cluster spread 5–12m. Avoid cramming everything near the origin.
 Keep at least 60% open ground and 2m-wide routes around solids. Collision and safe spawn are supplied by the compiler.
 Use six-digit hex colors WITH a leading #, for example #8855ff. Fog far > near. Night means muted pastel
 surfaces under blue light, not nearly black materials: keep ground and foliage medium-light so geometry remains legible.
