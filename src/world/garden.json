@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "quiet-garden",
+  "name": "The Quiet Garden",
+  "ground": { "size": [18, 18], "color": "#879579" },
+  "camera": { "position": [12, 10, 14], "target": [0, 0, 0], "fov": 45 },
+  "environment": {
+    "background": "#dce4d8",
+    "ambientIntensity": 1.2,
+    "sunlight": { "position": [8, 12, 6], "color": "#fff0d5", "intensity": 2.3 }
+  },
+  "objects": []
+}

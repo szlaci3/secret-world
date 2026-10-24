@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Libre+Caslon+Display&display=swap');
+
+:root { font-family: 'DM Sans', sans-serif; color: #24392e; background: #f3f2eb; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { min-height: 100svh; display: flex; flex-direction: column; }
+.masthead { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.6rem 4%; }
+.wordmark { color: inherit; font-size: 1.35rem; font-weight: 600; text-decoration: none; letter-spacing: -.06em; }
+.brand-dot { color: #a86643; }
+.stage, .eyebrow, footer, .preview-note { font-size: .72rem; letter-spacing: .08em; }
+.stage { text-transform: uppercase; }
+.garden { flex: 1; position: relative; min-height: 34rem; margin: 0 1.5rem; overflow: hidden; border-radius: 3px; background: #dce4d8; }
+.scene { position: absolute; inset: 0; }
+.intro { position: relative; pointer-events: none; padding: 3rem; max-width: 36rem; }
+.eyebrow { text-transform: uppercase; margin: 0 0 1rem; }
+h1 { font-family: 'Libre Caslon Display', Georgia, serif; font-weight: 400; font-size: clamp(2.8rem, 6vw, 5.5rem); line-height: 1; margin: 0; letter-spacing: -.04em; }
+.intro > p:last-child { font-size: .9rem; margin-top: 1.1rem; }
+.preview-note { position: absolute; bottom: 1.5rem; left: 2rem; padding: .8rem 1rem; background: #f3f2ebe8; border: 1px solid #24392e20; border-radius: 2px; }
+.preview-note span { margin-right: .4rem; }
+footer { display: flex; justify-content: space-between; gap: 1rem; padding: 1.3rem 4%; line-height: 1.6; }
+.graphics-message { position: absolute; top: 50%; width: 100%; text-align: center; padding: 1rem; }
+a:focus-visible { outline: 2px solid #a86643; outline-offset: 6px; }
+@media (max-width: 600px) {
+  .masthead { padding: 1.25rem; }
+  .stage { font-size: .6rem; }
+  .garden { margin: 0 .75rem; min-height: 32rem; }
+  .intro { padding: 2rem 1.25rem; }
+  .preview-note { left: 1rem; right: 1rem; text-align: center; font-size: .65rem; }
+  footer { flex-direction: column; gap: .3rem; padding: 1rem 1.25rem; }
+}
