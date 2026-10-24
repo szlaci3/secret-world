@@ -43,6 +43,13 @@ export const worldSchema = z.strictObject({
     ambientIntensity: intensity,
     sunlight: z.strictObject({ position: vector3, color, intensity }),
   }),
+  walking: z.strictObject({
+    spawn: vector3.refine((position) => position[1] > 0 && position[1] <= 3, 'Eye height must be above ground and at most 3 meters'),
+    yaw: z.number().finite(),
+    speed: z.number().finite().positive().max(10),
+    fov: z.number().finite().min(50).max(90),
+    lookSensitivity: z.number().finite().positive().max(0.01),
+  }).optional(),
   objects: z.array(worldObjectSchema).max(200).superRefine((objects, context) => {
     const ids = new Set<string>()
     objects.forEach((object, index) => {

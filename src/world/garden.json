@@ -4,6 +4,7 @@
   "name": "The Quiet Garden",
   "ground": { "size": [18, 18], "color": "#879579" },
   "camera": { "position": [20, 19, 24], "target": [0, 0.5, 0], "fov": 42 },
+  "walking": { "spawn": [-1.8, 1.65, 7.7], "yaw": 0, "speed": 2.4, "fov": 65, "lookSensitivity": 0.002 },
   "environment": {
     "background": "#dce4d8",
     "ambientIntensity": 1.2,

@@ -24,7 +24,18 @@ describe('world data boundary', () => {
   })
 
   it('still accepts an empty foundation world', () => {
-    expect(parseWorld({ ...garden, objects: [] }).objects).toEqual([])
+    const { walking: _, ...foundation } = garden
+    expect(parseWorld({ ...foundation, objects: [] }).objects).toEqual([])
+  })
+
+  it.each([
+    ['underground eye height', { ...garden.walking, spawn: [0, -1, 0] }],
+    ['non-finite heading', { ...garden.walking, yaw: Infinity }],
+    ['negative speed', { ...garden.walking, speed: -1 }],
+    ['excessive field of view', { ...garden.walking, fov: 180 }],
+    ['zero sensitivity', { ...garden.walking, lookSensitivity: 0 }],
+  ])('rejects walking settings with %s', (_, walking) => {
+    expect(() => parseWorld({ ...garden, walking })).toThrow()
   })
 
   it('covers every supported garden kind and both tree varieties in the fixture', () => {

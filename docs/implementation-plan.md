@@ -15,7 +15,7 @@ Each task has its own acceptance gate. Complete tasks in order.
    - Extend the schema and renderer with paths, pond, rocks, trees, lanterns,
      and an entrance. Place every instance through garden data.
    - Verify: fixture validation and browser inspection of the full garden layout.
-3. **First-person walking**
+3. **First-person walking (completed)**
    - Add keyboard movement, pointer-lock mouse look, explicit entry/exit,
      and accessible instructions. Reset held inputs on focus loss.
    - Verify: enter, walk, look, Escape, and tab-away/resume in a browser.
@@ -37,8 +37,9 @@ Each task has its own acceptance gate. Complete tasks in order.
 
 ## Scope boundary
 
-Task 1 provides the foundation; Task 2 adds the stationary garden composition.
-Walking, collisions, JSON import UI, and AI generation belong to later tasks.
+Task 1 provides the foundation; Task 2 adds the garden composition; Task 3 adds
+keyboard walking and pointer-lock mouse look. Collisions, JSON import UI,
+and AI generation belong to later tasks.
 
 ## Task 1 verification
 
@@ -65,3 +66,25 @@ Walking, collisions, JSON import UI, and AI generation belong to later tasks.
   with a winding path from the torii, clear pond, and trees around the perimeter.
 - `git diff --check`: passed. Hardware GPU performance and walking are unverified;
   responsive visual refinement remains in Task 5.
+
+## Task 3 verification
+
+- Added optional, validated walking settings to world data: spawn, heading,
+  speed, walking FOV, and look sensitivity. Older worlds remain valid.
+- Enter garden captures the mouse; WASD/arrows walk horizontally and mouse
+  movement changes the camera heading/pitch. Escape, Tab, Leave walk, blur,
+  and hidden-tab events return to the overview, clear held input, and restore
+  keyboard focus. Re-entry starts at the configured spawn, without auto-resume.
+- `npm.cmd test`: 38 tests passed, including walking-setting validation,
+  heading-relative motion, diagonal normalization, opposite/duplicate bindings,
+  frame-rate consistency, and stalled-frame capping.
+- `npm.cmd run build`: TypeScript and production build passed. Existing bundle
+  warning remains (approximately 1.24 MB JavaScript / 341 KB gzip).
+- `npm.cmd run smoke`: production HTML and both built assets served successfully.
+- `npm.cmd run inspect:walking`: passed in headless Edge with software WebGL2.
+  Verified real pointer lock, keyboard entry, forward movement, mouse look,
+  Escape, Tab, a real tab switch while holding a movement key, still re-entry,
+  Leave walk, focus restoration, and no console/page errors. Visually inspected
+  `artifacts/garden-walking.png` at 1440 × 960.
+- `git diff --check`: passed. No collision or boundary behavior was added.
+  Hardware GPU performance and touch walking are unverified/not implemented.

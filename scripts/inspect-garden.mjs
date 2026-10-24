@@ -3,6 +3,7 @@ import { mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { chromium } from 'playwright'
 import { preview } from 'vite'
+import { checkWalking } from './check-walking.mjs'
 
 // Inspect production output using an installed Edge on Windows, or Playwright's
 // Chromium elsewhere. Override with SECRET_WORLD_BROWSER_CHANNEL when needed.
@@ -17,7 +18,8 @@ try {
     headless: true,
     args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
   })
-  const page = await browser.newPage({ viewport: { width: 1440, height: 960 }, deviceScaleFactor: 1 })
+  const context = await browser.newContext({ viewport: { width: 1440, height: 960 }, deviceScaleFactor: 1 })
+  const page = await context.newPage()
   const errors = []
   page.on('pageerror', (error) => errors.push(error.message))
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()) })
@@ -38,6 +40,8 @@ try {
   const screenshot = resolve('artifacts/garden-desktop.png')
   await page.screenshot({ path: screenshot, fullPage: true })
   console.log(`Garden browser check passed (${channel}, software WebGL2). Screenshot: ${screenshot}`)
+  if (process.argv.includes('--walk')) await checkWalking(page)
+  assert.deepEqual(errors, [], 'Unexpected browser errors during inspection')
 } finally {
   if (browser) await browser.close()
   await new Promise((accept, reject) => server.httpServer.close((error) => error ? reject(error) : accept()))
