@@ -3,11 +3,29 @@ import { z } from 'zod'
 const vector3 = z.tuple([z.number().finite(), z.number().finite(), z.number().finite()])
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a six-digit hex color')
 const intensity = z.number().finite().min(0).max(10)
+const dimension = z.number().finite().positive().max(20)
+const identifier = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+const transform = {
+  id: identifier,
+  position: vector3,
+  // Rotation around the Y axis, in radians. Local object origins sit on ground.
+  rotation: z.number().finite(),
+  scale: z.tuple([dimension, dimension, dimension]),
+}
 
-/** Version 1 covers the foundation only. Add supported prop kinds in Task 2. */
+export const worldObjectSchema = z.discriminatedUnion('type', [
+  z.strictObject({ ...transform, type: z.literal('path'), size: z.tuple([dimension, dimension]), color }),
+  z.strictObject({ ...transform, type: z.literal('pond'), radii: z.tuple([dimension, dimension]), waterColor: color, bankColor: color }),
+  z.strictObject({ ...transform, type: z.literal('rock'), color }),
+  z.strictObject({ ...transform, type: z.literal('tree'), variety: z.enum(['pine', 'maple']), foliageColor: color, trunkColor: color }),
+  z.strictObject({ ...transform, type: z.literal('lantern'), stoneColor: color, glowColor: color }),
+  z.strictObject({ ...transform, type: z.literal('entrance'), woodColor: color, roofColor: color }),
+])
+
+/** Version 1 accepts the foundation and a closed set of garden object kinds. */
 export const worldSchema = z.strictObject({
   schemaVersion: z.literal(1),
-  id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  id: identifier,
   name: z.string().trim().min(1).max(80),
   ground: z.strictObject({
     size: z.tuple([z.number().finite().positive().max(100), z.number().finite().positive().max(100)]),
@@ -25,11 +43,19 @@ export const worldSchema = z.strictObject({
     ambientIntensity: intensity,
     sunlight: z.strictObject({ position: vector3, color, intensity }),
   }),
-  // No prop types are implemented yet; reject rather than silently drop them.
-  objects: z.array(z.never()).max(0),
+  objects: z.array(worldObjectSchema).max(200).superRefine((objects, context) => {
+    const ids = new Set<string>()
+    objects.forEach((object, index) => {
+      if (ids.has(object.id)) {
+        context.addIssue({ code: 'custom', path: [index, 'id'], message: 'Object IDs must be unique' })
+      }
+      ids.add(object.id)
+    })
+  }),
 })
 
 export type WorldDefinition = z.infer<typeof worldSchema>
+export type WorldObject = z.infer<typeof worldObjectSchema>
 
 /** All untrusted world data must cross this boundary before rendering. */
 export function parseWorld(input: unknown): WorldDefinition {

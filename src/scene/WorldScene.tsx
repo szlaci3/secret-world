@@ -1,6 +1,7 @@
 import { useThree } from '@react-three/fiber'
 import { useLayoutEffect } from 'react'
 import type { WorldDefinition } from '../world/schema'
+import { GardenObject } from './GardenObject'
 
 function CameraTarget({ target }: { target: WorldDefinition['camera']['target'] }) {
   const camera = useThree((state) => state.camera)
@@ -23,6 +24,7 @@ export function WorldScene({ world }: { world: WorldDefinition }) {
         <planeGeometry args={ground.size} />
         <meshStandardMaterial color={ground.color} roughness={1} />
       </mesh>
+      {world.objects.map((object) => <GardenObject key={object.id} object={object} />)}
     </>
   )
 }

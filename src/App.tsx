@@ -25,7 +25,7 @@ export default function App() {
         <span className="stage">World study / 001</span>
       </header>
       <section className="garden" id="garden" aria-labelledby="garden-title">
-        <div className="scene" role="img" aria-label="A stationary 3D preview of the garden’s square ground plane in soft daylight.">
+        <div className="scene" role="img" aria-label="A Japanese garden with a winding stone path, still pond, rocks, pine and maple trees, stone lanterns, and a torii entrance. Stationary view.">
           <SceneBoundary>
             <Canvas camera={world.camera} dpr={[1, 1.5]} frameloop="demand" fallback={<GraphicsFallback />}>
               <WorldScene world={world} />
@@ -37,9 +37,9 @@ export default function App() {
           <h1 id="garden-title">{world.name}</h1>
           <p>A Japanese garden, taking shape.</p>
         </div>
-        <div className="preview-note"><span aria-hidden="true">◌</span> Foundation preview · Stationary view</div>
+        <div className="preview-note"><span aria-hidden="true">◌</span> Garden study · Stationary view</div>
       </section>
-      <footer><span>01 / The ground beneath</span><span>Garden details and walking arrive in later tasks.</span></footer>
+      <footer><span>02 / A garden takes shape</span><span>Walking arrives in the next task.</span></footer>
     </main>
   )
 }

@@ -11,7 +11,7 @@ Each task has its own acceptance gate. Complete tasks in order.
      data-driven camera, lighting, and background; show the SecretWorld name.
    - Verify: schema tests, TypeScript check, production build, HTTP smoke check.
      Record browser/WebGL verification separately if unavailable.
-2. **Japanese garden composition**
+2. **Japanese garden composition (completed)**
    - Extend the schema and renderer with paths, pond, rocks, trees, lanterns,
      and an entrance. Place every instance through garden data.
    - Verify: fixture validation and browser inspection of the full garden layout.
@@ -37,8 +37,8 @@ Each task has its own acceptance gate. Complete tasks in order.
 
 ## Scope boundary
 
-Task 1 deliberately provides a stationary ground preview. Garden props, walking,
-collisions, JSON import UI, and AI generation belong to later tasks.
+Task 1 provides the foundation; Task 2 adds the stationary garden composition.
+Walking, collisions, JSON import UI, and AI generation belong to later tasks.
 
 ## Task 1 verification
 
@@ -49,3 +49,19 @@ collisions, JSON import UI, and AI generation belong to later tasks.
 - Browser/WebGL rendering has not been verified in this environment.
 - Vite reports a bundle-size warning (approximately 1.22 MB JavaScript,
   336 KB gzip); rendering-cost tuning remains in Task 5.
+
+## Task 2 verification
+
+- Added six typed object kinds and 30 JSON-defined instances, including both
+  pine and maple trees. No walking or collision behavior was added.
+- `npm.cmd test`: 27 schema tests passed, covering the fixture, unique IDs,
+  supported kinds, object count, transforms, and type-specific fields.
+- `npm.cmd run build`: TypeScript check and production build passed. Vite's
+  existing bundle-size warning remains (approximately 1.23 MB / 339 KB gzip).
+- `npm.cmd run smoke`: production HTML, JavaScript, and CSS served successfully.
+- `npm.cmd run inspect:garden`: installed Edge, headless software WebGL2,
+  1440 × 960; active canvas, no visible fallback, no console/page errors.
+  Visually inspected `artifacts/garden-desktop.png`: all six kinds are visible,
+  with a winding path from the torii, clear pond, and trees around the perimeter.
+- `git diff --check`: passed. Hardware GPU performance and walking are unverified;
+  responsive visual refinement remains in Task 5.
