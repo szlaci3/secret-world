@@ -12,11 +12,12 @@ export function WalkingControls({ world, ref, onStatus, onReady }: {
   onStatus: (status: WalkStatus) => void
   onReady: (ready: boolean) => void
 }) {
-  const { camera, gl, invalidate } = useThree()
+  const { camera, gl, invalidate, size } = useThree()
   const session = useRef<WalkSession | null>(null)
   useImperativeHandle(ref, () => ({
     enter: () => session.current?.enter(),
     exit: () => session.current?.exit(),
+    isMoving: () => session.current?.isMoving() ?? false,
   }), [])
 
   useEffect(() => {
@@ -30,6 +31,10 @@ export function WalkingControls({ world, ref, onStatus, onReady }: {
       onReady(false)
     }
   }, [camera, gl, world, invalidate, onStatus, onReady])
+
+  useEffect(() => {
+    session.current?.resizeOverview(size.width / size.height)
+  }, [size.width, size.height])
 
   useFrame((_, delta) => session.current?.update(delta))
   return null

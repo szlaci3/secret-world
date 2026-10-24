@@ -5,7 +5,7 @@ import { createNavigation, moveWithinGarden } from './navigation'
 import type { Navigation } from './navigation'
 
 export type WalkStatus = { phase: 'overview' | 'requesting' | 'walking'; error: string | null }
-export type WalkActions = { enter: () => void; exit: () => void }
+export type WalkActions = { enter: () => void; exit: () => void; isMoving: () => boolean }
 
 /** Owns browser input for exactly one mounted canvas; dispose removes everything. */
 export class WalkSession implements WalkActions {
@@ -16,6 +16,7 @@ export class WalkSession implements WalkActions {
   private document: Document
   private window: Window
   private navigation: Navigation
+  private aspect: number
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -27,6 +28,7 @@ export class WalkSession implements WalkActions {
     this.document = canvas.ownerDocument
     this.window = this.document.defaultView!
     this.navigation = createNavigation(world)
+    this.aspect = camera.aspect
     this.document.addEventListener('pointerlockchange', this.onLockChange)
     this.document.addEventListener('pointerlockerror', this.onLockError)
     this.document.addEventListener('keydown', this.onKeyDown)
@@ -40,9 +42,15 @@ export class WalkSession implements WalkActions {
   private restoreOverview() {
     this.camera.position.set(...this.world.camera.position)
     this.camera.lookAt(...this.world.camera.target)
-    this.camera.fov = this.world.camera.fov
+    const vertical = this.world.camera.fov * Math.PI / 180
+    this.camera.fov = Math.min(90, 2 * Math.atan(Math.tan(vertical / 2) / Math.min(1, this.aspect)) * 180 / Math.PI)
     this.camera.updateProjectionMatrix()
     this.invalidate()
+  }
+
+  resizeOverview(aspect: number) {
+    this.aspect = aspect
+    if (!this.active && !this.pending) this.restoreOverview()
   }
 
   enter = () => {
@@ -132,6 +140,8 @@ export class WalkSession implements WalkActions {
 
   private onBlur = () => { this.exit() }
   private onVisibility = () => { if (this.document.hidden) this.exit() }
+
+  isMoving = () => this.active && this.keys.size > 0
 
   update(delta: number) {
     if (!this.active || this.disposed) return

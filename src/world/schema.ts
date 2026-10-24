@@ -18,8 +18,13 @@ const transform = {
 
 export const worldObjectSchema = z.discriminatedUnion('type', [
   z.strictObject({ ...transform, type: z.literal('path'), size: z.tuple([dimension, dimension]), color }),
-  z.strictObject({ ...transform, type: z.literal('pond'), radii: z.tuple([dimension, dimension]), waterColor: color, bankColor: color }),
-  z.strictObject({ ...transform, type: z.literal('rock'), color }),
+  z.strictObject({ ...transform, type: z.literal('pond'), radii: z.tuple([dimension, dimension]), waterColor: color, bankColor: color,
+    lilyPads: z.array(z.strictObject({
+      position: z.tuple([z.number().finite().min(-0.8).max(0.8), z.number().finite().min(-0.8).max(0.8)]),
+      radius: z.number().finite().min(0.03).max(0.15), color,
+    }).refine((pad) => Math.hypot(...pad.position) + pad.radius <= 0.9, 'Lily pads must remain inside the pond')).max(12).optional(),
+  }),
+  z.strictObject({ ...transform, type: z.literal('rock'), color, mossColor: color.optional() }),
   z.strictObject({ ...transform, type: z.literal('tree'), variety: z.enum(['pine', 'maple']), foliageColor: color, trunkColor: color }),
   z.strictObject({ ...transform, type: z.literal('lantern'), stoneColor: color, glowColor: color }),
   z.strictObject({ ...transform, type: z.literal('entrance'), woodColor: color, roofColor: color }),
@@ -45,6 +50,7 @@ export const worldSchema = z.strictObject({
     background: color,
     ambientIntensity: intensity,
     sunlight: z.strictObject({ position: vector3, color, intensity }),
+    skyLight: z.strictObject({ skyColor: color, groundColor: color, intensity }).optional(),
   }),
   walking: z.strictObject({
     spawn: vector3.refine((position) => position[1] > 0 && position[1] <= 3, 'Eye height must be above ground and at most 3 meters'),

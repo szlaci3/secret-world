@@ -5,6 +5,7 @@ import { chromium } from 'playwright'
 import { preview } from 'vite'
 import { checkWalking } from './check-walking.mjs'
 import { checkCollisions } from './check-collisions.mjs'
+import { checkExperience } from './check-experience.mjs'
 
 // Inspect production output using an installed Edge on Windows, or Playwright's
 // Chromium elsewhere. Override with SECRET_WORLD_BROWSER_CHANNEL when needed.
@@ -28,6 +29,7 @@ try {
   await page.route('https://fonts.googleapis.com/**', (route) => route.fulfill({ body: '', contentType: 'text/css' }))
   await page.goto(`http://127.0.0.1:${address.port}`, { waitUntil: 'networkidle' })
   await page.locator('.scene canvas').waitFor({ state: 'visible' })
+  await page.locator('.scene[aria-busy="false"]').waitFor({ state: 'visible' })
   const graphics = await page.locator('.scene canvas').evaluate((canvas) => {
     const gl = canvas.getContext('webgl2')
     return { width: canvas.width, height: canvas.height, webgl2: Boolean(gl), error: gl?.getError() }
@@ -43,6 +45,7 @@ try {
   console.log(`Garden browser check passed (${channel}, software WebGL2). Screenshot: ${screenshot}`)
   if (process.argv.includes('--walk')) await checkWalking(page)
   if (process.argv.includes('--collisions')) await checkCollisions(page)
+  if (process.argv.includes('--experience')) await checkExperience(page, browser, `http://127.0.0.1:${address.port}`)
   assert.deepEqual(errors, [], 'Unexpected browser errors during inspection')
 } finally {
   if (browser) await browser.close()

@@ -23,7 +23,7 @@ Each task has its own acceptance gate. Complete tasks in order.
    - Constrain movement to the garden; block water and solid props using
      collision data, with a safe spawn and frame-independent movement.
    - Verify: automated boundary/collision cases and a browser traversal.
-5. **Atmosphere and responsive experience**
+5. **Atmosphere and responsive experience (completed)**
    - Refine lighting, shadows, garden details, and responsive overlays;
      provide clear loading/error states and tune rendering cost.
    - Verify: desktop/narrow viewports, keyboard access, visual inspection,
@@ -39,8 +39,9 @@ Each task has its own acceptance gate. Complete tasks in order.
 
 Task 1 provides the foundation; Task 2 adds the garden composition; Task 3 adds
 keyboard walking and pointer-lock mouse look. Task 4 adds boundaries, data-driven
-footprint collisions, and spatial spawn validation. Atmosphere/responsive polish,
-JSON import UI, and AI generation belong to later tasks.
+footprint collisions, and spatial spawn validation. Task 5 adds atmosphere,
+responsive layouts, loading/recovery states, and rendering-cost controls.
+JSON import UI and AI generation belong to later work.
 
 ## Task 1 verification
 
@@ -113,3 +114,30 @@ JSON import UI, and AI generation belong to later tasks.
 - `git diff --check`: passed. Collision footprints are conservative 2D geometry;
   hardware GPU performance, gravity, jumping, and vertical/overhead collision
   are outside this task. Task 5 has not been started.
+
+## Task 5 verification
+
+- Added static sun shadows, hemisphere fill, JSON-configured lily pads and moss,
+  and a complete garden overview on narrow screens. System fonts avoid external
+  font requests. Touch-only devices get clear overview-only instructions.
+- Lazy-loaded the 3D renderer so preparation UI can appear first. Entry is
+  disabled until ready; graphics failures expose a keyboard-focused retry that
+  reloads the page, including recovery from cached module-download failures.
+- Batched path stones by color, reused static shadow maps, capped pixel density,
+  and added a one-way shadow/density fallback for sustained slow movement frames.
+- `npm.cmd test`: 62 tests passed, including invalid decoration-data checks.
+- `npm.cmd run build`: TypeScript and production build passed. Initial shell is
+  approximately 326 KB / 100 KB gzip; lazy 3D chunk 925 KB / 245 KB gzip. The large
+  3D chunk warning remains; splitting improves preparation UI, not total download.
+- `npm.cmd run inspect:experience`: passed in headless Edge software WebGL2,
+  including walking, collision traversal, focus recovery, 320/390/768/1440 layouts,
+  walking resize, touch overview, delayed loading, native context loss/retry,
+  and failed renderer-download/retry. Normal navigation had no console/page errors;
+  deliberate download failure emits expected browser/React error diagnostics.
+- Visually inspected desktop, narrow overview, walking, loading, and error
+  screenshots under `artifacts/`.
+- `npm.cmd run measure:performance`: approximately 43 FPS after quality warmup,
+  33.4 ms p95 frame interval, zero idle WebGL draw calls. See
+  [the recorded method and limits](performance.md); hardware GPU and physical
+  mobile performance are unverified.
+- `npm.cmd run smoke` and `git diff --check`: passed. Task 6 has not been started.

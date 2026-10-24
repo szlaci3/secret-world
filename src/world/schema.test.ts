@@ -83,6 +83,8 @@ describe('world data boundary', () => {
     ['invalid lantern color', { ...garden.objects.find((object) => object.type === 'lantern'), glowColor: 'orange' }],
     ['missing entrance material', { ...garden.objects.find((object) => object.type === 'entrance'), woodColor: undefined }],
     ['invalid rock color', { ...garden.objects.find((object) => object.type === 'rock'), color: '#fff' }],
+    ['lily pad outside the pond', { ...garden.objects.find((object) => object.type === 'pond'), lilyPads: [{ position: [0.8, 0.8], radius: 0.1, color: '#668250' }] }],
+    ['invalid moss color', { ...garden.objects.find((object) => object.type === 'rock'), mossColor: 'green' }],
   ])('rejects object with %s', (_, object) => {
     expect(worldObjectSchema.safeParse(object).success).toBe(false)
   })
