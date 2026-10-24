@@ -22,6 +22,7 @@ try {
     args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
   })
   const context = await browser.newContext({ viewport: { width: 1440, height: 960 }, deviceScaleFactor: 1 })
+  context.setDefaultTimeout(20000)
   const page = await context.newPage()
   const errors = []
   page.on('pageerror', (error) => errors.push(error.message))

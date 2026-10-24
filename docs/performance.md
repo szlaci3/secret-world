@@ -125,7 +125,8 @@ exact interpolation of the rendered terrain triangles, including in fallback.
 Plant clusters are merged into one low-poly geometry and instanced by variety and
 two-color palette. Path stones remain instanced by color. Each world has only one
 shadow-casting light, static geometry and shadows, and no continuous animations.
-Geometry/material resources and walking input listeners are released on replacement.
+Geometry/material resources are released on replacement. Walking input listeners
+belong to the shared canvas session and are released when that session is disposed.
 There are no added packages, model downloads, textures, or external font requests.
 
 The current production shell is 397 KB (115 KB gzip estimate), the lazy 3D chunk
@@ -151,3 +152,17 @@ focus recovery, and graphics failure handling. Unit tests additionally check
 terrain/camera agreement, gentle-hill bounds, shoreline clearance, and that at
 least 95% of the sampled walkable ground is connected to each world's spawn.
 Physical mobile devices, hardware GPU performance, and hosted latency remain unverified.
+
+## Sidebar world browser
+
+The world list uses six static JPEG screenshots (about 91 KB combined), with a
+centered 1.7× crop for clearer landmarks. Later thumbnails load lazily; browsing
+creates no extra canvases or WebGL contexts. The selected scene keeps the shared
+renderer and input session. A thumbnail click updates its world and requests
+pointer lock synchronously, before React updates scene data.
+
+The production shell is now about 399 KB (115 KB gzip estimate), CSS is 7.1 KB
+(2.3 KB gzip), and the 3D chunk remains 938 KB (249 KB gzip). The existing large
+3D chunk warning remains. The previous timing tables describe their recorded
+builds; they are not measurements of the new sidebar. Screenshot generation is
+an offline authoring step, not work performed by a visitor's browser.

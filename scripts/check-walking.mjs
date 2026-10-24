@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 
 export async function checkWalking(page) {
   const canvas = page.locator('.scene canvas')
-  const enter = page.getByRole('button', { name: 'Enter world', exact: true })
+  const enter = page.locator('.world-card[aria-pressed="true"]')
   const bounds = await canvas.boundingBox()
   assert(bounds)
   const clip = { x: bounds.x + bounds.width * 0.3, y: bounds.y + bounds.height * 0.2,
@@ -13,21 +13,21 @@ export async function checkWalking(page) {
   const waitOverview = async () => {
     await page.waitForFunction(() => document.pointerLockElement === null)
     await enter.waitFor({ state: 'visible' })
-    assert.equal(await enter.evaluate((button) => button === document.activeElement), true, 'Return keyboard focus to Enter world')
+    assert.equal(await enter.evaluate((button) => button === document.activeElement), true, 'Return keyboard focus to the selected thumbnail')
   }
   const enterAgain = async () => {
     // Chromium enforces a cooldown after the user releases pointer lock.
     await page.waitForTimeout(1400)
     await enter.press('Enter')
     await waitLocked()
-    await page.getByRole('button', { name: 'Leave walk', exact: true }).waitFor({ state: 'visible' })
+    await page.locator('.walk-controls').waitFor({ state: 'visible' })
     await page.waitForTimeout(150)
   }
 
   // Enter through the keyboard, exercising the real user-activation requirement.
   await enter.press('Enter')
   await waitLocked()
-  await page.getByRole('button', { name: 'Leave walk', exact: true }).waitFor({ state: 'visible' })
+  await page.locator('.walk-controls').waitFor({ state: 'visible' })
   await page.waitForTimeout(150)
   const spawn = await sample()
   await page.screenshot({ path: resolve('artifacts/garden-walking.png'), fullPage: true })
@@ -64,7 +64,7 @@ export async function checkWalking(page) {
   assert(spawn.equals(await sample()), 'Held input must be cleared after tab-away and re-entry')
   await page.keyboard.up('ArrowUp')
   await other.close()
-  await page.getByRole('button', { name: 'Leave walk', exact: true }).press('Enter')
+  await page.keyboard.press('Escape')
   await waitOverview()
-  console.log('Walking browser checks passed: keyboard entry, forward movement, mouse look, Escape, Tab, tab-away/resume, cleared held input, and Leave walk.')
+  console.log('Walking browser checks passed: keyboard entry, forward movement, mouse look, Escape, Tab, tab-away/resume, cleared held input.')
 }

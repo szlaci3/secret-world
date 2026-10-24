@@ -6,10 +6,13 @@ Gemini-powered generation remains milestone 3; no provider is connected.
 
 ## Explore
 
-Select **Worlds**, choose a place, then **Enter world**. Walk with **WASD** or
-**arrow keys**, look with the mouse, and leave with **Escape**, **Tab**, or
-**Leave walk**. Each entry resets to that world's spawn. Switching worlds reuses
-the WebGL canvas and replaces the scene, camera, atmosphere, and walking session.
+Choose a screenshot in the desktop sidebar to enter a world directly. On narrow
+screens, open **Worlds** to browse the same list in a drawer. Walk with **WASD** or
+**arrow keys**, look with the mouse, and leave with **Escape** or **Tab**.
+Each entry resets to that world's spawn. Switching worlds reuses
+the WebGL canvas and updates the scene, camera, atmosphere, and walking session.
+The sidebar collapses while walking; leaving restores selection focus. If the
+browser declines mouse capture, **Click to begin** offers another attempt.
 Touch devices support the overview; walking needs a keyboard and mouse.
 
 | World | Composition and landmarks | Water |
@@ -25,8 +28,10 @@ All layouts are authored JSON. Trees, plants, structures, ground patches, stones
 water, terrain, and lighting use the same reusable components across worlds.
 The six fixtures contain 60–99 objects, with repeated plants and paths batched.
 
-The picker supports keyboard focus, Escape, a current-world marker, and narrow
-screens. Its **Open your own world JSON** section accepts files or pasted JSON.
+Descriptions appear on thumbnail hover or keyboard focus; touch users can read
+the selected world's description above the overview. The drawer uses native modal
+focus management and closes with Escape, Close, or a backdrop click.
+The sidebar's **Open your own world JSON** section accepts files or pasted JSON.
 Invalid input preserves the current scene. Imports last until reload; Maple
 Courtyard remains a backward-compatibility fixture available for importing.
 
@@ -48,6 +53,7 @@ npm.cmd run smoke
 npm.cmd run inspect:worlds
 npm.cmd run measure:performance
 npm.cmd run measure:performance -- "--world=Amber Meadow"
+npm.cmd run capture:thumbnails
 npm.cmd run preview
 ```
 
@@ -64,6 +70,12 @@ screenshots under Git-ignored `artifacts/`. Unit tests additionally verify terra
 interpolation and camera elevation, fixture validity, water clearance, and walking
 connectivity. Performance measurements run separately from browser QA; see
 [the measurements and limitations](docs/performance.md).
+
+`capture:thumbnails` captures the six actual scenes from the current production
+build into `public/worlds/`. Run `build` first, capture, then build again to include
+refreshed images in `dist/`. The sidebar uses these static JPEGs, with lazy loading
+for later cards, and never creates additional WebGL contexts for previews. Captures
+use a centered 16:9 crop with 1.7× magnification to make landmarks easier to see.
 
 ## Shared architecture
 

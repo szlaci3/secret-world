@@ -14,15 +14,16 @@ export function WalkingControls({ world, ref, onStatus, onReady }: {
 }) {
   const { camera, gl, invalidate, size } = useThree()
   const session = useRef<WalkSession | null>(null)
+  const initialWorld = useRef(world)
   useImperativeHandle(ref, () => ({
-    enter: () => session.current?.enter(),
+    enter: (next) => session.current?.enter(next),
     exit: () => session.current?.exit(),
     isMoving: () => session.current?.isMoving() ?? false,
   }), [])
 
   useEffect(() => {
     if (!(camera instanceof PerspectiveCamera)) return
-    const current = new WalkSession(gl.domElement, camera, world, invalidate, onStatus)
+    const current = new WalkSession(gl.domElement, camera, initialWorld.current, invalidate, onStatus)
     session.current = current
     onReady(true)
     return () => {
@@ -30,7 +31,12 @@ export function WalkingControls({ world, ref, onStatus, onReady }: {
       session.current = null
       onReady(false)
     }
-  }, [camera, gl, world, invalidate, onStatus, onReady])
+  }, [camera, gl, invalidate, onStatus, onReady])
+
+  useEffect(() => {
+    session.current?.replaceWorld(world)
+    onReady(true)
+  }, [world, onReady])
 
   useEffect(() => {
     session.current?.resizeOverview(size.width / size.height)

@@ -6,7 +6,7 @@ import type { Navigation } from './navigation'
 import { terrainHeight } from '../world/terrain'
 
 export type WalkStatus = { phase: 'overview' | 'requesting' | 'walking'; error: string | null }
-export type WalkActions = { enter: () => void; exit: () => void; isMoving: () => boolean }
+export type WalkActions = { enter: (world?: WorldDefinition) => void; exit: () => void; isMoving: () => boolean }
 
 /** Owns browser input for exactly one mounted canvas; dispose removes everything. */
 export class WalkSession implements WalkActions {
@@ -54,7 +54,18 @@ export class WalkSession implements WalkActions {
     if (!this.active && !this.pending) this.restoreOverview()
   }
 
-  enter = () => {
+  replaceWorld(world: WorldDefinition) {
+    if (world === this.world || this.disposed) return
+    this.exit()
+    this.world = world
+    this.navigation = createNavigation(world)
+    this.restoreOverview()
+  }
+
+  enter = (world?: WorldDefinition) => {
+    // Selection and mouse capture share the thumbnail's user gesture. React can
+    // replace scene data afterward without disposing the captured canvas/session.
+    if (world) this.replaceWorld(world)
     if (this.disposed || this.active || this.pending || !this.world.walking) return
     if (!this.canvas.requestPointerLock) {
       this.onStatus({ phase: 'overview', error: 'Mouse capture is unavailable in this browser. The world overview is still available.' })
@@ -64,7 +75,7 @@ export class WalkSession implements WalkActions {
     this.pending = true
     this.onStatus({ phase: 'requesting', error: null })
     try {
-      // Request synchronously from the Enter button's user gesture.
+      // Request synchronously from the thumbnail or recovery button's gesture.
       Promise.resolve(this.canvas.requestPointerLock()).catch(this.onLockError)
     } catch {
       this.onLockError()
@@ -111,7 +122,7 @@ export class WalkSession implements WalkActions {
     if (this.disposed || !this.pending) return
     this.pending = false
     this.keys.clear()
-    this.onStatus({ phase: 'overview', error: 'Mouse capture was declined. Select Enter world to try again.' })
+    this.onStatus({ phase: 'overview', error: 'Mouse capture was declined. Click to begin, or choose a world to try again.' })
   }
 
   private onKeyDown = (event: KeyboardEvent) => {
