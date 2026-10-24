@@ -56,7 +56,7 @@ export class WalkSession implements WalkActions {
   enter = () => {
     if (this.disposed || this.active || this.pending || !this.world.walking) return
     if (!this.canvas.requestPointerLock) {
-      this.onStatus({ phase: 'overview', error: 'Mouse capture is unavailable in this browser. The garden overview is still available.' })
+      this.onStatus({ phase: 'overview', error: 'Mouse capture is unavailable in this browser. The world overview is still available.' })
       return
     }
     this.keys.clear()
@@ -109,7 +109,7 @@ export class WalkSession implements WalkActions {
     if (this.disposed || !this.pending) return
     this.pending = false
     this.keys.clear()
-    this.onStatus({ phase: 'overview', error: 'Mouse capture was declined. Select Enter garden to try again.' })
+    this.onStatus({ phase: 'overview', error: 'Mouse capture was declined. Select Enter world to try again.' })
   }
 
   private onKeyDown = (event: KeyboardEvent) => {

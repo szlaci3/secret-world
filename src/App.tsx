@@ -1,12 +1,11 @@
-import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import gardenData from './world/garden.json'
-import { parseWorld } from './world/schema'
+import { worldCatalog } from './world/catalog'
 import type { WalkActions, WalkStatus } from './controls/WalkSession'
 import { WorldPicker } from './components/WorldPicker'
 import type { WorldDefinition } from './world/schema'
 
-const initialWorld = parseWorld(gardenData)
+const initialWorld = worldCatalog[0].world
 const GardenCanvas = lazy(() => import('./scene/GardenCanvas'))
 
 class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
@@ -27,6 +26,8 @@ export default function App() {
   const retryButton = useRef<HTMLButtonElement>(null)
   const focusOnReturn = useRef(false)
   const walking = status.phase === 'walking'
+  const worldDetails = useMemo(() => worldCatalog.find((entry) => entry.world === world ||
+    JSON.stringify(entry.world) === JSON.stringify(world)), [world])
   const onStatus = useCallback((next: WalkStatus) => {
     setStatus(next)
     focusOnReturn.current = next.phase === 'overview'
@@ -69,28 +70,28 @@ export default function App() {
         <a href="#garden" className="wordmark">SecretWorld<span className="brand-dot" aria-hidden="true">.</span></a>
         <div className="header-actions">
           <span className="stage">World study</span>
-          <WorldPicker disabled={walking || status.phase === 'requesting' || sceneState === 'error'} onSelect={selectWorld} />
+          <WorldPicker currentWorldId={worldDetails?.world.id} disabled={walking || status.phase === 'requesting' || sceneState === 'error'} onSelect={selectWorld} />
         </div>
       </header>
       <section className={`garden${walking ? ' is-walking' : ''}`} id="garden" aria-labelledby="garden-title">
-        <div className="scene" role="region" aria-label={`${world.name}. ${walking ? 'First-person view.' : 'Garden overview.'}`} aria-busy={sceneState === 'loading'}>
+        <div className="scene" role="region" aria-label={`${world.name}. ${walking ? 'First-person view.' : 'World overview.'}`} aria-busy={sceneState === 'loading'}>
           <SceneBoundary onFailure={onFailure}>
             <Suspense fallback={null}>
               <GardenCanvas world={world} actions={actions} onStatus={onStatus} onReady={onReady} onFailure={onFailure} walking={walking} />
             </Suspense>
           </SceneBoundary>
-          {sceneState === 'loading' && <div className="scene-notice" role="status"><span className="loading-mark" aria-hidden="true">◌</span><p>Preparing the garden…</p></div>}
+          {sceneState === 'loading' && <div className="scene-notice" role="status"><span className="loading-mark" aria-hidden="true">◌</span><p>Preparing the world…</p></div>}
           {sceneState === 'error' && <div className="scene-notice graphics-message" role="alert">
-            <h2>The garden couldn’t open</h2>
+            <h2>The world couldn’t open</h2>
             <p>Check your connection and that WebGL is enabled, then try again.</p>
             <button type="button" ref={retryButton} onClick={retry}>Try again</button>
           </div>}
           {walking && <div className="crosshair" aria-hidden="true">+</div>}
         </div>
         <div className="intro">
-          <p className="eyebrow">A space to slow down</p>
+          <p className="eyebrow">{worldDetails?.theme ?? 'A world of your own'}</p>
           <h1 id="garden-title">{world.name}</h1>
-          <p>Stone, water, and a little room to breathe.</p>
+          <p>{worldDetails?.description ?? 'A new place to explore at your own pace.'}</p>
         </div>
         <div className="walk-panel" hidden={sceneState === 'error'}>
           <div className="walk-actions">
@@ -99,18 +100,18 @@ export default function App() {
             ) : (
               <button type="button" ref={enterButton} disabled={!ready || !world.walking || touchOnly || status.phase === 'requesting'}
                 aria-describedby="walk-instructions" onClick={() => actions.current?.enter()}>
-                {!ready ? 'Preparing garden…' : touchOnly || !world.walking ? 'Garden overview' : status.phase === 'requesting' ? 'Capturing mouse…' : 'Enter garden'}
+                {!ready ? 'Preparing world…' : touchOnly || !world.walking ? 'World overview' : status.phase === 'requesting' ? 'Capturing mouse…' : 'Enter world'}
               </button>
             )}
             <span className="walk-status" role="status">
-              {status.error ?? (walking ? 'Walking · Mouse captured' : status.phase === 'requesting' ? 'Allow mouse capture to begin.' : 'Garden overview')}
+              {status.error ?? (walking ? 'Walking · Mouse captured' : status.phase === 'requesting' ? 'Allow mouse capture to begin.' : 'World overview')}
             </span>
           </div>
-          <p id="walk-instructions">{!world.walking ? 'This world is an overview. Choose another world to take a walk.' : touchOnly ? 'Enjoy the garden overview. Walking needs a keyboard and mouse.' : 'WASD or arrow keys to walk · Mouse to look · Esc or Tab to leave'}</p>
+          <p id="walk-instructions">{!world.walking ? 'This world is an overview. Choose another world to take a walk.' : touchOnly ? 'Enjoy the world overview. Walking needs a keyboard and mouse.' : 'WASD or arrow keys to walk · Mouse to look · Esc or Tab to leave'}</p>
           {!walking && !touchOnly && world.walking && <p className="device-note">Each entry starts at the world’s starting point. Explore at your own pace.</p>}
         </div>
       </section>
-      <footer><span>06 / A world of your own</span><span>Follow the stones, or explore the grass. Stay a while.</span></footer>
+      <footer><span>02 / Three places to wander</span><span>Choose a world. Find your own path.</span></footer>
     </main>
   )
 }

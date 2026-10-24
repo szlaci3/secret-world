@@ -8,7 +8,8 @@ There is no AI provider, generation endpoint, model loading, or code execution.
 ## Load a world
 
 1. Leave any active walk with Escape or Tab.
-2. Select **Worlds**. Choose an example, or select a `.json` file or paste JSON.
+2. Select **Worlds**. Choose one of the three worlds. For file/paste imports, expand
+   **Open your own world JSON**, then select a `.json` file or paste JSON.
 3. Select **Load world** for file/paste input. Files populate the editor first;
    selecting a file does not replace the world by itself.
 
@@ -50,8 +51,12 @@ Complete populated examples:
 
 - [`src/world/garden.json`](../src/world/garden.json): 18 × 18 m Quiet Garden,
   30 objects, pond, winding path, pine/maple trees, rocks, lanterns, and entrance.
+- [`src/world/sandstone-oasis.json`](../src/world/sandstone-oasis.json): 20 × 18 m
+  sunlit desert, 20 objects, tall sandstone formations, trail, and turquoise oasis.
+- [`src/world/frostlight-grove.json`](../src/world/frostlight-grove.json): 20 × 18 m
+  winter woodland, 20 objects, snowy pines, slate trail, and a blue pool.
 - [`src/world/maple-courtyard.json`](../src/world/maple-courtyard.json): 14 × 12 m
-  Maple Courtyard, 15 objects, autumn colors, shorter path, and a smaller pond.
+  Maple Courtyard import/test fixture, 15 objects, autumn colors, shorter path, and a smaller pond.
 
 ## Global rules
 
@@ -148,6 +153,17 @@ them; entrances need two separate post footprints to leave an opening. Tree
 footprints should cover trunks, not overhead canopy. Pond banks extend to 1.15
 times their radii before object scale; cover the bank as well as water. Inspect
 generated layouts because geometric/visual alignment is the author's responsibility.
+
+## Built-in catalog
+
+`src/world/catalog.ts` validates the three selectable fixtures with `parseWorld`
+and adds presentation-only theme/description metadata outside the versioned JSON
+contract. The picker sends each selection through the same `loadWorldJson` path
+as imports. The shared renderer, lighting, overview camera, and walking session
+read only `WorldDefinition`; no world-specific rendering code is needed. Switching
+reuses the canvas and disposes the previous walking session and input listeners.
+Imported worlds can use arbitrary valid IDs and get generic introductory copy.
+Only an exact match to a catalog fixture is marked as the current built-in world.
 
 ## Future generator handoff
 

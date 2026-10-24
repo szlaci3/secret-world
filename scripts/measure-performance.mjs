@@ -4,7 +4,9 @@ import { resolve } from 'node:path'
 import { chromium } from 'playwright'
 import { preview } from 'vite'
 
-const output = process.argv.includes('--baseline') ? 'performance-before.json' : 'performance.json'
+const worldName = process.argv.find((argument) => argument.startsWith('--world='))?.slice('--world='.length)
+const output = worldName ? `performance-${worldName.toLowerCase().replaceAll(' ', '-')}.json`
+  : process.argv.includes('--baseline') ? 'performance-before.json' : 'performance.json'
 const channel = process.env.SECRET_WORLD_BROWSER_CHANNEL ?? (process.platform === 'win32' ? 'msedge' : 'chromium')
 const server = await preview({ preview: { host: '127.0.0.1', port: 0, open: false } })
 let browser
@@ -35,12 +37,18 @@ try {
   })
   await page.goto(`http://127.0.0.1:${address.port}`, { waitUntil: 'networkidle' })
   await page.waitForFunction(() => window.gardenMeasurement.draws > 0)
+  if (worldName) {
+    await page.getByRole('button', { name: 'Worlds', exact: true }).click()
+    await page.getByRole('dialog').getByRole('button', { name: worldName, exact: true }).click()
+    await page.locator('.scene[aria-busy="false"]').waitFor()
+    assert.equal(await page.locator('h1').textContent(), worldName)
+  }
   await page.waitForTimeout(500)
   const idleStart = await page.evaluate(() => window.gardenMeasurement.draws)
   await page.waitForTimeout(1000)
   const idleDrawCalls = await page.evaluate((start) => window.gardenMeasurement.draws - start, idleStart)
   assert.equal(idleDrawCalls, 0, 'The settled overview should render on demand')
-  await page.getByRole('button', { name: 'Enter garden', exact: true }).press('Enter')
+  await page.getByRole('button', { name: 'Enter world', exact: true }).press('Enter')
   await page.waitForFunction(() => Boolean(document.pointerLockElement))
   await page.waitForTimeout(250)
   await page.keyboard.down('w')
@@ -75,7 +83,7 @@ try {
   assert.equal(idleWalkingDrawCalls, 0, 'Standing still should also render on demand')
   await page.keyboard.press('Escape')
   const firstDrawMs = await page.evaluate(() => window.gardenMeasurement.firstDrawMs)
-  const report = { measuredAt: new Date().toISOString(), browser: browser.version(), channel,
+  const report = { world: await page.locator('h1').textContent(), measuredAt: new Date().toISOString(), browser: browser.version(), channel,
     rendering: 'Headless software WebGL2 (SwiftShader), local production server; not a hardware GPU benchmark',
     viewport: { width: 1440, height: 960, dpr: 1 }, firstDrawMs, idleDrawCalls, idleWalkingDrawCalls,
     warmupMs: 2000, active, approximateDrawCallsPerRender: active.drawCalls / active.renderedFrames }

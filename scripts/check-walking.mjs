@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 
 export async function checkWalking(page) {
   const canvas = page.locator('.scene canvas')
-  const enter = page.getByRole('button', { name: 'Enter garden', exact: true })
+  const enter = page.getByRole('button', { name: 'Enter world', exact: true })
   const bounds = await canvas.boundingBox()
   assert(bounds)
   const clip = { x: bounds.x + bounds.width * 0.3, y: bounds.y + bounds.height * 0.2,
@@ -13,7 +13,7 @@ export async function checkWalking(page) {
   const waitOverview = async () => {
     await page.waitForFunction(() => document.pointerLockElement === null)
     await enter.waitFor({ state: 'visible' })
-    assert.equal(await enter.evaluate((button) => button === document.activeElement), true, 'Return keyboard focus to Enter garden')
+    assert.equal(await enter.evaluate((button) => button === document.activeElement), true, 'Return keyboard focus to Enter world')
   }
   const enterAgain = async () => {
     // Chromium enforces a cooldown after the user releases pointer lock.

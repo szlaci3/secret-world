@@ -12,7 +12,15 @@ button { font: inherit; }
 .dialog-heading h2 { font: 400 1.8rem Georgia, serif; margin: 0; }
 .world-dialog .quiet-button { background: transparent; border-color: transparent; }
 .world-dialog p { font-size: .85rem; line-height: 1.6; }
-.world-examples { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0 1.5rem; }
+.world-examples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 1rem 0 1.5rem; }
+.world-examples button { display: flex; flex-direction: column; text-align: left; gap: .5rem; padding: .75rem; line-height: 1.5; }
+.world-examples button[aria-pressed="true"] { border-color: #36543f; box-shadow: 0 0 0 1px #36543f; }
+.world-examples strong { font: 400 1.25rem Georgia, serif; }
+.world-examples .world-theme { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; }
+.world-examples .world-current { font-size: .7rem; font-weight: 600; margin-top: auto; }
+.world-swatch { width: 100%; height: 2.5rem; border-top: .8rem solid; border-radius: 2px; }
+.world-import summary { cursor: pointer; min-height: 44px; padding: .7rem 0; font-size: .85rem; }
+.world-import form { margin-top: .75rem; }
 .world-dialog form { display: grid; gap: .75rem; }
 .world-dialog label { font-size: .85rem; font-weight: 600; }
 .file-label input { display: block; max-width: 100%; margin-top: .6rem; font: inherit; font-size: .8rem; }
@@ -49,7 +57,7 @@ footer span:last-child { text-align: right; }
 .scene-notice p { max-width: 26rem; font-size: .9rem; line-height: 1.7; }
 .scene-notice h2 { font: 400 1.7rem Georgia, serif; margin: 0; }
 .loading-mark { font-size: 2.5rem; color: #6a7e60; }
-a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #a86643; outline-offset: 5px; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 3px solid #a86643; outline-offset: 5px; }
 @media (max-width: 760px) {
   .masthead { padding: 1.25rem; }
   .stage { font-size: .6rem; }
@@ -68,4 +76,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   footer { flex-direction: column; gap: .3rem; padding: 1rem 1.25rem; font-size: .65rem; }
   footer span:last-child { text-align: left; }
   .is-walking .intro { display: none; }
+}
+
+@media (max-width: 540px) {
+  .world-examples { grid-template-columns: 1fr; }
+  .world-swatch { height: 1.5rem; border-top-width: .5rem; }
 }

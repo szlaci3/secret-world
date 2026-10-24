@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "frostlight-grove",
+  "name": "Frostlight Grove",
+  "ground": {"size": [20, 18], "color": "#dbe7ee"},
+  "camera": {"position": [23, 20, 25], "target": [0, 0.5, 0], "fov": 42},
+  "walking": {"spawn": [0, 1.65, 7], "yaw": 0, "speed": 2.4, "fov": 65, "lookSensitivity": 0.002, "radius": 0.28},
+  "environment": {"background": "#9eb9d3", "ambientIntensity": 0.55, "sunlight": {"position": [5, 8, -6], "color": "#b6d9ff", "intensity": 1.6}, "skyLight": {"skyColor": "#bad9f2", "groundColor": "#dbe7ee", "intensity": 0.9}},
+  "objects": [
+    {"id": "slate-1", "type": "path", "position": [0, 0, 6.0], "rotation": 0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-2", "type": "path", "position": [0, 0, 4.75], "rotation": -0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-3", "type": "path", "position": [0, 0, 3.5], "rotation": 0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-4", "type": "path", "position": [0, 0, 2.25], "rotation": -0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-5", "type": "path", "position": [0, 0, 1.0], "rotation": 0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-6", "type": "path", "position": [0, 0, -0.25], "rotation": -0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-7", "type": "path", "position": [0, 0, -1.5], "rotation": 0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-8", "type": "path", "position": [0, 0, -2.75], "rotation": -0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "slate-9", "type": "path", "position": [0, 0, -4.0], "rotation": 0.1, "scale": [1, 1, 1], "size": [1.25, 0.85], "color": "#91a8bc"},
+    {"id": "frost-pine-1", "type": "tree", "position": [-6, 0, -5], "rotation": 0.0, "scale": [1.35, 1.6875, 1.35], "variety": "pine", "foliageColor": "#cedfe9", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "frost-pine-2", "type": "tree", "position": [-3, 0, -6], "rotation": 0.6, "scale": [1.2, 1.5, 1.2], "variety": "pine", "foliageColor": "#9db8cb", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "frost-pine-3", "type": "tree", "position": [1, 0, -6], "rotation": 1.2, "scale": [1.4, 1.75, 1.4], "variety": "pine", "foliageColor": "#e5edf3", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "frost-pine-4", "type": "tree", "position": [6, 0, -5], "rotation": 1.7999999999999998, "scale": [1.3, 1.625, 1.3], "variety": "pine", "foliageColor": "#cedfe9", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "frost-pine-5", "type": "tree", "position": [7, 0, -1], "rotation": 2.4, "scale": [1.15, 1.4375, 1.15], "variety": "pine", "foliageColor": "#9db8cb", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "frost-pine-6", "type": "tree", "position": [6, 0, 4], "rotation": 3.0, "scale": [1.1, 1.375, 1.1], "variety": "pine", "foliageColor": "#e5edf3", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "frost-pine-7", "type": "tree", "position": [-7, 0, 0], "rotation": 3.5999999999999996, "scale": [1.2, 1.5, 1.2], "variety": "pine", "foliageColor": "#cedfe9", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "frost-pine-8", "type": "tree", "position": [-6, 0, 4], "rotation": 4.2, "scale": [1.05, 1.3125, 1.05], "variety": "pine", "foliageColor": "#9db8cb", "trunkColor": "#525d73", "collision": [{"kind": "ellipse", "center": [0.15, 0], "radii": [0.32, 0.23]}]},
+    {"id": "blue-pool", "type": "pond", "position": [3, 0, 0], "rotation": 0, "scale": [1, 1, 1], "radii": [1.7, 2.1], "waterColor": "#527eae", "bankColor": "#f0f4f7", "collision": [{"kind": "ellipse", "center": [0, 0], "radii": [1.955, 2.415]}]},
+    {"id": "snow-boulder", "type": "rock", "position": [-4, 0, -1], "rotation": 0, "scale": [1.6, 1.6, 1.3], "color": "#7c96b1", "mossColor": "#eff5f8", "collision": [{"kind": "ellipse", "center": [0, 0], "radii": [0.8, 0.75]}]},
+    {"id": "snow-boulder-small", "type": "rock", "position": [-3, 0, 1], "rotation": 0, "scale": [0.9, 0.9, 1], "color": "#9db2c5", "mossColor": "#eff5f8", "collision": [{"kind": "ellipse", "center": [0, 0], "radii": [0.8, 0.75]}]}
+  ]
+}

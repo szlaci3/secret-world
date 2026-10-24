@@ -54,3 +54,41 @@ The script writes raw results to Git-ignored `artifacts/performance.json`. Run
 it separately from other browser checks. Timings vary with CPU load, shader/cache
 warmup, browser scheduling, and device capability. Hardware GPU, physical mobile
 device, network/deployed latency, and cross-browser performance are unverified.
+
+## Milestone 2: three-world verification
+
+Recorded 2026-10-24 on the same local Edge 155 / SwiftShader setup above,
+with browser QA stopped during measurement. Each sample follows two seconds
+of walking warmup and about two seconds of measured forward movement.
+
+| World | Objects | Animation-frame FPS | p95 interval | Draw calls / render | Idle overview / standing draws |
+| --- | --- | --- | --- | --- | --- |
+| The Quiet Garden | 30 | 40.7 | 33.4 ms | 33.7 | 0 / 0 |
+| Sandstone Oasis | 20 | 53.6 | 33.4 ms | 7.9 | 0 / 0 |
+| Frostlight Grove | 20 | 45.3 | 33.4 ms | 19.7 | 0 / 0 |
+
+These are software-rendered adaptive-quality observations, not hardware GPU
+or mobile performance guarantees. Both added worlds stay below the original
+world's draw workload on this route. They reuse the existing static primitive
+library, instanced paths, cached shadows, pixel cap, and quality fallback.
+No textures, models, animations, dependencies, or per-world renderer branches
+were added. The new production shell is 337 KB (102 KB gzip estimate), CSS is
+6 KB (1.9 KB gzip), and the 3D chunk remains 925 KB (245 KB gzip). The existing
+Vite large-chunk warning remains.
+
+```powershell
+npm.cmd run measure:performance
+npm.cmd run measure:performance -- "--world=Sandstone Oasis"
+npm.cmd run measure:performance -- "--world=Frostlight Grove"
+```
+
+Raw output is in `artifacts/performance.json`,
+`artifacts/performance-sandstone-oasis.json`, and
+`artifacts/performance-frostlight-grove.json` (Git-ignored). `firstDrawMs` measures
+initial page navigation to the original world's first draw, including in the
+runs that subsequently select another world; it is not a switching-latency metric.
+
+The milestone 2 browser gate additionally checks all three selections, walking
+from each spawn, repeated switching, canvas identity, the current-world marker,
+and picker width at 320px. Unit checks validate the new JSON through the existing
+loader, follow each central trail, and verify blocked water and solid footprints.

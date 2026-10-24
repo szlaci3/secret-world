@@ -28,7 +28,7 @@ export async function checkExperience(page, browser, base) {
   assert.equal(await page.getByRole('button', { name: 'Worlds', exact: true })
     .evaluate((button) => button.matches(':focus-visible')), true, 'World selection must be reachable by keyboard')
   await page.keyboard.press('Tab')
-  const enter = page.getByRole('button', { name: 'Enter garden', exact: true })
+  const enter = page.getByRole('button', { name: 'Enter world', exact: true })
   assert.equal(await enter.evaluate((button) => button.matches(':focus-visible')), true, 'Keyboard entry must have visible focus')
   await enter.press('Enter')
   await page.waitForFunction(() => Boolean(document.pointerLockElement))
@@ -45,8 +45,8 @@ export async function checkExperience(page, browser, base) {
     const touch = await touchContext.newPage()
     await touch.goto(base, { waitUntil: 'networkidle' })
     await ready(touch)
-    assert.equal(await touch.getByRole('button', { name: 'Garden overview', exact: true }).isDisabled(), true)
-    assert(await touch.getByText('Enjoy the garden overview. Walking needs a keyboard and mouse.').isVisible())
+    assert.equal(await touch.getByRole('button', { name: 'World overview', exact: true }).isDisabled(), true)
+    assert(await touch.getByText('Enjoy the world overview. Walking needs a keyboard and mouse.').isVisible())
     await touch.screenshot({ path: resolve('artifacts/garden-touch.png'), fullPage: true })
   } finally { await touchContext.close() }
 
@@ -57,8 +57,8 @@ export async function checkExperience(page, browser, base) {
     const gate = new Promise((accept) => { release = accept })
     await loading.route(/\/assets\/GardenCanvas-.*\.js$/, async (route) => { await gate; await route.continue() })
     await loading.goto(base, { waitUntil: 'domcontentloaded' })
-    await loading.getByText('Preparing the garden…', { exact: true }).waitFor({ state: 'visible' })
-    assert.equal(await loading.getByRole('button', { name: 'Preparing garden…', exact: true }).isDisabled(), true)
+    await loading.getByText('Preparing the world…', { exact: true }).waitFor({ state: 'visible' })
+    assert.equal(await loading.getByRole('button', { name: 'Preparing world…', exact: true }).isDisabled(), true)
     await loading.screenshot({ path: resolve('artifacts/garden-loading.png'), fullPage: true })
     release()
     await ready(loading)
@@ -75,7 +75,7 @@ export async function checkExperience(page, browser, base) {
     await loading.screenshot({ path: resolve('artifacts/garden-error.png'), fullPage: true })
     await Promise.all([loading.waitForEvent('load'), loading.getByRole('button', { name: 'Try again', exact: true }).click()])
     await ready(loading)
-    assert.equal(await loading.getByRole('button', { name: 'Enter garden', exact: true }).isEnabled(), true)
+    assert.equal(await loading.getByRole('button', { name: 'Enter world', exact: true }).isEnabled(), true)
   } finally { await loading.close() }
 
   const failed = await page.context().newPage()
@@ -89,7 +89,7 @@ export async function checkExperience(page, browser, base) {
     await failed.getByRole('alert').waitFor({ state: 'visible' })
     await Promise.all([failed.waitForEvent('load'), failed.getByRole('button', { name: 'Try again', exact: true }).click()])
     await ready(failed)
-    assert.equal(await failed.getByRole('button', { name: 'Enter garden', exact: true }).isEnabled(), true)
+    assert.equal(await failed.getByRole('button', { name: 'Enter world', exact: true }).isEnabled(), true)
   } finally { await failed.close() }
   await page.bringToFront()
   await page.setViewportSize({ width: 1440, height: 960 })

@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import garden from './garden.json'
 import courtyard from './maple-courtyard.json'
+import oasis from './sandstone-oasis.json'
+import frost from './frostlight-grove.json'
 import { loadWorldJson, MAX_WORLD_BYTES } from './load-world'
 import { createNavigation, isWalkable } from '../controls/navigation'
 
 describe('world JSON loading', () => {
-  it.each([garden, courtyard])('accepts and validates the $id fixture', (fixture) => {
+  it.each([garden, courtyard, oasis, frost])('accepts and validates the $id fixture', (fixture) => {
     const result = loadWorldJson(JSON.stringify(fixture))
     expect(result).toEqual({ ok: true, world: fixture })
     if (!result.ok) throw new Error(result.message)

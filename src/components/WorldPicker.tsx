@@ -1,11 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
-import garden from '../world/garden.json'
-import courtyard from '../world/maple-courtyard.json'
+import { worldCatalog } from '../world/catalog'
 import { loadWorldJson, MAX_WORLD_BYTES } from '../world/load-world'
 import type { WorldDefinition } from '../world/schema'
 
-export function WorldPicker({ disabled, onSelect }: { disabled: boolean; onSelect: (world: WorldDefinition) => void }) {
+export function WorldPicker({ disabled, currentWorldId, onSelect }: { disabled: boolean; currentWorldId?: string; onSelect: (world: WorldDefinition) => void }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const readSequence = useRef(0)
   const [draft, setDraft] = useState('')
@@ -53,24 +52,34 @@ export function WorldPicker({ disabled, onSelect }: { disabled: boolean; onSelec
           <h2 id="world-picker-title">Choose a world</h2>
           <button type="button" className="quiet-button" onClick={() => dialog.current?.close()}>Close</button>
         </div>
-        <p>Visit an example garden, or open your own world.</p>
+        <p>Three places to explore. Choose one, then enter to walk.</p>
         <div className="world-examples" aria-label="Example worlds">
-          <button type="button" disabled={disabled || reading} onClick={() => load(JSON.stringify(garden))}>The Quiet Garden</button>
-          <button type="button" disabled={disabled || reading} onClick={() => load(JSON.stringify(courtyard))}>Maple Courtyard</button>
+          {worldCatalog.map(({ world, theme, description }) => (
+            <button type="button" key={world.id} disabled={disabled || reading}
+              aria-label={world.name} aria-pressed={currentWorldId === world.id}
+              onClick={() => load(JSON.stringify(world))}>
+              <span className="world-swatch" style={{ background: world.ground.color, borderColor: world.environment.background }} aria-hidden="true" />
+              <strong>{world.name}</strong><span className="world-theme">{theme}</span><span>{description}</span>
+              {currentWorldId === world.id && <span className="world-current">Current world</span>}
+            </button>
+          ))}
         </div>
-        <form onSubmit={(event) => { event.preventDefault(); load(draft) }}>
-          <label className="file-label">Open JSON file
-            <input type="file" accept=".json,application/json" disabled={disabled || reading} onChange={chooseFile} />
-          </label>
-          <label htmlFor="world-json">World JSON</label>
-          <textarea id="world-json" value={draft} onChange={(event) => setDraft(event.target.value)}
-            disabled={disabled || reading} rows={8} maxLength={MAX_WORLD_BYTES} spellCheck={false} autoCapitalize="off"
-            placeholder="Choose a JSON file above, or paste a world here." aria-describedby="world-import-note" />
-          <p id="world-import-note" className="import-note">Up to 1 MiB. Loading replaces this view until reload. Invalid input keeps your current world.</p>
-          {reading && <p role="status">Reading world file…</p>}
-          {error && <p className="import-error" role="alert">{error}</p>}
-          <button className="load-world" type="submit" disabled={disabled || reading || !draft.trim()}>Load world</button>
-        </form>
+        <details className="world-import">
+          <summary>Open your own world JSON</summary>
+          <form onSubmit={(event) => { event.preventDefault(); load(draft) }}>
+            <label className="file-label">Open JSON file
+              <input type="file" accept=".json,application/json" disabled={disabled || reading} onChange={chooseFile} />
+            </label>
+            <label htmlFor="world-json">World JSON</label>
+            <textarea id="world-json" value={draft} onChange={(event) => setDraft(event.target.value)}
+              disabled={disabled || reading} rows={8} maxLength={MAX_WORLD_BYTES} spellCheck={false} autoCapitalize="off"
+              placeholder="Choose a JSON file above, or paste a world here." aria-describedby="world-import-note" />
+            <p id="world-import-note" className="import-note">Up to 1 MiB. Loading replaces this view until reload. Invalid input keeps your current world.</p>
+            {reading && <p role="status">Reading world file…</p>}
+            {error && <p className="import-error" role="alert">{error}</p>}
+            <button className="load-world" type="submit" disabled={disabled || reading || !draft.trim()}>Load world</button>
+          </form>
+        </details>
       </dialog>
     </>
   )

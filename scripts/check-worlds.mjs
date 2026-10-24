@@ -20,6 +20,7 @@ export async function checkWorlds(page) {
   }
 
   await open()
+  await dialog.locator('summary').click()
   for (let index = 0; index < 12; index++) {
     await page.keyboard.press('Tab')
     // A native dialog can hand focus to browser chrome at the page boundary;
@@ -63,7 +64,7 @@ export async function checkWorlds(page) {
   await originalCanvas.dispose()
   await page.screenshot({ path: resolve('artifacts/world-maple-courtyard.png'), fullPage: true })
 
-  const enter = page.getByRole('button', { name: 'Enter garden', exact: true })
+  const enter = page.getByRole('button', { name: 'Enter world', exact: true })
   // Native modal tab cycling can activate browser chrome in headless Edge.
   await page.bringToFront()
   await page.waitForTimeout(1400)
@@ -90,14 +91,40 @@ export async function checkWorlds(page) {
   await dialog.getByRole('button', { name: 'The Quiet Garden', exact: true }).click()
   await loaded(garden.name)
   await open()
-  await dialog.getByRole('button', { name: 'Maple Courtyard', exact: true }).click()
-  await loaded(courtyard.name)
+  for (const filename of ['sandstone-oasis', 'frostlight-grove', 'garden', 'sandstone-oasis']) {
+    const fixture = JSON.parse(await readFile(`src/world/${filename}.json`, 'utf8'))
+    const canvas = await page.locator('.scene canvas').elementHandle()
+    await dialog.getByRole('button', { name: fixture.name, exact: true }).click()
+    await loaded(fixture.name)
+    assert(await canvas.evaluate((element) => element === document.querySelector('.scene canvas')), 'Switching must reuse the WebGL canvas')
+    await canvas.dispose()
+    await page.screenshot({ path: resolve(`artifacts/world-${fixture.id}.png`), fullPage: true })
+    await page.bringToFront()
+    await page.waitForTimeout(1400)
+    await enter.press('Enter')
+    await page.waitForFunction(() => Boolean(document.pointerLockElement))
+    const start = await page.locator('.scene canvas').screenshot()
+    await page.keyboard.down('w')
+    await page.waitForTimeout(400)
+    await page.keyboard.up('w')
+    await page.waitForTimeout(150)
+    assert(!start.equals(await page.locator('.scene canvas').screenshot()), `${fixture.name} must be walkable`)
+    assert(await worlds.isDisabled(), 'Picker must stay disabled while walking')
+    await page.keyboard.press('Escape')
+    await open()
+    assert.equal(await dialog.getByRole('button', { name: fixture.name, exact: true }).getAttribute('aria-pressed'), 'true')
+    await page.setViewportSize({ width: 320, height: 844 })
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'World cards must fit at 320px')
+    await page.screenshot({ path: resolve(`artifacts/world-picker-${fixture.id}-320.png`), fullPage: true })
+    await page.setViewportSize({ width: 1440, height: 960 })
+  }
+  await dialog.getByRole('button', { name: 'Close', exact: true }).click()
   await open()
   const { walking: _, ...overview } = courtyard
   await draft.fill(JSON.stringify({ ...overview, name: 'Overview World' }))
   await load.click()
   await loaded('Overview World')
-  assert.equal(await page.getByRole('button', { name: 'Garden overview', exact: true }).isDisabled(), true)
+  assert.equal(await page.getByRole('button', { name: 'World overview', exact: true }).isDisabled(), true)
 
   await page.setViewportSize({ width: 320, height: 844 })
   await open()
@@ -114,5 +141,5 @@ export async function checkWorlds(page) {
   assert(await retry.evaluate((button) => button === document.activeElement), 'A graphics failure must dismiss the modal and focus recovery')
   await Promise.all([page.waitForEvent('load'), retry.click()])
   await ready(page)
-  console.log('World import checks passed: modal focus/Escape, malformed/version/spawn/unknown-field rejection without canvas replacement, oversized files, valid file/paste replacement, imported-world walking, both example buttons, overview-only worlds, and narrow layout.')
+  console.log('World import checks passed: modal focus/Escape, malformed/version/spawn/unknown-field rejection without canvas replacement, oversized files, valid file/paste replacement, imported-world walking, all three world buttons and repeat switches, overview-only worlds, and narrow layout.')
 }

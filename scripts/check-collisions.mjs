@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 
 /** Real input traversal complements the exact geometry assertions in Vitest. */
 export async function checkCollisions(page) {
-  const enter = page.getByRole('button', { name: 'Enter garden', exact: true })
+  const enter = page.getByRole('button', { name: 'Enter world', exact: true })
   const canvas = page.locator('.scene canvas')
   const enterGarden = async () => {
     await page.waitForTimeout(1400) // Chromium's user-exit pointer-lock cooldown.

@@ -1,21 +1,30 @@
 # SecretWorld
 
-`secret-world` is a small Japanese garden project built with React, TypeScript,
+`secret-world` is a small walkable-world project built with React, TypeScript,
 Vite, Three.js, and React Three Fiber.
 
-## Current scope: Task 6 — implementation plan complete
+## Current scope: Milestone 2 complete
 
-The app renders a **walkable Japanese garden**, using a validated JSON world
-fixture: stepping stones, a pond, rocks, pine and maple trees, stone lanterns,
-and a torii entrance. Keyboard walking and pointer-lock mouse look are implemented.
-Walking stays inside the garden and stops/slides at the pond bank and solid props.
-The torii opening and paths remain walkable. See the
-[six-task implementation plan](docs/implementation-plan.md) for acceptance gates.
-Sun shadows, sky fill, lily pads, moss details, responsive overlays, and graphics
-loading/recovery states are implemented. **Worlds** lets you choose either example
-or load validated JSON from a local file or pasted text. Rejected input preserves
-the current world. The imported world lasts until reload; no AI provider is connected.
-See the [complete version 1 world format](docs/world-format.md) for generator handoff.
+Three walkable worlds share one React Three Fiber renderer, navigation engine,
+and reusable object library:
+
+- **The Quiet Garden**: the original Japanese garden, with a torii, maple trees,
+  lanterns, and a winding path.
+- **Sandstone Oasis**: open desert, warm sandstone spires, and turquoise water.
+- **Frostlight Grove**: a snowy pine clearing, slate trail, and cool blue light.
+
+Select **Worlds**, choose a world, then **Enter world** to walk. The picker shows
+which world is active and works with keyboard navigation and narrow screens.
+Leave a walk before switching. Switching resets the camera and spawn while
+reusing the WebGL canvas. Each new world has 20 objects and uses existing shapes,
+static lighting/shadows, and demand rendering; no new assets or dependencies.
+
+The collapsible **Open your own world JSON** section preserves the existing
+file/paste importer. Maple Courtyard remains an import/test fixture rather than
+a fourth selectable world. Invalid input preserves the current world.
+See the [version 1 world format](docs/world-format.md) for the data contract.
+Milestone 3 (Gemini-powered generation) is future work; no provider is connected.
+The [original implementation plan](docs/implementation-plan.md) records milestone 1.
 
 ## Run locally
 
@@ -64,21 +73,23 @@ loading, native WebGL context loss, and failed module-download recovery. It save
 the corresponding screenshots under `artifacts/`.
 `inspect:worlds` runs the full browser gate and adds file/paste imports, malformed/
 unsupported/blocked-spawn rejection, live-canvas preservation, imported-world
-walking, both example worlds, overview-only worlds, and narrow picker checks.
+walking, all three selectable worlds and repeated switches, overview-only worlds,
+and narrow picker checks.
 
 Run `measure:performance` separately from browser QA. It records actual WebGL draw
-calls and browser frame timing to `artifacts/performance.json`. The recorded
-software-WebGL run reached about 43 FPS after adaptive-quality warmup, with no
-draw calls while idle. See [the performance record](docs/performance.md) for the
-method, limits, and bundle sizes.
+calls and browser frame timing to `artifacts/performance.json`. Per-world
+measurements use the same instrumentation and adaptive-quality warmup, with
+assertions for zero draw calls while idle. See [the performance record](docs/performance.md)
+for the method, limits, and bundle sizes.
 
 ## Walking
 
-Select **Enter garden** with a keyboard or mouse to capture the pointer. Use
+Select **Enter world** with a keyboard or mouse to capture the pointer. Use
 **WASD** or **arrow keys** to walk, and move the mouse to look around. **Escape**,
 **Tab**, or the **Leave walk** button returns to the overview and restores focus
-to Enter garden. Losing window focus or switching tabs also exits and clears
-held input. Walking never resumes automatically; each entry resets to the gate.
+to Enter world. Losing window focus or switching tabs also exits and clears
+held input. Walking never resumes automatically; each entry resets to the
+selected world’s spawn.
 Mouse capture failures are shown in the controls panel without losing the overview.
 Graphics loading shows a preparation state and disables entry until ready.
 Graphics/context or renderer-download failures show a focused **Try again** button;
@@ -105,7 +116,11 @@ switches to lighter rendering for the rest of the canvas session.
   it before replacement. The file picker also checks byte size before reading.
 - `src/components/WorldPicker.tsx` provides the native modal, file/paste editor,
   validation feedback, and example selection. All examples use the same loader.
-- `src/world/maple-courtyard.json` is the second, smaller 15-object garden.
+- `src/world/catalog.ts` pairs the three validated JSON worlds with picker/intro
+  metadata; it contains no scene layout or world-specific rendering branches.
+- `src/world/sandstone-oasis.json` and `src/world/frostlight-grove.json` each hold
+  20 objects with explicit solid/water collision footprints and walking settings.
+- `src/world/maple-courtyard.json` remains a smaller 15-object import/test fixture.
 - `src/scene/WorldScene.tsx` renders validated world settings.
 - `src/scene/GardenCanvas.tsx` is the lazy-loaded renderer, with context health and
   a movement-frame quality budget. `InstancedPaths.tsx` batches stones by color.

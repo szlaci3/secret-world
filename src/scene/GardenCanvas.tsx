@@ -49,7 +49,7 @@ export default function GardenCanvas({ world, actions, onStatus, onReady, onFail
   return (
     <Canvas camera={world.camera} dpr={light ? 1 : [1, 1.5]} frameloop="demand" shadows={light ? false : 'basic'}
       gl={{ antialias: true, powerPreference: 'low-power' }}
-      fallback={<p className="graphics-message">The garden needs a browser with WebGL support.</p>}>
+      fallback={<p className="graphics-message">The world needs a browser with WebGL support.</p>}>
       <WorldScene world={world} />
       <WalkingControls world={world} ref={actions} onStatus={onStatus} onReady={onReady} />
       <ContextHealth onFailure={onFailure} />
