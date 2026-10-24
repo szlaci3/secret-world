@@ -26,7 +26,10 @@ export const worldObjectSchema = z.discriminatedUnion('type', [
     }).refine((pad) => Math.hypot(...pad.position) + pad.radius <= 0.9, 'Lily pads must remain inside the pond')).max(12).optional(),
   }),
   z.strictObject({ ...transform, type: z.literal('rock'), color, mossColor: color.optional() }),
-  z.strictObject({ ...transform, type: z.literal('tree'), variety: z.enum(['pine', 'maple']), foliageColor: color, trunkColor: color }),
+  z.strictObject({ ...transform, type: z.literal('tree'), variety: z.enum(['pine', 'maple', 'spruce', 'palm']), foliageColor: color, trunkColor: color }),
+  z.strictObject({ ...transform, type: z.literal('plant'), variety: z.enum(['grass', 'flowers', 'reeds', 'bamboo', 'cactus', 'fern', 'mushrooms']), color, accentColor: color }),
+  z.strictObject({ ...transform, type: z.literal('structure'), variety: z.enum(['arch', 'pavilion', 'cabin', 'beacon', 'windmill', 'column', 'bench']), color, accentColor: color }),
+  z.strictObject({ ...transform, type: z.literal('patch'), radii: z.tuple([dimension, dimension]), color }),
   z.strictObject({ ...transform, type: z.literal('lantern'), stoneColor: color, glowColor: color }),
   z.strictObject({ ...transform, type: z.literal('entrance'), woodColor: color, roofColor: color }),
 ])
@@ -39,6 +42,8 @@ export const worldSchema = z.strictObject({
   ground: z.strictObject({
     size: z.tuple([z.number().finite().min(0.1).max(100), z.number().finite().min(0.1).max(100)]),
     color,
+    hills: z.array(z.strictObject({ center: z.tuple([coordinate, coordinate]), radius: z.number().min(2).max(12), height: z.number().min(0).max(3) })
+      .refine((hill) => hill.height / hill.radius <= 0.4, 'Hills must have gentle slopes')).max(8).optional(),
   }),
   camera: z.strictObject({
     position: vector3,
@@ -52,6 +57,8 @@ export const worldSchema = z.strictObject({
     ambientIntensity: intensity,
     sunlight: z.strictObject({ position: vector3, color, intensity }),
     skyLight: z.strictObject({ skyColor: color, groundColor: color, intensity }).optional(),
+    fog: z.strictObject({ color, near: z.number().min(5).max(100), far: z.number().min(10).max(200) })
+      .refine((fog) => fog.far > fog.near, 'Fog far must exceed near').optional(),
   }),
   walking: z.strictObject({
     spawn: vector3.refine((position) => position[1] > 0 && position[1] <= 3, 'Eye height must be above ground and at most 3 meters'),

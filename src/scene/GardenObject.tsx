@@ -1,4 +1,5 @@
 import type { WorldObject } from '../world/schema'
+import { Structure } from './Structure'
 
 type ObjectOf<T extends WorldObject['type']> = Extract<WorldObject, { type: T }>
 
@@ -48,6 +49,18 @@ function Rock({ object }: { object: ObjectOf<'rock'> }) {
 }
 
 function Tree({ object }: { object: ObjectOf<'tree'> }) {
+  if (object.variety === 'spruce') return <group>
+    <mesh castShadow position-y={1.5}><cylinderGeometry args={[0.1, 0.22, 3, 6]} /><meshStandardMaterial color={object.trunkColor} /></mesh>
+    {[0, 1, 2].map((tier) => <mesh key={tier} castShadow position-y={1.5 + tier * 0.8}>
+      <coneGeometry args={[1.25 - tier * 0.28, 1.9, 7]} /><meshStandardMaterial color={object.foliageColor} roughness={1} flatShading />
+    </mesh>)}
+  </group>
+  if (object.variety === 'palm') return <group>
+    <mesh castShadow position-y={1.65} rotation-z={0.12}><cylinderGeometry args={[0.1, 0.22, 3.3, 7]} /><meshStandardMaterial color={object.trunkColor} /></mesh>
+    {[0, 1, 2, 3, 4, 5].map((leaf) => <group key={leaf} rotation-y={leaf * Math.PI / 3}>
+      <mesh castShadow position={[0.6, 3.2, 0]} rotation-z={-0.25} scale={[1.25, 0.12, 0.35]}><icosahedronGeometry args={[1, 0]} /><meshStandardMaterial color={object.foliageColor} roughness={1} /></mesh>
+    </group>)}
+  </group>
   const pine = object.variety === 'pine'
   const crowns: [number, number, number, number, number][] = pine
     ? [[-0.65, 2.05, 0, 1.05, 0.38], [0.6, 2.65, 0.12, 1.1, 0.4], [-0.1, 3.25, 0, 0.9, 0.42]]
@@ -152,6 +165,9 @@ function ObjectShape({ object }: { object: WorldObject }) {
     case 'tree': return <Tree object={object} />
     case 'lantern': return <Lantern object={object} />
     case 'entrance': return <Entrance object={object} />
+    case 'structure': return <Structure object={object} />
+    case 'plant': return null // Batched by Plants.
+    case 'patch': return null // GroundPatch conforms to the terrain.
     default: {
       const unsupported: never = object
       throw new Error(`Unsupported garden object: ${unsupported}`)

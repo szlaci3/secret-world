@@ -56,7 +56,7 @@ describe('world data boundary', () => {
   it('covers every supported garden kind and both tree varieties in the fixture', () => {
     const world = parseWorld(garden)
     expect(new Set(world.objects.map((object) => object.type)))
-      .toEqual(new Set(['path', 'pond', 'rock', 'tree', 'lantern', 'entrance']))
+      .toEqual(new Set(['path', 'pond', 'rock', 'tree', 'lantern', 'entrance', 'plant', 'structure', 'patch']))
     expect(new Set(world.objects.filter((object) => object.type === 'tree').map((tree) => tree.variety)))
       .toEqual(new Set(['pine', 'maple']))
   })

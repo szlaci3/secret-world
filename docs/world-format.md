@@ -8,7 +8,7 @@ There is no AI provider, generation endpoint, model loading, or code execution.
 ## Load a world
 
 1. Leave any active walk with Escape or Tab.
-2. Select **Worlds**. Choose one of the three worlds. For file/paste imports, expand
+2. Select **Worlds**. Choose one of the six worlds. For file/paste imports, expand
    **Open your own world JSON**, then select a `.json` file or paste JSON.
 3. Select **Load world** for file/paste input. Files populate the editor first;
    selecting a file does not replace the world by itself.
@@ -47,16 +47,19 @@ or automatic download of URLs from imported data. Keep your source JSON file.
 }
 ```
 
-Complete populated examples:
+Complete populated examples (all dimensions in meters):
 
-- [`src/world/garden.json`](../src/world/garden.json): 18 × 18 m Quiet Garden,
-  30 objects, pond, winding path, pine/maple trees, rocks, lanterns, and entrance.
-- [`src/world/sandstone-oasis.json`](../src/world/sandstone-oasis.json): 20 × 18 m
-  sunlit desert, 20 objects, tall sandstone formations, trail, and turquoise oasis.
-- [`src/world/frostlight-grove.json`](../src/world/frostlight-grove.json): 20 × 18 m
-  winter woodland, 20 objects, snowy pines, slate trail, and a blue pool.
-- [`src/world/maple-courtyard.json`](../src/world/maple-courtyard.json): 14 × 12 m
-  Maple Courtyard import/test fixture, 15 objects, autumn colors, shorter path, and a smaller pond.
+| Fixture | Ground | Objects | Design |
+| --- | --- | --- | --- |
+| `garden.json` | 18 × 18 | 60 | One pond, winding path, bamboo screen, tea pavilion |
+| `sandstone-oasis.json` | 24 × 22 | 64 | Three pools, dunes, palms and gateway ruins |
+| `frostlight-grove.json` | 24 × 22 | 60 | No water, spruce pockets, cabin and hillside lookout |
+| `amber-meadow.json` | 24 × 22 | 99 | No water, rolling flower meadow and windmill loop |
+| `basalt-reach.json` | 26 × 24 | 70 | Large lake, crescent shore and beacon |
+| `violet-sanctuary.json` | 24 × 22 | 75 | Three pools, arches, columns and secluded pavilion |
+
+Files live under `src/world/`. `maple-courtyard.json` is a 15-object legacy fixture
+with flat ground and no new object kinds, retained to verify backward compatibility.
 
 ## Global rules
 
@@ -81,17 +84,45 @@ Complete populated examples:
 | Field | Required value/shape |
 | --- | --- |
 | `schemaVersion`, `id`, `name` | As above |
-| `ground` | `size: [width, depth]`, `color` |
+| `ground` | `size: [width, depth]`, `color`, optional `hills` (below) |
 | `camera` | `position: [x,y,z]`, distinct `target: [x,y,z]`, `fov: 20–100` vertical degrees |
 | `environment` | `background`, `ambientIntensity: 0–10`, `sunlight` |
 | `environment.sunlight` | `position: [x,y,z]`, `color`, `intensity: 0–10`; points toward origin |
 | `environment.skyLight` | Optional `{skyColor, groundColor, intensity: 0–10}` hemisphere fill |
+| `environment.fog` | Optional `{color, near: 5–100, far: 10–200}`; far must exceed near |
 | `walking` | Optional settings below |
 | `objects` | Array of supported object definitions; can be empty |
 
 The overview preserves the configured camera position/target and widens vertical
 FOV on narrow canvases to keep horizontal framing. Walking uses its own FOV.
 Renderer quality and shadow-map settings are application concerns, not world fields.
+
+## Terrain and atmosphere
+
+Optional `ground.hills` is an array of at most eight compact radial hills:
+
+```json
+"hills": [{ "center": [0, -3], "radius": 6, "height": 1.9 }]
+```
+
+Centers use bounded X/Z coordinates. Radius is 2–12 m, height 0–3 m, and
+height/radius must not exceed 0.4. Each hill contributes
+`height * max(0, 1 - distanceSquared / radiusSquared)^2`. Overlapping hills add;
+keep them separated or lightly overlapping to retain gentle slopes. This is a
+height field with no caves, overhangs, cliffs, or vertical terrain walls.
+
+The surface samples a grid of at most 1 m spacing. Walking height uses exact
+triangle interpolation from that grid. Object Y is an offset above the terrain
+at its X/Z anchor; `walking.spawn[1]` is eye height above the terrain. Omitted
+hills preserve the previous flat-ground behavior. Paths tilt to the local slope;
+`patch` meshes conform to the surface. Keep large structures and pond footprints
+on flat ground: other rigid objects are anchored at their centers and stay upright.
+Ponds do not flatten terrain, and collision footprints remain horizontal.
+
+Fog is linear distance fog. In overview, the renderer offsets its distances to
+account for the distant overview camera, preserving legibility of the whole scene.
+Walking uses the authored near/far distances. Fog, ground colors, sunlight, and
+hemisphere fill are static and add no animation loop or extra shadow lights.
 
 ## Walking settings
 
@@ -109,26 +140,58 @@ If `walking` exists, all fields below except `radius` are required.
 The whole circular player footprint must fit inside the ground and clear every
 declared collider at spawn. A blocked or out-of-bounds spawn rejects the world.
 Validation does not prove every destination is reachable or validate the artistic
-layout. Walking is horizontal, with no gravity, jumping, or terrain following.
+layout. Horizontal motion follows terrain elevation; there is no gravity or jumping.
 
 ## Objects
 
 Every object requires `id`, `type`, `position: [x,y,z]`, `rotation`, and
-`scale: [x,y,z]`. Local origins sit on the ground. `collision` is optional.
+`scale: [x,y,z]`. Local origins sit on the terrain at the anchor, plus position Y.
+`collision` is optional; supply it explicitly for solids and water.
 
 | `type` | Additional required fields | Optional fields |
 | --- | --- | --- |
 | `path` | `size: [width,depth]`, `color` | — |
 | `pond` | `radii: [xRadius,zRadius]`, `waterColor`, `bankColor` | `lilyPads` |
 | `rock` | `color` | `mossColor` |
-| `tree` | `variety: "pine"` or `"maple"`, `foliageColor`, `trunkColor` | — |
+| `tree` | `variety: "pine"`, `"maple"`, `"spruce"`, or `"palm"`, `foliageColor`, `trunkColor` | — |
 | `lantern` | `stoneColor`, `glowColor` | — |
 | `entrance` | `woodColor`, `roofColor` | — |
+| `plant` | `variety` (below), `color`, `accentColor` | — |
+| `structure` | `variety` (below), `color`, `accentColor` | — |
+| `patch` | `radii: [xRadius,zRadius]`, `color` | — |
 
 For a pond, up to 12 `lilyPads` each have `position: [x,z]`, `radius`, and `color`.
 These positions are normalized relative to pond radii, with each component
 -0.8–0.8; leaf radius is 0.03–0.15. Position length plus radius must be at most 0.9.
 Decorations do not create colliders. Repeated path colors are batched automatically.
+
+### Reusable plants, structures, and ground patches
+
+Plant varieties are `grass`, `flowers`, `reeds`, `bamboo`, `cactus`, `fern`, and
+`mushrooms`. Each is a small cluster with a local footprint around 1–1.5 m wide;
+scales vary density and height. Grass/flowers/ferns/mushrooms are roughly 0.4–1 m
+high, reeds 1–1.5 m, cactus 1–1.7 m, and bamboo 3–3.5 m before scaling. Repeated
+plants with the same variety and two colors share merged instanced geometry.
+Use a few consistent palette pairs per world rather than unique colors per plant.
+Soft plants normally have no collider; cactus and dense bamboo use a local ellipse
+with radii `[0.65, 0.65]` in the shipped fixtures.
+
+Structure varieties and recommended unscaled collision footprints:
+
+| Variety | Geometry / use | Footprints |
+| --- | --- | --- |
+| `arch` | 3.8 m wide stone gateway, about 4 m high | Two boxes `[0.7,1]` centered at `[-1.4,0]` and `[1.4,0]` |
+| `pavilion` | Four-post open shelter with a pyramidal roof | Four `[0.25,0.25]` boxes centered at each combination of X/Z ±1.2 |
+| `cabin` | Solid 2.8 × 2.2 m body, roof, window and chimney | Box `[3,2.5]`; no interior |
+| `beacon` | Tapered 5.3 m tower with an emissive lens | Box `[2.4,2.4]` |
+| `windmill` | Tapered tower with four static sails | Box `[2.4,2.4]`; sails are overhead |
+| `column` | Octagonal shaft, base and capital | Box `[1.2,1.2]` |
+| `bench` | Simple timber seat on two supports | Box `[1.9,0.7]` |
+
+`patch` adds a thin elliptical, terrain-conforming region for gravel, sand,
+clearing soil, or a different grass tone. It is decorative and normally has no
+collider. Its radii, scale, rotation, and Y offset apply as for other objects.
+Avoid coincident overlapping patches or large patches over water.
 
 ## Collision footprints
 
@@ -156,7 +219,7 @@ generated layouts because geometric/visual alignment is the author's responsibil
 
 ## Built-in catalog
 
-`src/world/catalog.ts` validates the three selectable fixtures with `parseWorld`
+`src/world/catalog.ts` validates the six selectable fixtures with `parseWorld`
 and adds presentation-only theme/description metadata outside the versioned JSON
 contract. The picker sends each selection through the same `loadWorldJson` path
 as imports. The shared renderer, lighting, overview camera, and walking session
@@ -172,4 +235,11 @@ object with schemaVersion 1, supported fields/kinds only, explicit collision
 footprints for solids/water, and a clear in-bounds spawn. Keep the result within
 the limits above. Feed its JSON through `loadWorldJson`; never evaluate generated
 code or bypass validation. Rejected data should be corrected and submitted again.
-Provider integration and automatic generation remain future work.
+Design the composition before choosing counts: reserve clear routes and negative
+space, place a landmark, then cluster supporting plants and rocks asymmetrically.
+Vary water count/size, route topology, tree density, hill placement, and shelter
+locations between worlds. Keep ponds on flat terrain and footpaths out of water.
+The shipped fixtures provide six contrasting examples. Catalog tests sample
+walkable connectivity and shoreline clearance; schema validity alone does not
+prove good composition, reachability, or visual alignment. Provider integration
+and automatic generation remain future work.

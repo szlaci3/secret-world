@@ -119,7 +119,7 @@ describe('the actual garden collision data', () => {
 
   it('defines footprints for every solid and water object, leaving paths walkable', () => {
     world.objects.forEach((object) => {
-      if (object.type === 'path') expect(object.collision ?? []).toHaveLength(0)
+      if (object.type === 'path' || object.type === 'patch' || (object.type === 'plant' && !['bamboo', 'cactus'].includes(object.variety))) expect(object.collision ?? []).toHaveLength(0)
       else expect(object.collision?.length).toBeGreaterThan(0)
     })
     expect(isWalkable({ x: world.walking!.spawn[0], z: world.walking!.spawn[2] }, nav)).toBe(true)

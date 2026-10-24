@@ -86,6 +86,7 @@ try {
   const report = { world: await page.locator('h1').textContent(), measuredAt: new Date().toISOString(), browser: browser.version(), channel,
     rendering: 'Headless software WebGL2 (SwiftShader), local production server; not a hardware GPU benchmark',
     viewport: { width: 1440, height: 960, dpr: 1 }, firstDrawMs, idleDrawCalls, idleWalkingDrawCalls,
+    canvasPixels: await page.locator('.scene canvas').evaluate((canvas) => [canvas.width, canvas.height]),
     warmupMs: 2000, active, approximateDrawCallsPerRender: active.drawCalls / active.renderedFrames }
   await mkdir('artifacts', { recursive: true })
   const path = resolve('artifacts', output)

@@ -37,7 +37,7 @@ come from the build report, not a verified hosting compression configuration.
 - Path stones are instanced by color: the fixture's 12 stones use two mesh
   batches, with all instance transforms still taken from JSON.
 - Pixel density is capped at 1.5. If sustained movement frames average below
-  25 FPS over a 1.5-second sample, shadows turn off and density becomes 1 for
+  30 FPS over a 1.5-second sample, shadows turn off and density becomes 0.8 for
   that canvas's lifetime. The one-way fallback avoids quality oscillation.
   Idle frames and intermittent mouse look are not counted as movement workload.
 - Decorative water, plants, and lighting remain static; there is no background
@@ -92,3 +92,62 @@ The milestone 2 browser gate additionally checks all three selections, walking
 from each spawn, repeated switching, canvas identity, the current-world marker,
 and picker width at 320px. Unit checks validate the new JSON through the existing
 loader, follow each central trail, and verify blocked water and solid footprints.
+
+## Six-world enrichment (current implementation)
+
+Measured 2026-10-24 on Edge 155.0.4283.62, headless SwiftShader software WebGL2,
+at 1440 × 960, device scale factor 1. No browser QA ran concurrently. These
+measurements supersede the smaller milestone 2 fixtures above.
+
+| World | Objects | Animation-frame FPS | p95 interval | Draws / render | Canvas pixels after sampling |
+| --- | --- | --- | --- | --- | --- |
+| The Quiet Garden | 60 | 38.0 | 33.4 ms | 43.8 | 1113 × 643 |
+| Sandstone Oasis | 64 | 45.0 | 25.1 ms | 27.5 | 1113 × 643 |
+| Frostlight Grove | 60 | 30.8 | 41.7 ms | 42.1 | 1392 × 804 |
+| Amber Meadow | 99 | 32.1 | 41.6 ms | 27.0 | 1392 × 804 |
+| Basalt Reach | 70 | 45.4 | 25.1 ms | 17.8 | 1113 × 643 |
+| Violet Sanctuary | 75 | 33.2 | 36.2 ms | 31.3 | 1113 × 643 |
+
+All six recorded **zero draw calls** during the settled overview and while
+standing still. Each active sample lasts about two seconds after two seconds of
+forward-walking warmup. Results vary by route, visibility, shader warmup, browser
+scheduling, and device. These are adaptive-quality results, not fixed-resolution
+comparisons or hardware GPU guarantees. The added `canvasPixels` report field
+makes the rendered resolution explicit.
+
+The first enrichment pass exposed excess work in software rendering. Terrain now
+uses a grid of at most 1 m spacing, ground patches use 256 triangles, and the
+existing quality fallback activates below 30 FPS over 1.5 seconds of sustained
+movement. Fallback disables shadows and lowers canvas pixel density to 0.8 for
+the canvas session; normal rendering remains capped at 1.5. Camera height uses
+exact interpolation of the rendered terrain triangles, including in fallback.
+
+Plant clusters are merged into one low-poly geometry and instanced by variety and
+two-color palette. Path stones remain instanced by color. Each world has only one
+shadow-casting light, static geometry and shadows, and no continuous animations.
+Geometry/material resources and walking input listeners are released on replacement.
+There are no added packages, model downloads, textures, or external font requests.
+
+The current production shell is 397 KB (115 KB gzip estimate), the lazy 3D chunk
+is 938 KB (249 KB gzip), and CSS is 6 KB (1.9 KB gzip). Vite still reports its
+existing large-3D-chunk warning. Compression estimates are from the local build.
+
+Run measurements separately from other browser work:
+
+```powershell
+npm.cmd run measure:performance
+npm.cmd run measure:performance -- "--world=Sandstone Oasis"
+npm.cmd run measure:performance -- "--world=Frostlight Grove"
+npm.cmd run measure:performance -- "--world=Amber Meadow"
+npm.cmd run measure:performance -- "--world=Basalt Reach"
+npm.cmd run measure:performance -- "--world=Violet Sanctuary"
+```
+
+Results are written to `artifacts/performance.json` for the default garden and
+`artifacts/performance-<world-name>.json` for named worlds. Overview and first-person
+screenshots are saved by `inspect:worlds`. Automated checks cover all six worlds,
+repeated switches with one WebGL canvas, walking, imports, responsive layouts,
+focus recovery, and graphics failure handling. Unit tests additionally check
+terrain/camera agreement, gentle-hill bounds, shoreline clearance, and that at
+least 95% of the sampled walkable ground is connected to each world's spawn.
+Physical mobile devices, hardware GPU performance, and hosted latency remain unverified.

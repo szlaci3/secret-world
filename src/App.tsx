@@ -73,7 +73,7 @@ export default function App() {
           <WorldPicker currentWorldId={worldDetails?.world.id} disabled={walking || status.phase === 'requesting' || sceneState === 'error'} onSelect={selectWorld} />
         </div>
       </header>
-      <section className={`garden${walking ? ' is-walking' : ''}`} id="garden" aria-labelledby="garden-title">
+      <section className={`garden${walking ? ' is-walking' : ''}`} id="garden" aria-labelledby="garden-title" style={{ background: world.environment.background }}>
         <div className="scene" role="region" aria-label={`${world.name}. ${walking ? 'First-person view.' : 'World overview.'}`} aria-busy={sceneState === 'loading'}>
           <SceneBoundary onFailure={onFailure}>
             <Suspense fallback={null}>
@@ -111,7 +111,7 @@ export default function App() {
           {!walking && !touchOnly && world.walking && <p className="device-note">Each entry starts at the world’s starting point. Explore at your own pace.</p>}
         </div>
       </section>
-      <footer><span>02 / Three places to wander</span><span>Choose a world. Find your own path.</span></footer>
+      <footer><span>Six places to wander</span><span>Choose a world. Find your own path.</span></footer>
     </main>
   )
 }

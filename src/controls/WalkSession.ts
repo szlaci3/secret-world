@@ -3,6 +3,7 @@ import type { WorldDefinition } from '../world/schema'
 import { movementKeys, movementStep } from './movement'
 import { createNavigation, moveWithinGarden } from './navigation'
 import type { Navigation } from './navigation'
+import { terrainHeight } from '../world/terrain'
 
 export type WalkStatus = { phase: 'overview' | 'requesting' | 'walking'; error: string | null }
 export type WalkActions = { enter: () => void; exit: () => void; isMoving: () => boolean }
@@ -98,6 +99,7 @@ export class WalkSession implements WalkActions {
     this.active = true
     this.keys.clear()
     this.camera.position.set(...walking.spawn)
+    this.camera.position.y += terrainHeight(this.world.ground, walking.spawn[0], walking.spawn[2])
     this.camera.rotation.set(0, walking.yaw, 0, 'YXZ')
     this.camera.fov = walking.fov
     this.camera.updateProjectionMatrix()
@@ -150,6 +152,7 @@ export class WalkSession implements WalkActions {
     const next = moveWithinGarden(this.camera.position, step, this.navigation)
     this.camera.position.x = next.x
     this.camera.position.z = next.z
+    this.camera.position.y = this.world.walking!.spawn[1] + terrainHeight(this.world.ground, next.x, next.z)
     this.invalidate()
   }
 

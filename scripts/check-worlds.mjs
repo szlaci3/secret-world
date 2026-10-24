@@ -91,7 +91,7 @@ export async function checkWorlds(page) {
   await dialog.getByRole('button', { name: 'The Quiet Garden', exact: true }).click()
   await loaded(garden.name)
   await open()
-  for (const filename of ['sandstone-oasis', 'frostlight-grove', 'garden', 'sandstone-oasis']) {
+  for (const filename of ['sandstone-oasis', 'frostlight-grove', 'amber-meadow', 'basalt-reach', 'violet-sanctuary', 'garden', 'sandstone-oasis']) {
     const fixture = JSON.parse(await readFile(`src/world/${filename}.json`, 'utf8'))
     const canvas = await page.locator('.scene canvas').elementHandle()
     await dialog.getByRole('button', { name: fixture.name, exact: true }).click()
@@ -104,6 +104,7 @@ export async function checkWorlds(page) {
     await enter.press('Enter')
     await page.waitForFunction(() => Boolean(document.pointerLockElement))
     const start = await page.locator('.scene canvas').screenshot()
+    await page.screenshot({ path: resolve(`artifacts/walking-${fixture.id}.png`), fullPage: true })
     await page.keyboard.down('w')
     await page.waitForTimeout(400)
     await page.keyboard.up('w')
@@ -141,5 +142,5 @@ export async function checkWorlds(page) {
   assert(await retry.evaluate((button) => button === document.activeElement), 'A graphics failure must dismiss the modal and focus recovery')
   await Promise.all([page.waitForEvent('load'), retry.click()])
   await ready(page)
-  console.log('World import checks passed: modal focus/Escape, malformed/version/spawn/unknown-field rejection without canvas replacement, oversized files, valid file/paste replacement, imported-world walking, all three world buttons and repeat switches, overview-only worlds, and narrow layout.')
+  console.log('World import checks passed: modal focus/Escape, malformed/version/spawn/unknown-field rejection without canvas replacement, oversized files, valid file/paste replacement, imported-world walking, all six world buttons and repeat switches, overview-only worlds, and narrow layout.')
 }

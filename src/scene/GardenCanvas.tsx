@@ -29,7 +29,7 @@ function RenderBudget({ walking, light, onReduce, actions }: {
     sample.current.seconds += delta
     sample.current.frames++
     if (sample.current.seconds >= 1.5) {
-      if (sample.current.frames / sample.current.seconds < 25) onReduce()
+      if (sample.current.frames / sample.current.seconds < 30) onReduce()
       sample.current = { seconds: 0, frames: 0 }
     }
   })
@@ -47,10 +47,10 @@ export default function GardenCanvas({ world, actions, onStatus, onReady, onFail
   const [light, setLight] = useState(false)
   const reduce = useCallback(() => setLight(true), [])
   return (
-    <Canvas camera={world.camera} dpr={light ? 1 : [1, 1.5]} frameloop="demand" shadows={light ? false : 'basic'}
+    <Canvas camera={world.camera} dpr={light ? 0.8 : [1, 1.5]} frameloop="demand" shadows={light ? false : 'basic'}
       gl={{ antialias: true, powerPreference: 'low-power' }}
       fallback={<p className="graphics-message">The world needs a browser with WebGL support.</p>}>
-      <WorldScene world={world} />
+      <WorldScene world={world} walking={walking} />
       <WalkingControls world={world} ref={actions} onStatus={onStatus} onReady={onReady} />
       <ContextHealth onFailure={onFailure} />
       <RenderBudget walking={walking} light={light} onReduce={reduce} actions={actions} />

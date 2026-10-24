@@ -52,7 +52,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect }: { disabled: 
           <h2 id="world-picker-title">Choose a world</h2>
           <button type="button" className="quiet-button" onClick={() => dialog.current?.close()}>Close</button>
         </div>
-        <p>Three places to explore. Choose one, then enter to walk.</p>
+        <p>Six places to explore. Choose one, then enter to walk.</p>
         <div className="world-examples" aria-label="Example worlds">
           {worldCatalog.map(({ world, theme, description }) => (
             <button type="button" key={world.id} disabled={disabled || reading}
