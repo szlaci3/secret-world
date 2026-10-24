@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "maple-courtyard",
+  "name": "Maple Courtyard",
+  "ground": { "size": [14, 12], "color": "#b0a88d" },
+  "camera": { "position": [17, 17, 20], "target": [0, 0.6, 0], "fov": 42 },
+  "walking": { "spawn": [0, 1.65, 4.8], "yaw": 0, "speed": 2.2, "fov": 65, "lookSensitivity": 0.002, "radius": 0.28 },
+  "environment": {
+    "background": "#ece3d2", "ambientIntensity": 0.6,
+    "sunlight": { "position": [-5, 9, 6], "color": "#ffdfb7", "intensity": 2.2 },
+    "skyLight": { "skyColor": "#f5ead8", "groundColor": "#7b7654", "intensity": 0.7 }
+  },
+  "objects": [
+    { "id": "courtyard-entry", "type": "entrance", "position": [0, 0, 3.8], "rotation": 0, "scale": [1, 1, 1], "woodColor": "#92523c", "roofColor": "#41473b", "collision": [{"kind":"ellipse","center":[-1.2,0],"radii":[0.3,0.3]},{"kind":"ellipse","center":[1.2,0],"radii":[0.3,0.3]}] },
+    { "id": "courtyard-stone-1", "type": "path", "position": [0, 0, 4.8], "rotation": 0, "scale": [1, 1, 1], "size": [1.3, 0.9], "color": "#d5c9ae" },
+    { "id": "courtyard-stone-2", "type": "path", "position": [0, 0, 3.6], "rotation": 0.03, "scale": [1, 1, 1], "size": [1.3, 0.9], "color": "#d5c9ae" },
+    { "id": "courtyard-stone-3", "type": "path", "position": [-0.2, 0, 2.4], "rotation": -0.1, "scale": [1, 1, 1], "size": [1.3, 0.9], "color": "#d5c9ae" },
+    { "id": "courtyard-stone-4", "type": "path", "position": [-0.5, 0, 1.2], "rotation": -0.1, "scale": [1, 1, 1], "size": [1.3, 0.9], "color": "#d5c9ae" },
+    { "id": "courtyard-stone-5", "type": "path", "position": [-0.5, 0, 0], "rotation": 0, "scale": [1, 1, 1], "size": [1.3, 0.9], "color": "#d5c9ae" },
+    { "id": "courtyard-stone-6", "type": "path", "position": [-0.2, 0, -1.2], "rotation": 0.1, "scale": [1, 1, 1], "size": [1.3, 0.9], "color": "#d5c9ae" },
+    { "id": "courtyard-stone-7", "type": "path", "position": [0, 0, -2.4], "rotation": 0, "scale": [1, 1, 1], "size": [1.3, 0.9], "color": "#d5c9ae" },
+    { "id": "courtyard-maple-west", "type": "tree", "position": [-3.7, 0, -1], "rotation": 0.4, "scale": [1.15, 1.15, 1.15], "variety": "maple", "foliageColor": "#b84632", "trunkColor": "#6b5140", "collision": [{"kind":"ellipse","center":[0.15,0],"radii":[0.32,0.23]}] },
+    { "id": "courtyard-maple-east", "type": "tree", "position": [3.8, 0, -2.4], "rotation": -0.5, "scale": [1.1, 1.2, 1.1], "variety": "maple", "foliageColor": "#cc7940", "trunkColor": "#6b5140", "collision": [{"kind":"ellipse","center":[0.15,0],"radii":[0.32,0.23]}] },
+    { "id": "courtyard-pine", "type": "tree", "position": [-3.8, 0, -4.2], "rotation": 0, "scale": [0.85, 1, 0.85], "variety": "pine", "foliageColor": "#536744", "trunkColor": "#6b5140", "collision": [{"kind":"ellipse","center":[0.15,0],"radii":[0.32,0.23]}] },
+    { "id": "courtyard-pond", "type": "pond", "position": [3.2, 0, 1.3], "rotation": 0.3, "scale": [1, 1, 1], "radii": [1.6, 1.1], "waterColor": "#668780", "bankColor": "#c5b99c", "lilyPads": [{"position":[0.3,0.2],"radius":0.12,"color":"#7e8c51"}], "collision": [{"kind":"ellipse","center":[0,0],"radii":[1.84,1.265]}] },
+    { "id": "courtyard-pond-rock", "type": "rock", "position": [4.4, 0, 0.25], "rotation": 0.4, "scale": [1.1, 0.9, 0.9], "color": "#8f8b76", "mossColor": "#77804e", "collision": [{"kind":"ellipse","center":[0,0],"radii":[0.8,0.75]}] },
+    { "id": "courtyard-west-rock", "type": "rock", "position": [-3.1, 0, 2.1], "rotation": 0.5, "scale": [1.3, 0.8, 1], "color": "#8f8b76", "collision": [{"kind":"ellipse","center":[0,0],"radii":[0.8,0.75]}] },
+    { "id": "courtyard-lantern", "type": "lantern", "position": [1.9, 0, -3.1], "rotation": 0.2, "scale": [1, 1, 1], "stoneColor": "#bcb99b", "glowColor": "#f9cd7c", "collision": [{"kind":"ellipse","center":[0,0],"radii":[0.6,0.6]}] }
+  ]
+}
