@@ -34,8 +34,23 @@ describe('world data boundary', () => {
     ['negative speed', { ...garden.walking, speed: -1 }],
     ['excessive field of view', { ...garden.walking, fov: 180 }],
     ['zero sensitivity', { ...garden.walking, lookSensitivity: 0 }],
+    ['too-small player radius', { ...garden.walking, radius: 0.01 }],
+    ['outside the ground', { ...garden.walking, spawn: [20, 1.65, 0] }],
+    ['insufficient edge clearance', { ...garden.walking, spawn: [8.9, 1.65, 0] }],
+    ['inside water', { ...garden.walking, spawn: [3.1, 1.65, 0.1] }],
+    ['inside a gate post', { ...garden.walking, spawn: [-3, 1.65, 6.5] }],
   ])('rejects walking settings with %s', (_, walking) => {
     expect(() => parseWorld({ ...garden, walking })).toThrow()
+  })
+
+  it('rejects invalid collision footprints before constructing navigation', () => {
+    const object = { ...garden.objects[0], collision: [{ kind: 'ellipse', center: [0, 0], radii: [-1, 2] }] }
+    expect(worldObjectSchema.safeParse(object).success).toBe(false)
+  })
+
+  it('rejects a garden too small for the player', () => {
+    expect(() => parseWorld({ ...garden, ground: { ...garden.ground, size: [0.3, 0.3] },
+      walking: { ...garden.walking, spawn: [0, 1.65, 0] }, objects: [] })).toThrow()
   })
 
   it('covers every supported garden kind and both tree varieties in the fixture', () => {

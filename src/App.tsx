@@ -76,7 +76,7 @@ export default function App() {
           {!walking && <p className="device-note">Walking needs a keyboard and mouse. Each entry starts at the gate.</p>}
         </div>
       </section>
-      <footer><span>03 / A walk through the garden</span><span>Movement preview · Props and garden edges do not block walking yet.</span></footer>
+      <footer><span>04 / Room to wander</span><span>Follow the stones, or explore the grass. The pond and solid props guide your way.</span></footer>
     </main>
   )
 }

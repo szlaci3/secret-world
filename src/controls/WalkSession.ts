@@ -1,6 +1,8 @@
 import { PerspectiveCamera } from 'three'
 import type { WorldDefinition } from '../world/schema'
 import { movementKeys, movementStep } from './movement'
+import { createNavigation, moveWithinGarden } from './navigation'
+import type { Navigation } from './navigation'
 
 export type WalkStatus = { phase: 'overview' | 'requesting' | 'walking'; error: string | null }
 export type WalkActions = { enter: () => void; exit: () => void }
@@ -13,6 +15,7 @@ export class WalkSession implements WalkActions {
   private disposed = false
   private document: Document
   private window: Window
+  private navigation: Navigation
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -23,6 +26,7 @@ export class WalkSession implements WalkActions {
   ) {
     this.document = canvas.ownerDocument
     this.window = this.document.defaultView!
+    this.navigation = createNavigation(world)
     this.document.addEventListener('pointerlockchange', this.onLockChange)
     this.document.addEventListener('pointerlockerror', this.onLockError)
     this.document.addEventListener('keydown', this.onKeyDown)
@@ -133,8 +137,9 @@ export class WalkSession implements WalkActions {
     if (!this.active || this.disposed) return
     const step = movementStep(this.keys, this.camera.rotation.y, this.world.walking!.speed, delta)
     if (step.x === 0 && step.z === 0) return
-    this.camera.position.x += step.x
-    this.camera.position.z += step.z
+    const next = moveWithinGarden(this.camera.position, step, this.navigation)
+    this.camera.position.x = next.x
+    this.camera.position.z = next.z
     this.invalidate()
   }
 

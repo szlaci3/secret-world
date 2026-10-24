@@ -19,7 +19,7 @@ Each task has its own acceptance gate. Complete tasks in order.
    - Add keyboard movement, pointer-lock mouse look, explicit entry/exit,
      and accessible instructions. Reset held inputs on focus loss.
    - Verify: enter, walk, look, Escape, and tab-away/resume in a browser.
-4. **Walkable bounds and collisions**
+4. **Walkable bounds and collisions (completed)**
    - Constrain movement to the garden; block water and solid props using
      collision data, with a safe spawn and frame-independent movement.
    - Verify: automated boundary/collision cases and a browser traversal.
@@ -38,8 +38,9 @@ Each task has its own acceptance gate. Complete tasks in order.
 ## Scope boundary
 
 Task 1 provides the foundation; Task 2 adds the garden composition; Task 3 adds
-keyboard walking and pointer-lock mouse look. Collisions, JSON import UI,
-and AI generation belong to later tasks.
+keyboard walking and pointer-lock mouse look. Task 4 adds boundaries, data-driven
+footprint collisions, and spatial spawn validation. Atmosphere/responsive polish,
+JSON import UI, and AI generation belong to later tasks.
 
 ## Task 1 verification
 
@@ -88,3 +89,27 @@ and AI generation belong to later tasks.
   `artifacts/garden-walking.png` at 1440 × 960.
 - `git diff --check`: passed. No collision or boundary behavior was added.
   Hardware GPU performance and touch walking are unverified/not implemented.
+
+## Task 4 verification
+
+- Added optional object-local box/ellipse collision data and a configurable
+  player radius (default 0.28 m). All fixture solids and water have footprints;
+  paths and the torii opening remain clear.
+- A shared navigation compiler transforms footprints by object scale/yaw,
+  inflates them by player radius, and supplies spawn validation and continuous
+  segment sweeps. Movement slides at contacts and retains horizontal eye height.
+- `npm.cmd test`: 60 tests passed. Coverage includes all garden edges, edge
+  recovery, radius clearance, rotated/nonuniformly scaled/offset shapes, large
+  steps without tunneling, repeated corner pushes, frame-rate consistency,
+  invalid spawns, gate posts/opening, every solid kind, and an actual-garden route.
+- `npm.cmd run build`: TypeScript and production build passed. Existing Vite
+  bundle warning remains (approximately 1.24 MB JavaScript / 342 KB gzip).
+- `npm.cmd run smoke`: production HTML, JavaScript, and CSS served successfully.
+- `npm.cmd run inspect:collisions`: passed in headless Edge, software WebGL2,
+  1440 × 960, including the full walking/focus regression checks. Repeated
+  outward input stopped at the south edge; retreat, gate passage, and pond
+  approach/retreat worked. No console/page errors. Visually inspected
+  `artifacts/garden-boundary.png` and `artifacts/garden-pond-approach.png`.
+- `git diff --check`: passed. Collision footprints are conservative 2D geometry;
+  hardware GPU performance, gravity, jumping, and vertical/overhead collision
+  are outside this task. Task 5 has not been started.

@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { collisionShapeSchema } from './collision-schema'
+import { createNavigation, isWalkable } from '../controls/navigation'
 
 const vector3 = z.tuple([z.number().finite(), z.number().finite(), z.number().finite()])
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a six-digit hex color')
@@ -11,6 +13,7 @@ const transform = {
   // Rotation around the Y axis, in radians. Local object origins sit on ground.
   rotation: z.number().finite(),
   scale: z.tuple([dimension, dimension, dimension]),
+  collision: z.array(collisionShapeSchema).max(8).optional(),
 }
 
 export const worldObjectSchema = z.discriminatedUnion('type', [
@@ -49,6 +52,7 @@ export const worldSchema = z.strictObject({
     speed: z.number().finite().positive().max(10),
     fov: z.number().finite().min(50).max(90),
     lookSensitivity: z.number().finite().positive().max(0.01),
+    radius: z.number().finite().min(0.1).max(1).optional(),
   }).optional(),
   objects: z.array(worldObjectSchema).max(200).superRefine((objects, context) => {
     const ids = new Set<string>()
@@ -59,6 +63,13 @@ export const worldSchema = z.strictObject({
       ids.add(object.id)
     })
   }),
+}).superRefine((world, context) => {
+  if (!world.walking) return
+  const [x, , z] = world.walking.spawn
+  if (!isWalkable({ x, z }, createNavigation(world))) {
+    context.addIssue({ code: 'custom', path: ['walking', 'spawn'],
+      message: 'Walking spawn must fit inside the ground and clear all collision footprints' })
+  }
 })
 
 export type WorldDefinition = z.infer<typeof worldSchema>
