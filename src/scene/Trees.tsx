@@ -13,8 +13,8 @@ export function treeGeometry(tree: Tree, lowDetail = false, variant = 0) {
     // Angled ends cannot meet flush at a bend. Extend both ends inside
     // adjacent sections; at the base this also hides the cut below ground.
     const direction = trunk[i + 1].clone().sub(trunk[i]).normalize()
-    const start = trunk[i].clone().addScaledVector(direction, i === 0 ? -0.009 : -0.024)
-    const end = trunk[i + 1].clone().addScaledVector(direction, 0.024)
+    const start = trunk[i].clone().addScaledVector(direction, i === 0 ? -0.009 : -0.0228)
+    const end = trunk[i + 1].clone().addScaledVector(direction, 0.0228)
     builder.add(branchGeometry(start, end, 0.19 - i * 0.05, 0.14 - i * 0.055), tree.trunkColor, 0.85 + i * 0.05)
   }
   const fullBranches = palm ? 9 : spruce ? 18 : 10
