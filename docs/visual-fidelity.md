@@ -123,3 +123,49 @@ All-world switching and generation UI checks pass. The UI test mocks its API
 response; the Gemini request described above was a separate real provider call.
 See `docs/performance.md` for the software-rendering sample and its resolution
 limitations; no hardware GPU or physical-mobile performance claim is made.
+
+
+## Ground cover and pond waterlines (2026-10-25)
+
+This pass changes shared rendering, with no scene JSON, world dimensions, object
+counts, navigation geometry or tree-trunk adjustments changed. Ground now carries
+soft variation at several physical scales, plus palette-neutral contact marks
+around vegetation, rocks, wood props and wet pond margins. One baked 256 × 256
+RGBA map (about 341 KiB including mip levels) is generated when the terrain loads
+and reused at both quality levels. It adds no draw calls, object instances,
+transparency layers, background frame loop or runtime per-fragment object loop.
+Terrain still uses exactly the same height/triangle grid as walking.
+
+Ponds now share an ID-seeded irregular contour between level water and the inner
+bank, with gentle bank-height variation. The water receives shadows. The outer
+bank contact ring remains on the authored ellipse so collision stays aligned;
+all visible geometry fits within the original 1.15-radius bank envelope. Indexed
+wrapped rings avoid a duplicated seam. The outer skirt meets the ground with a
+6mm overlap, and existing lily-pad positions remain inside the water. Both quality
+levels retain the contour; the existing water ripple finish remains static.
+
+Review **The Quiet Garden**: enter through the red gate, follow the stones, and
+approach the pond on the right. Look at the bank width and waterline around the
+rocks, then the ground beneath the maple on the left. The same treatment applies
+to snow in Silverwood Grove, sand in Sandstone Oasis, and previously saved worlds.
+
+`node scripts/inspect-fidelity.mjs --surfaces` captures repeatable Quiet Garden
+views of the pond, grove and arrival. The pond eye is `[-0.6,1.1,0.1]`, yaw
+`-PI/2`; the grove eye is `[-3.8,0.9,1]`, yaw zero; arrival uses the fixture spawn.
+Images are under ignored `artifacts/fidelity/after-surface-*.png`. A matching
+before-pond image was captured from production build `2e1a273`; the other two
+views are after-only inspections. An initial grove capture used a blocked import
+spawn; the corrected viewpoint above was checked successfully.
+
+Verification: 182 unit tests and production build/typecheck pass, including
+repeatable/opaque/palette-neutral maps, rotated shoreline contact marks,
+non-accumulating ground shading, finite indexed pond geometry, level water,
+water/bank continuity, lily-pad clearance and the original collision envelope.
+Existing chunk-size advisories remain. Production smoke, walking/collision,
+responsive/recovery, all-world import/switching and generation UI checks pass.
+The generation UI uses a mocked API, while scene rendering and storage are real;
+no paid Gemini call was needed for this renderer-only change. Final pond close
+views also verify the original visible water height (0.1275m) and lily-pad height
+relationship after the new contour was introduced. A hidden water skirt overlaps
+the inner bank to keep contact closed. The software-rendering sample remained
+around 30 FPS with zero idle draws; see `docs/performance.md` for its limitations.

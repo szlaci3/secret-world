@@ -1,28 +1,33 @@
 import { SurfaceMaterial } from './SurfaceMaterial'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { hillHeight, terrainHeight, terrainSegments } from '../world/terrain'
 import type { WorldDefinition, WorldObject } from '../world/schema'
+import { groundCoverTexture } from './ground-cover'
 
-export function Terrain({ ground, lowDetail = false }: { ground: WorldDefinition['ground']; lowDetail?: boolean }) {
-  const { positions, indices } = useMemo(() => {
+export function Terrain({ ground, objects, lowDetail = false }: { ground: WorldDefinition['ground']; objects: WorldObject[]; lowDetail?: boolean }) {
+  const cover = useMemo(() => groundCoverTexture(ground.size, objects), [ground, objects])
+  useEffect(() => () => cover.dispose(), [cover])
+  const { positions, indices, uvs } = useMemo(() => {
     const [nx, nz] = terrainSegments(ground)
-    const vertices: number[] = [], indices: number[] = []
+    const vertices: number[] = [], indices: number[] = [], uvs: number[] = []
     for (let z = 0; z <= nz; z++) for (let x = 0; x <= nx; x++) {
       const px = (x / nx - 0.5) * ground.size[0], pz = (z / nz - 0.5) * ground.size[1]
       vertices.push(px, hillHeight(ground, px, pz), pz)
+      uvs.push(x / nx, z / nz)
     }
     for (let z = 0; z < nz; z++) for (let x = 0; x < nx; x++) {
       const a = z * (nx + 1) + x, b = a + 1, c = a + nx + 1, d = c + 1
       indices.push(a, d, b, a, c, d)
     }
-    return { positions: new Float32Array(vertices), indices }
+    return { positions: new Float32Array(vertices), indices, uvs: new Float32Array(uvs) }
   }, [ground])
   return <mesh receiveShadow>
     <bufferGeometry key={JSON.stringify(ground)} onUpdate={(geometry) => geometry.computeVertexNormals()}>
       <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      <bufferAttribute attach="attributes-uv" args={[uvs, 2]} />
       <bufferAttribute attach="index" args={[new Uint32Array(indices), 1]} />
     </bufferGeometry>
-    {lowDetail ? <meshStandardMaterial color={ground.color} roughness={1} /> : <SurfaceMaterial color={ground.color} grain={0.1} />}
+    {lowDetail ? <meshStandardMaterial color={ground.color} map={cover} roughness={1} /> : <SurfaceMaterial color={ground.color} map={cover} grain={0.07} />}
   </mesh>
 }
 

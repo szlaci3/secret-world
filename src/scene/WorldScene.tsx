@@ -40,7 +40,7 @@ export function WorldScene({ world, walking, lowDetail }: { world: WorldDefiniti
         shadow-normalBias={0.025} shadow-bias={-0.00015}>
         <orthographicCamera attach="shadow-camera" args={[-extent, extent, extent, -extent, 0.5, Math.max(120, Math.hypot(...environment.sunlight.position) + extent * 2)]} />
       </directionalLight>
-      <Terrain ground={ground} lowDetail={lowDetail} />
+      <Terrain ground={ground} objects={world.objects} lowDetail={lowDetail} />
       <InstancedPaths objects={objects} ground={ground} lowDetail={lowDetail} />
       <Plants objects={plants} lowDetail={lowDetail} />
       <Trees objects={objects} lowDetail={lowDetail} />

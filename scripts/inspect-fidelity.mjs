@@ -8,18 +8,19 @@ import { preview } from 'vite'
 // Only the walking spawn changes in an imported copy; no runtime debug hooks.
 const baseline = process.argv.includes('--baseline')
 const natural = process.argv.includes('--natural')
-const fixture = natural ? 'silverwood-grove' : 'open-meadow'
+const surfaces = process.argv.includes('--surfaces')
+const fixture = surfaces ? 'garden' : natural ? 'silverwood-grove' : 'open-meadow'
 const baselineRef = process.argv.find(arg => arg.startsWith('--baseline-ref='))?.split('=')[1] ?? '14cda4e'
 const world = baseline
   ? JSON.parse(execFileSync('git', ['show', `${baselineRef}:src/world/${fixture}.json`], { encoding: 'utf8' }))
   : JSON.parse(await readFile(`src/world/${fixture}.json`, 'utf8'))
-const views = natural ? [['natural-log', [-3.8, 0.95, 34.5]], ['natural-stump', [4.1, 0.8, 29]], ['natural-grove', [-26.5, 1.1, 15]]] : process.argv.includes('--artifacts') ? [ ['arch', [0, 1.65, 5]], ['cabin', [45, 1.65, 43]], ['pavilion', [-36, 1.65, 24]], ['windmill', [-43, 1.65, -21]], ['beacon', [39, 1.65, -30]], ['pavement', [0, 1.65, 40]] ] : [ ['entrance', [0, 1.65, 40]], ['grove', [-42, 1.65, -14]], ['stone', [-32, 1.65, 5.5]] ]
+const views = surfaces ? [['surface-pond', [-0.6, 1.1, 0.1], -Math.PI / 2], ['surface-grove', [-3.8, 0.9, 1.0]], ['surface-ground', [-1.8, 1.65, 7.7]]] : natural ? [['natural-log', [-3.8, 0.95, 34.5]], ['natural-stump', [4.1, 0.8, 29]], ['natural-grove', [-26.5, 1.1, 15]]] : process.argv.includes('--artifacts') ? [ ['arch', [0, 1.65, 5]], ['cabin', [45, 1.65, 43]], ['pavilion', [-36, 1.65, 24]], ['windmill', [-43, 1.65, -21]], ['beacon', [39, 1.65, -30]], ['pavement', [0, 1.65, 40]] ] : [ ['entrance', [0, 1.65, 40]], ['grove', [-42, 1.65, -14]], ['stone', [-32, 1.65, 5.5]] ]
 const server = await preview({ build: { outDir: baseline ? 'artifacts/baseline-dist' : 'dist' }, preview: { host: '127.0.0.1', port: 0, open: false } })
 let browser
 try {
   browser = await chromium.launch({ channel: process.env.SECRET_WORLD_BROWSER_CHANNEL ?? (process.platform === 'win32' ? 'msedge' : 'chromium'), headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] })
   await mkdir('artifacts/fidelity', { recursive: true })
-  for (const [name, spawn] of views) {
+  for (const [name, spawn, yaw = 0] of views) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 960 }, deviceScaleFactor: 1 })
     const errors = []
     page.on('pageerror', e => errors.push(e.message))
@@ -29,7 +30,7 @@ try {
     await page.locator('.scene[aria-busy="false"]').waitFor()
     const sidebar = page.getByRole('complementary', { name: 'Choose a world', exact: true })
     await sidebar.locator('summary').click()
-    await sidebar.getByRole('textbox', { name: 'World JSON', exact: true }).fill(JSON.stringify({ ...world, walking: { ...world.walking, spawn, yaw: 0 } }))
+    await sidebar.getByRole('textbox', { name: 'World JSON', exact: true }).fill(JSON.stringify({ ...world, walking: { ...world.walking, spawn, yaw } }))
     await sidebar.getByRole('button', { name: 'Load world', exact: true }).click()
     await page.waitForFunction(() => Boolean(document.pointerLockElement))
     await page.waitForTimeout(700)

@@ -253,3 +253,23 @@ increase to generated object limits or permanent animation loop. Software frame
 rates remain modest; physical-device/hardware GPU performance is unverified.
 Raw reports: `artifacts/natural-detail-performance-before.json` and
 `artifacts/performance-silverwood-grove.json` (ignored diagnostic files).
+
+
+## Baked ground cover and pond contours (2026-10-25)
+
+After the surface pass, the same Silverwood Grove walking check recorded 29.9 FPS,
+41.6ms p95 and 23.7 draws per rendered frame, with zero overview/standing idle
+draws. The adaptive canvas was 649 × 497 at a 1440 × 960 viewport in Edge 156
+SwiftShader. The earlier woodland-detail sample used 835 × 497, so their similar
+frame cadence does not establish equal rendering cost at matched resolution.
+
+The cover map adds one texture lookup to the ground material at both quality
+levels, about 341 KiB of texture memory including mipmaps, and one bounded bake
+per terrain load. No world object or draw call is added. Pond water/banks retain
+two meshes; the shared indexed contour uses 512 bank triangles and 192 water
+triangles, comparable to the previous lathe/cylinder combination. Terrain height
+geometry is unchanged. Textures and pond geometry are explicitly disposed on
+replacement. The water remains static, preserving on-demand idle behavior.
+
+Report: `artifacts/performance-surfaces-silverwood-grove.json`. These short local
+software-renderer checks are not hardware GPU or physical-mobile validation.

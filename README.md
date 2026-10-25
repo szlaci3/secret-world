@@ -38,6 +38,11 @@ Plant clumps have three stable shape variants, with uneven stem heights, natural
 lean and subtle color variation. Mossy fallen logs and cut stumps have bark detail
 and growth rings; Silverwood Grove showcases them beside its route. Gemini can
 use these assets within the existing object budgets.
+Ground cover has soft, palette-preserving variation and contact shading around
+vegetation, rocks and water. Ponds have stable irregular waterlines and varied
+banks, with shadows on the water. These finishes also apply to saved/imported
+worlds and remain visible in reduced-detail mode. **The Quiet Garden** is a useful
+close-up review scene: follow the stones and look at the pond on the right.
 Pavement stays horizontal on flat terrain; slabs whose rotated footprints cross
 slopes are omitted, including in imported or previously saved worlds. Grass
 openings remain walkable where hill routes have no pavement.

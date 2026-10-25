@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from 'react'
 import { DataTexture, LinearFilter, LinearMipmapLinearFilter, MeshStandardMaterial, RepeatWrapping, RGBAFormat } from 'three'
 import { randomSource } from './natural-geometry'
+import type { Texture } from 'three'
 
 /** Object-space mineral/soil grain, no textures or extra render passes. */
-export function SurfaceMaterial({ color = '#ffffff', vertexColors = false, grain = 0.08, finish = 'stone', relief = vertexColors, worldSpace = false }: { color?: string; vertexColors?: boolean; grain?: number; finish?: 'stone' | 'wood' | 'water'; relief?: boolean; worldSpace?: boolean }) {
+export function SurfaceMaterial({ color = '#ffffff', vertexColors = false, grain = 0.08, finish = 'stone', relief = vertexColors, worldSpace = false, map }: { color?: string; vertexColors?: boolean; grain?: number; finish?: 'stone' | 'wood' | 'water'; relief?: boolean; worldSpace?: boolean; map?: Texture }) {
   const material = useMemo(() => {
     // Generated once per material, sampled with mipmaps instead of expensive
     // per-fragment trigonometric noise. No asset downloads or texture popping.
@@ -16,7 +17,7 @@ export function SurfaceMaterial({ color = '#ffffff', vertexColors = false, grain
     noise.wrapS = noise.wrapT = RepeatWrapping
     noise.magFilter = LinearFilter; noise.minFilter = LinearMipmapLinearFilter
     noise.generateMipmaps = true; noise.needsUpdate = true
-    const m = new MeshStandardMaterial({ color, vertexColors, roughness: finish === 'water' ? 0.28 : 0.96, metalness: finish === 'water' ? 0.15 : 0 })
+    const m = new MeshStandardMaterial({ color, vertexColors, map, roughness: finish === 'water' ? 0.28 : 0.96, metalness: finish === 'water' ? 0.15 : 0 })
     m.userData.noise = noise
     m.onBeforeCompile = shader => {
       shader.uniforms.surfaceNoise = { value: noise }
@@ -46,7 +47,7 @@ export function SurfaceMaterial({ color = '#ffffff', vertexColors = false, grain
     }
     m.customProgramCacheKey = () => `surface-${grain}-${finish}-${relief}-${worldSpace}`
     return m
-  }, [color, vertexColors, grain, finish, relief, worldSpace])
+  }, [color, vertexColors, grain, finish, relief, worldSpace, map])
   useEffect(() => () => { material.userData.noise.dispose(); material.dispose() }, [material])
   return <primitive object={material} attach="material" />
 }

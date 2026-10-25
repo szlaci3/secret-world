@@ -125,6 +125,23 @@ hills preserve the previous flat-ground behavior. Paths remain horizontal; any p
 on flat ground: other rigid objects are anchored at their centers and stay upright.
 Ponds do not flatten terrain, and collision footprints remain horizontal.
 
+Ground appearance uses one 256 × 256 baked grayscale cover map per loaded world.
+Broad and fine variation are measured in world coordinates, and soft contact
+marks follow scaled/rotated trees, rocks, plants, logs, stumps and pond margins.
+The map multiplies the authored ground color, so it introduces no new biome
+palette or elevation. Overlapping marks use the strongest influence rather than
+accumulating darkness. The texture is shared across detail levels and disposed
+when its terrain is replaced. It requires no extra world objects or JSON fields.
+
+Pond IDs select deterministic gently irregular waterlines. Water stays horizontal,
+and the inner bank follows the same contour. The outer ground-contact ring stays
+at 1.15 times the authored ellipse so existing conservative collision and boundary
+checks remain aligned. Every visible bank/water vertex stays within that envelope;
+the water radius never shrinks below 0.92 of the normalized ellipse, leaving room
+for the existing 0.9 lily-pad envelope. The outer bank skirt extends 6mm below the
+surface to hide the edge. These rendering changes apply to old and new worlds.
+
+
 Fog is linear distance fog. In overview, the renderer offsets its distances to
 account for the distant overview camera, preserving legibility of the whole scene.
 Walking uses the authored near/far distances. Fog, ground colors, sunlight, and
