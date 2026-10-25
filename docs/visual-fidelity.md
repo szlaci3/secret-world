@@ -33,3 +33,46 @@ The matched views show separated foliage rather than solid polygon crowns, flowe
 - Production HTTP smoke passed.
 - Software WebGL2 checks passed for walking, pointer lock, collisions, responsive layout/recovery and world imports/switching.
 - See the current measurement in `docs/performance.md`. These are local software-renderer results, not hardware GPU or deployment validation.
+
+## Artifact and pavement pass (2026-10-25)
+
+Baseline: `fd4a805` on main, including the earlier natural-asset milestone.
+
+Structures, entrance gates and lantern housings now use shared indexed geometry
+with softened masonry edges, stone courses, timber boards/braces, roof courses,
+window frames, slatted benches and windmill sail ribs. Solid parts are merged into
+one mesh per artifact; lantern/beacon light inserts are separate. Materials reuse
+the generated mipmapped surface texture with a directional wood finish. Pond
+banks have a rounded profile and water has subtle static ripple normals. Paving
+samples grain in scene coordinates so long slabs do not stretch it. There is no
+new animation loop, external asset download or new world.
+
+`vegetation-clearance.ts` computes each plant variety's horizontal geometry bounds
+at both quality levels, caches their union, and uses separating-axis tests against
+scaled/rotated, level paved slabs with a 12cm margin. A cluster whose foliage
+reaches paving is omitted from rendering. The source JSON is retained, so imports
+receive the same treatment without a schema change. Uphill slabs already excluded
+from rendering do not cause vegetation removal. The meadow retains 246/252 small
+plant clusters; Silverwood retains 267/268; all other catalog plant counts remain
+unchanged. One meadow maple was moved from the windmill path to adjacent ground;
+its collision shape moves with it. Existing-world tests also check root clearance
+while allowing tree canopies to overhang paths.
+
+Validation: production build/typecheck, 146 tests, HTTP smoke, browser walking,
+collisions, imports/world switches and responsive/recovery checks passed. Tests
+independently transform every retained plant vertex at both quality levels and
+check that none lies on rendered pavement in any catalog world. Geometry tests
+cover all nine artifact types and the arch opening.
+
+`node scripts/inspect-fidelity.mjs --artifacts` captures fixed arch, cabin, pavilion,
+windmill, beacon and pavement viewpoints. Matching before views were captured
+using the production archive build and `--baseline --baseline-ref=fd4a805`.
+Images are in ignored `artifacts/fidelity/`. `--baseline-ref` reads the entire
+reference world from Git, including its original object positions.
+
+The final isolated Edge 156 SwiftShader run at a 1440 x 960 viewport recorded
+35.0 animation frames/sec, 33.4ms p95, 19.2 draw calls/frame and zero overview or
+standing idle draws. Adaptive canvas size was 649 x 497, so this is not directly
+comparable to the previous 835 x 497 measurements. Hardware GPU and hosted
+rendering performance remain unverified. A preceding run caught one late overview
+frame during startup; the isolated rerun passed both idle assertions.

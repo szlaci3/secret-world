@@ -8,6 +8,7 @@ import { Terrain, GroundPatch } from './Terrain'
 import { Plants } from './Plants'
 import { Trees } from './Trees'
 import { Rocks } from './Rocks'
+import { pavementClearPlants } from './vegetation-clearance'
 
 export function WorldScene({ world, walking, lowDetail }: { world: WorldDefinition; walking: boolean; lowDetail: boolean }) {
   const { ground, environment } = world
@@ -20,6 +21,7 @@ export function WorldScene({ world, walking, lowDetail }: { world: WorldDefiniti
   const objects = useMemo(() => world.objects.map((object) => ({ ...object,
     position: [object.position[0], object.position[1] + terrainHeight(ground, object.position[0], object.position[2]), object.position[2]] as [number, number, number],
   })), [world, ground])
+  const plants = useMemo(() => pavementClearPlants(objects, ground), [objects, ground])
   useLayoutEffect(() => {
     // World geometry and light are static. Camera movement reuses the shadow map.
     gl.shadowMap.autoUpdate = false
@@ -39,12 +41,12 @@ export function WorldScene({ world, walking, lowDetail }: { world: WorldDefiniti
         <orthographicCamera attach="shadow-camera" args={[-extent, extent, extent, -extent, 0.5, Math.max(120, Math.hypot(...environment.sunlight.position) + extent * 2)]} />
       </directionalLight>
       <Terrain ground={ground} lowDetail={lowDetail} />
-      <InstancedPaths objects={objects} ground={ground} />
-      <Plants objects={objects} lowDetail={lowDetail} />
+      <InstancedPaths objects={objects} ground={ground} lowDetail={lowDetail} />
+      <Plants objects={plants} lowDetail={lowDetail} />
       <Trees objects={objects} lowDetail={lowDetail} />
       <Rocks objects={objects} lowDetail={lowDetail} />
       {world.objects.filter((object) => object.type === 'patch').map((object) => <GroundPatch key={object.id} object={object} ground={ground} />)}
-      {objects.filter((object) => !['path', 'plant', 'patch', 'tree', 'rock'].includes(object.type)).map((object) => <GardenObject key={object.id} object={object} />)}
+      {objects.filter((object) => !['path', 'plant', 'patch', 'tree', 'rock'].includes(object.type)).map((object) => <GardenObject key={object.id} object={object} lowDetail={lowDetail} />)}
     </>
   )
 }

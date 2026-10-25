@@ -1,12 +1,13 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import { InstancedMesh, Object3D } from 'three'
 import type { WorldObject } from '../world/schema'
+import { SurfaceMaterial } from './SurfaceMaterial'
 import { isLevelPath } from '../world/paths'
 import type { TerrainGround } from '../world/terrain'
 
 type Path = Extract<WorldObject, { type: 'path' }>
 
-function PathBatch({ objects, color, ground }: { objects: Path[]; color: string; ground: TerrainGround }) {
+function PathBatch({ objects, color, ground, lowDetail }: { objects: Path[]; color: string; ground: TerrainGround; lowDetail: boolean }) {
   const mesh = useRef<InstancedMesh>(null)
   useLayoutEffect(() => {
     if (!mesh.current) return
@@ -24,13 +25,13 @@ function PathBatch({ objects, color, ground }: { objects: Path[]; color: string;
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, objects.length]} castShadow receiveShadow>
       <boxGeometry />
-      <meshStandardMaterial color={color} roughness={1} />
+      {lowDetail ? <meshStandardMaterial color={color} roughness={1} /> : <SurfaceMaterial color={color} grain={0.13} worldSpace />}
     </instancedMesh>
   )
 }
 
 /** One draw per path color instead of one draw per stone; instances stay in JSON. */
-export function InstancedPaths({ objects, ground }: { objects: WorldObject[]; ground: TerrainGround }) {
+export function InstancedPaths({ objects, ground, lowDetail = false }: { objects: WorldObject[]; ground: TerrainGround; lowDetail?: boolean }) {
   const groups = useMemo(() => {
     const colors = new Map<string, Path[]>()
     objects.forEach((object) => {
@@ -41,5 +42,5 @@ export function InstancedPaths({ objects, ground }: { objects: WorldObject[]; gr
     })
     return [...colors]
   }, [objects, ground])
-  return groups.map(([color, paths]) => <PathBatch key={color} color={color} objects={paths} ground={ground} />)
+  return groups.map(([color, paths]) => <PathBatch key={color} color={color} objects={paths} ground={ground} lowDetail={lowDetail} />)
 }

@@ -1,5 +1,9 @@
 import type { WorldObject } from '../world/schema'
 import { Structure } from './Structure'
+import { SurfaceMaterial } from './SurfaceMaterial'
+import { Vector2 } from 'three'
+
+const bankProfile = [[0.98, 0.055], [1.01, 0.13], [1.07, 0.12], [1.13, 0.06], [1.15, 0.025]].reverse().map(([r, y]) => new Vector2(r, y))
 
 type ObjectOf<T extends WorldObject['type']> = Extract<WorldObject, { type: T }>
 
@@ -12,16 +16,16 @@ function Path({ object }: { object: ObjectOf<'path'> }) {
   )
 }
 
-function Pond({ object }: { object: ObjectOf<'pond'> }) {
+function Pond({ object, lowDetail }: { object: ObjectOf<'pond'>; lowDetail: boolean }) {
   return (
     <group scale={[object.radii[0], 1, object.radii[1]]}>
-      <mesh castShadow position-y={0.055}>
-        <cylinderGeometry args={[1.12, 1.15, 0.11, 48]} />
-        <meshStandardMaterial color={object.bankColor} roughness={1} />
+      <mesh castShadow receiveShadow>
+        <latheGeometry args={[bankProfile, 64]} />
+        {lowDetail ? <meshStandardMaterial color={object.bankColor} roughness={1} /> : <SurfaceMaterial color={object.bankColor} grain={0.18} />}
       </mesh>
       <mesh position-y={0.115}>
         <cylinderGeometry args={[1, 1, 0.025, 48]} />
-        <meshStandardMaterial color={object.waterColor} roughness={0.24} metalness={0.25} />
+        {lowDetail ? <meshStandardMaterial color={object.waterColor} roughness={0.28} metalness={0.15} /> : <SurfaceMaterial color={object.waterColor} finish="water" grain={0.04} />}
       </mesh>
       {object.lilyPads?.map((pad, index) => (
         <mesh castShadow key={index} position={[pad.position[0], 0.133, pad.position[1]]} rotation={[-Math.PI / 2, 0, index * 0.8]}>
@@ -33,87 +37,15 @@ function Pond({ object }: { object: ObjectOf<'pond'> }) {
   )
 }
 
-function Lantern({ object }: { object: ObjectOf<'lantern'> }) {
-  return (
-    <group>
-      <mesh castShadow position-y={0.1}>
-        <cylinderGeometry args={[0.4, 0.48, 0.2, 6]} />
-        <meshStandardMaterial color={object.stoneColor} roughness={1} />
-      </mesh>
-      <mesh castShadow position-y={0.55}>
-        <cylinderGeometry args={[0.13, 0.19, 0.8, 6]} />
-        <meshStandardMaterial color={object.stoneColor} roughness={1} />
-      </mesh>
-      <mesh castShadow position-y={1.02}>
-        <boxGeometry args={[0.56, 0.16, 0.56]} />
-        <meshStandardMaterial color={object.stoneColor} roughness={1} />
-      </mesh>
-      <mesh castShadow position-y={1.29}>
-        <boxGeometry args={[0.35, 0.38, 0.35]} />
-        <meshStandardMaterial color={object.glowColor} emissive={object.glowColor} emissiveIntensity={0.45} />
-      </mesh>
-      {[-1, 1].flatMap((x) => [-1, 1].map((z) => (
-        <mesh castShadow key={`${x}-${z}`} position={[x * 0.22, 1.29, z * 0.22]}>
-          <boxGeometry args={[0.09, 0.42, 0.09]} />
-          <meshStandardMaterial color={object.stoneColor} roughness={1} />
-        </mesh>
-      )))}
-      <mesh castShadow position-y={1.6} rotation-y={Math.PI / 4}>
-        <coneGeometry args={[0.58, 0.35, 4]} />
-        <meshStandardMaterial color={object.stoneColor} roughness={1} />
-      </mesh>
-      <mesh castShadow position-y={1.85}>
-        <sphereGeometry args={[0.1, 8, 6]} />
-        <meshStandardMaterial color={object.stoneColor} roughness={1} />
-      </mesh>
-    </group>
-  )
-}
-
-function Entrance({ object }: { object: ObjectOf<'entrance'> }) {
-  return (
-    <group>
-      {[-1, 1].map((side) => (
-        <group key={side} position-x={side * 1.2}>
-          <mesh castShadow position-y={1.55} rotation-z={side * 0.035}>
-            <cylinderGeometry args={[0.14, 0.18, 3.1, 10]} />
-            <meshStandardMaterial color={object.woodColor} roughness={0.8} />
-          </mesh>
-          <mesh castShadow position-y={0.12}>
-            <cylinderGeometry args={[0.24, 0.27, 0.24, 8]} />
-            <meshStandardMaterial color={object.roofColor} roughness={1} />
-          </mesh>
-          <mesh castShadow position={[side * 0.5, 3.25, 0]} rotation-z={side * 0.13}>
-            <boxGeometry args={[1.25, 0.2, 0.5]} />
-            <meshStandardMaterial color={object.roofColor} roughness={0.8} />
-          </mesh>
-        </group>
-      ))}
-      <mesh castShadow position-y={2.6}>
-        <boxGeometry args={[3.15, 0.18, 0.23]} />
-        <meshStandardMaterial color={object.woodColor} roughness={0.8} />
-      </mesh>
-      <mesh castShadow position-y={3.18}>
-        <boxGeometry args={[2.8, 0.22, 0.5]} />
-        <meshStandardMaterial color={object.roofColor} roughness={0.8} />
-      </mesh>
-      <mesh castShadow position-y={2.88}>
-        <boxGeometry args={[0.18, 0.6, 0.18]} />
-        <meshStandardMaterial color={object.woodColor} roughness={0.8} />
-      </mesh>
-    </group>
-  )
-}
-
-function ObjectShape({ object }: { object: WorldObject }) {
+function ObjectShape({ object, lowDetail }: { object: WorldObject; lowDetail: boolean }) {
   switch (object.type) {
     case 'path': return <Path object={object} />
-    case 'pond': return <Pond object={object} />
+    case 'pond': return <Pond object={object} lowDetail={lowDetail} />
     case 'rock': return null // Batched by Rocks.
     case 'tree': return null // Batched by Trees.
-    case 'lantern': return <Lantern object={object} />
-    case 'entrance': return <Entrance object={object} />
-    case 'structure': return <Structure object={object} />
+    case 'lantern': return <Structure object={object} lowDetail={lowDetail} />
+    case 'entrance': return <Structure object={object} lowDetail={lowDetail} />
+    case 'structure': return <Structure object={object} lowDetail={lowDetail} />
     case 'plant': return null // Batched by Plants.
     case 'patch': return null // GroundPatch conforms to the terrain.
     default: {
@@ -124,10 +56,10 @@ function ObjectShape({ object }: { object: WorldObject }) {
 }
 
 /** Local shapes are reusable; every world instance gets its transform from data. */
-export function GardenObject({ object }: { object: WorldObject }) {
+export function GardenObject({ object, lowDetail = false }: { object: WorldObject; lowDetail?: boolean }) {
   return (
     <group name={object.id} position={object.position} rotation={[0, object.rotation, 0]} scale={object.scale}>
-      <ObjectShape object={object} />
+      <ObjectShape object={object} lowDetail={lowDetail} />
     </group>
   )
 }

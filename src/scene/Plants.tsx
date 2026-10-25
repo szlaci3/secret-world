@@ -10,8 +10,8 @@ type Plant = Extract<WorldObject, { type: 'plant' }>
 export function plantGeometry(plant: Plant, lowDetail: boolean) {
   const parts: BufferGeometry[] = []
   const add = (geometry: BufferGeometry, color: string, x: number, y: number, z: number, sx = 1, sy = 1, sz = 1, tilt = 0) => {
-    const g = geometry.toNonIndexed()
-    geometry.dispose()
+    const g = geometry.index ? geometry.toNonIndexed() : geometry
+    if (g !== geometry) geometry.dispose()
     g.scale(sx, sy, sz).rotateZ(tilt).translate(x, y, z)
     const c = new Color(color), colors = []
     for (let i = 0; i < g.getAttribute('position').count; i++) colors.push(c.r, c.g, c.b)
