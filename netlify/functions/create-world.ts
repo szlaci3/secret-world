@@ -46,7 +46,11 @@ Aim for 240–320 small ground-cover plants in suitable environments. Use trees 
 Use 2–4 consistent plant palettes to benefit instancing. Vary terrain, water count and shape (including none),
 vegetation density/species, scale, landmarks, composition, fog, sky and light to match the prompt.
 Asset types: tree (pine/maple/spruce/palm); plant (grass/flowers/reeds/bamboo/cactus/fern/mushrooms);
-structure (arch/pavilion/cabin/beacon/windmill/column/bench); rock; pond; path; patch; lantern; entrance.
+structure (arch/pavilion/cabin/beacon/windmill/column/bench/fallen-log/stump); rock; pond; path; patch; lantern; entrance.
+For woodland and forest, a few fallen-log/stump structures add natural history beside the route.
+Logs are about 2.9m long and 0.7m wide/high, stumps about 0.8m wide and 0.65m tall.
+Their color is bark, accentColor is exposed wood. They are blocking solids: count 1, spread 0.
+Place them off paths on flat ground, with small fern/mushroom drifts nearby. They use the existing complex-object budget.
 Trees are 3–4m tall and 2–3m wide; plants 1–1.5m wide (bamboo 3m tall); cabin 3x2.5m;
 pavilion 3x3m; arch 3.8m wide; beacon/windmill 5m tall. Scale 0.3–2; prefer 0.7–1.3 except forest trees which benefit from 1.5–2.
 Keep objects within ground with margins for their full visible footprints, not only centers or colliders.

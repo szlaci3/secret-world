@@ -39,6 +39,8 @@ function collisions(object: WorldObject): WorldObject['collision'] {
     case 'entrance': return [ellipse([0.3, 0.3], [-1.2, 0]), ellipse([0.3, 0.3], [1.2, 0])]
     case 'plant': return ['cactus', 'bamboo'].includes(object.variety) ? [ellipse([0.65, 0.65])] : []
     case 'structure':
+      if (object.variety === 'fallen-log') return [box([3.1, 0.9])]
+      if (object.variety === 'stump') return [ellipse([0.42, 0.42])]
       if (object.variety === 'arch') return [box([0.7, 1], [-1.4, 0]), box([0.7, 1], [1.4, 0])]
       if (object.variety === 'pavilion') return [-1.2, 1.2].flatMap(x => [-1.2, 1.2].map(z => box([0.25, 0.25], [x, z])))
       return [box(object.variety === 'cabin' ? [3, 2.5] : object.variety === 'column' ? [1.2, 1.2] : object.variety === 'bench' ? [1.9, 0.7] : [2.4, 2.4])]

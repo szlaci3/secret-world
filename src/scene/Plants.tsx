@@ -1,27 +1,35 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { BufferGeometry, CircleGeometry, Color, DoubleSide, CylinderGeometry, Float32BufferAttribute, IcosahedronGeometry, InstancedMesh, Object3D, SphereGeometry } from 'three'
 import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js'
-import { leafGeometry, seedFor } from './natural-geometry'
+import { leafGeometry, randomSource, seedFor } from './natural-geometry'
 import type { WorldObject } from '../world/schema'
 
 type Plant = Extract<WorldObject, { type: 'plant' }>
+export const plantVariant = (plant: Plant) => seedFor(plant.id) % 3
 
 // Each cluster is one merged low-poly mesh; repeated clusters are instanced.
-export function plantGeometry(plant: Plant, lowDetail: boolean) {
+export function plantGeometry(plant: Plant, lowDetail: boolean, variant = plantVariant(plant)) {
   const parts: BufferGeometry[] = []
+  const random = randomSource(825 + variant * 173)
+  let stemX = 0, stemZ = 0, lean = 0, shade = 1
   const add = (geometry: BufferGeometry, color: string, x: number, y: number, z: number, sx = 1, sy = 1, sz = 1, tilt = 0) => {
     const g = geometry.index ? geometry.toNonIndexed() : geometry
     if (g !== geometry) geometry.dispose()
     g.scale(sx, sy, sz).rotateZ(tilt).translate(x, y, z)
-    const c = new Color(color), colors = []
+    // Bend the whole stem and its attached flowers/leaves together at the base.
+    g.translate(-stemX, 0, -stemZ).rotateZ(lean).translate(stemX, 0, stemZ)
+    const c = new Color(color).multiplyScalar(shade), colors = []
     for (let i = 0; i < g.getAttribute('position').count; i++) colors.push(c.r, c.g, c.b)
     g.setAttribute('color', new Float32BufferAttribute(colors, 3))
     g.deleteAttribute('uv')
     parts.push(g)
   }
   for (let i = 0; i < (lowDetail ? 3 : 5); i++) {
-    const angle = i * 2.4, radius = i === 0 ? 0 : 0.28 + (i % 2) * 0.15
-    const x = Math.cos(angle) * radius, z = Math.sin(angle) * radius, h = 0.55 + (i % 3) * 0.18
+    const angle = i * 2.4 + (random() - 0.5) * 1.1, radius = i === 0 ? 0 : 0.22 + random() * 0.2
+    const x = Math.cos(angle) * radius, z = Math.sin(angle) * radius, h = 0.45 + random() * 0.5
+    stemX = x; stemZ = z
+    lean = plant.variety === 'bamboo' || plant.variety === 'cactus' ? 0 : (random() - 0.5) * 0.2
+    shade = 0.88 + random() * 0.24
     switch (plant.variety) {
       case 'bamboo':
         add(new CylinderGeometry(0.045, 0.065, 2.6 + h, 5), plant.color, x, (2.6 + h) / 2, z)
@@ -70,9 +78,9 @@ export function plantGeometry(plant: Plant, lowDetail: boolean) {
   return result
 }
 
-function PlantBatch({ plants, lowDetail }: { plants: Plant[]; lowDetail: boolean }) {
+function PlantBatch({ plants, lowDetail, variant }: { plants: Plant[]; lowDetail: boolean; variant: number }) {
   const mesh = useRef<InstancedMesh>(null)
-  const geometry = useMemo(() => plantGeometry(plants[0], lowDetail), [plants, lowDetail])
+  const geometry = useMemo(() => plantGeometry(plants[0], lowDetail, variant), [plants, lowDetail, variant])
   useEffect(() => () => geometry.dispose(), [geometry])
   useLayoutEffect(() => {
     const transform = new Object3D()
@@ -97,12 +105,12 @@ export function Plants({ objects, lowDetail }: { objects: WorldObject[]; lowDeta
   const batches = useMemo(() => {
     const groups = new Map<string, Plant[]>()
     for (const object of objects) if (object.type === 'plant') {
-      const key = `${object.variety}/${object.color}/${object.accentColor}`
+      const key = `${object.variety}/${object.color}/${object.accentColor}/${plantVariant(object)}`
       const group = groups.get(key) ?? []
       group.push(object)
       groups.set(key, group)
     }
     return [...groups]
   }, [objects])
-  return batches.map(([key, plants]) => <PlantBatch key={key} plants={plants} lowDetail={lowDetail} />)
+  return batches.map(([key, plants]) => <PlantBatch key={key} plants={plants} lowDetail={lowDetail} variant={plantVariant(plants[0])} />)
 }

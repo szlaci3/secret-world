@@ -55,7 +55,7 @@ Current selectable built-in worlds (all dimensions in meters):
 | Fixture | Ground | Objects | Design |
 | --- | --- | --- | --- |
 | `open-meadow.json` | 128 × 128 | 337 | Long routes, two ponds, distant groves, windmill and cabin |
-| `silverwood-grove.json` | 128 × 128 | 297 | Gemini-generated snowy woodland, spruce groves, cabin and windmill |
+| `silverwood-grove.json` | 128 × 128 | 301 | Snowy woodland, spruce groves, cabin, windmill, fallen logs and stumps |
 | `garden.json` | 18 × 18 | 60 | One pond, winding path, bamboo screen, tea pavilion |
 | `sandstone-oasis.json` | 24 × 22 | 64 | Three pools, dunes, palms and gateway ruins |
 | `frostlight-grove.json` | 24 × 22 | 60 | No water, spruce pockets, cabin and hillside lookout |
@@ -179,6 +179,8 @@ scales vary density and height. Grass/flowers/ferns/mushrooms are roughly 0.4–
 high, reeds 1–1.5 m, cactus 1–1.7 m, and bamboo 3–3.5 m before scaling. Repeated
 plants with the same variety and two colors share merged instanced geometry.
 Use a few consistent palette pairs per world rather than unique colors per plant.
+Each palette uses up to three stable ID-selected clump shapes, with uneven heights,
+stem lean and tint. Clearance checks include all variants at both detail levels.
 Soft plants normally have no collider; cactus and dense bamboo use a local ellipse
 with radii `[0.65, 0.65]` in the shipped fixtures.
 
@@ -193,6 +195,13 @@ Structure varieties and recommended unscaled collision footprints:
 | `windmill` | Tapered tower with four static sails | Box `[2.4,2.4]`; sails are overhead |
 | `column` | Octagonal shaft, base and capital | Box `[1.2,1.2]` |
 | `bench` | Simple timber seat on two supports | Box `[1.9,0.7]` |
+| `fallen-log` | 2.9m fallen trunk with bark, cut-end rings and moss | Box `[3.1,0.9]` |
+| `stump` | 0.62m cut stump, growth rings and moss | Ellipse radii `[0.42,0.42]` |
+
+For `fallen-log` and `stump`, `color` is bark and `accentColor` is exposed wood.
+These use the existing `structure` type and count toward the 64 complex-object
+generation budget. Reserve flat ground off the route; a log is blocking, not a
+bridge. Existing version-1 worlds remain valid.
 
 `patch` adds a thin elliptical, terrain-conforming region for gravel, sand,
 clearing soil, or a different grass tone. It is decorative and normally has no

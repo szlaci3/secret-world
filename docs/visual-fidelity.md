@@ -76,3 +76,50 @@ standing idle draws. Adaptive canvas size was 649 x 497, so this is not directly
 comparable to the previous 835 x 497 measurements. Hardware GPU and hosted
 rendering performance remain unverified. A preceding run caught one late overview
 frame during startup; the isolated rerun passed both idle assertions.
+
+
+## Woodland detail and plant variation (2026-10-25)
+
+This pass adds reusable `structure` varieties `fallen-log` and `stump`, with bark
+ridges embedded in the surface, cut-end growth rings, tapered wood and small moss
+patches. The fallen trunk tilts just enough to rest both tapered ends on flat
+ground. Each prop is one merged indexed mesh, with no additional per-detail draw
+calls, animations or external downloads. Explicit collision and full-footprint
+boundary checks cover both kinds. The 512-total/64-complex generation limits are
+unchanged, and Gemini's instructions describe the new assets and safe placement.
+
+Silverwood Grove is the reference: two logs and two stumps were added, taking it
+from 297 to 301 objects. Existing terrain, paths, spawns, trees and plants retain
+their authored data. From arrival, walk through the gate: the first fallen log is
+on the left before the paved route, and a stump is on the right a little farther
+ahead. The western spruce grove contains another log and stump. The other eight
+worlds retain their original scene data. Recent trunk overlap and root-removal
+adjustments are preserved.
+
+Every plant palette now has three deterministic ID-selected geometry variants.
+Stem spacing, height, lean and shade vary within bounded envelopes; flowers and
+leaves lean with their stems rather than detaching from them. Variants still use
+instancing, with at most three batches per variety/palette. Both detail levels
+share the same first stems, and pavement clearance uses the union of all variants
+at both levels. Existing saved/imported worlds receive this rendering improvement
+without changing their JSON.
+
+Repeatable close views: `node scripts/inspect-fidelity.mjs --natural` captures the
+three Silverwood locations at the same fixed eye positions and headings. They use
+low eye heights to expose the log cut faces, stump top and ground contact.
+Screenshots go to `artifacts/fidelity/after-natural-*.png`.
+
+Verification: 174 unit tests pass, including generated prop collisions, boundary
+envelopes against actual mesh variants, deterministic plant geometry, and actual
+retained vegetation vertices remaining clear of paving across all catalog worlds.
+TypeScript and production build pass (the existing chunk-size advisory remains).
+A real Gemini request for a natural woodland trail with a mossy fallen log, cut
+stumps, ferns and mushrooms returned a valid 96 × 96m world with 186 objects,
+40 trees, one fallen log and one stump. This was a real provider call through the
+local function; hosted deployment and provider reliability are separate concerns.
+
+Production HTTP smoke and browser walking/collision/responsive checks pass.
+All-world switching and generation UI checks pass. The UI test mocks its API
+response; the Gemini request described above was a separate real provider call.
+See `docs/performance.md` for the software-rendering sample and its resolution
+limitations; no hardware GPU or physical-mobile performance claim is made.

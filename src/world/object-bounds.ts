@@ -15,6 +15,8 @@ function localHalfSize(object: WorldObject): [number, number] {
     case 'entrance': return [2.35, 0.3]
     case 'structure':
       switch (object.variety) {
+        case 'fallen-log': return [1.55, 0.45]
+        case 'stump': return [0.42, 0.42]
         case 'arch': return [1.9, 0.55]
         case 'bench': return [0.9, 0.31]
         case 'cabin': return [1.85, 1.4]

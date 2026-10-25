@@ -6,6 +6,16 @@ import type { WorldObject } from '../world/schema'
 
 const transform = { id: 'fixture', position: [0, 0, 0] as [number, number, number], scale: [1, 1, 1] as [number, number, number], rotation: 0 }
 describe('natural asset geometry budgets and variation', () => {
+  it('varies plant clump shapes deterministically while retaining a small fallback mesh', () => {
+    const plant = { ...transform, type: 'plant' as const, variety: 'flowers' as const, color: '#537c34', accentColor: '#ccb147' }
+    const a = plantGeometry(plant, false, 0), b = plantGeometry(plant, false, 0), c = plantGeometry(plant, false, 1), low = plantGeometry(plant, true, 0)
+    try {
+      expect(a.getAttribute('position').array).toEqual(b.getAttribute('position').array)
+      expect(a.getAttribute('position').array).not.toEqual(c.getAttribute('position').array)
+      expect(low.getIndex()!.count).toBeLessThan(a.getIndex()!.count)
+      expect(a.getIndex()!.count / 3).toBeLessThan(1200)
+    } finally { a.dispose(); b.dispose(); c.dispose(); low.dispose() }
+  })
   it('builds deterministic but distinct tree variants within a bounded mesh budget', () => {
     const tree: Extract<WorldObject, { type: 'tree' }> = { ...transform, type: 'tree', variety: 'maple', trunkColor: '#785638', foliageColor: '#548637' }
     const a = treeGeometry(tree, false, 0), b = treeGeometry(tree, false, 0), c = treeGeometry(tree, false, 1), reduced = treeGeometry(tree, true, 0)

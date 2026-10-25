@@ -1,4 +1,5 @@
-import { BoxGeometry, Color, ConeGeometry, CylinderGeometry, ExtrudeGeometry, Shape, SphereGeometry, Vector3 } from 'three'
+import type { BufferGeometry } from 'three'
+import { BoxGeometry, CircleGeometry, Color, ConeGeometry, CylinderGeometry, ExtrudeGeometry, RingGeometry, Shape, SphereGeometry, Vector3 } from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 import type { WorldObject } from '../world/schema'
 import { branchGeometry, geometryBuilder, randomSource } from './natural-geometry'
@@ -56,6 +57,48 @@ export function artifactGeometry(object: Artifact) {
     block([0, 2.6, 0], [3.15, 0.18, 0.23])
     block([0, 3.18, 0], [2.8, 0.22, 0.5], trim)
     block([0, 2.88, 0], [0.18, 0.6, 0.18])
+  } else if (object.variety === 'fallen-log' || object.variety === 'stump') {
+    const log = object.variety === 'fallen-log'
+    const length = log ? 2.9 : 0.62, bottom = log ? 0.34 : 0.38, top = log ? 0.27 : 0.3
+    const slope = log ? Math.atan((bottom - top) / length) : 0
+    const orient = (g: BufferGeometry, end = 0) => {
+      // The tapered log rests at both ends instead of hovering at its thin end.
+      if (log) g.rotateZ(-Math.PI / 2 - slope).translate(end * Math.cos(slope), 0.31 - end * Math.sin(slope), 0)
+      else g.translate(0, end, 0)
+      return g
+    }
+    // Closed wood ends, with rings on the actual cut planes rather than floating
+    // perpendicular branch stubs. Bark remains one merged, indexed mesh.
+    builder.add(orient(new CylinderGeometry(top, bottom, length, 13), 0).translate(0, log ? 0 : length / 2, 0), body)
+    for (const end of log ? [-1, 1] : [1]) {
+      const radius = (end < 0 ? bottom : top) - 0.012
+      const cut = end * length / (log ? 2 : 1) + end * 0.002
+      const face = new CircleGeometry(radius, 32).rotateX(-Math.PI / 2)
+      // Reverse the left end so its visible face points outward.
+      if (end < 0) face.rotateX(Math.PI)
+      builder.add(orient(face, cut), trim)
+      for (let ring = 1; ring <= 6; ring++) {
+        const r = radius * ring / 7
+        const g = new RingGeometry(r - 0.0035, r + 0.0035, 32).rotateX(-Math.PI / 2)
+        if (end < 0) g.rotateX(Math.PI)
+        builder.add(orient(g, cut + end * 0.001), dark)
+      }
+    }
+    for (let ridge = 0; ridge < 13; ridge++) {
+      const angle = ridge * Math.PI * 2 / 13
+      const lower = bottom * 0.95 + top * 0.05 - 0.012, upper = top * 0.95 + bottom * 0.05 - 0.012
+      const g = branchGeometry(new Vector3(Math.cos(angle) * lower, -length * 0.45, Math.sin(angle) * lower),
+        new Vector3(Math.cos(angle) * upper, length * 0.45, Math.sin(angle) * upper), 0.025, 0.016)
+      builder.add(orient(g).translate(0, log ? 0 : length / 2, 0), ridge % 3 ? body : dark)
+    }
+    // A few subdued moss islands hug the upper bark; no extra meshes or colliders.
+    for (let i = 0; i < (log ? 6 : 3); i++) {
+      const x = log ? -0.95 + i * 0.36 : Math.cos(i * 2.4) * 0.21
+      const z = log ? Math.sin(i * 2.4) * 0.12 : Math.sin(i * 2.4) * 0.21
+      const radius = bottom + (top - bottom) * (x / length + 0.5)
+      const y = log ? 0.31 - x * Math.sin(slope) + Math.sqrt(Math.max(0, radius ** 2 - z ** 2)) : length + 0.008
+      builder.add(new SphereGeometry(0.12, 7, 4).scale(1.3, 0.18, 0.7).translate(x, y, z), '#65754b', 0.85 + i * 0.03)
+    }
   } else if (object.variety === 'bench') {
     for (let slat = 0; slat < 4; slat++) block([0, 0.55, -0.24 + slat * 0.16], [1.8, 0.12, 0.14], trim)
     for (const x of [-0.6, 0.6]) {

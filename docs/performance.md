@@ -229,3 +229,27 @@ The production shell is now about 399 KB (115 KB gzip estimate), CSS is 7.1 KB
 3D chunk warning remains. The previous timing tables describe their recorded
 builds; they are not measurements of the new sidebar. Screenshot generation is
 an offline authoring step, not work performed by a visitor's browser.
+
+
+## Woodland props and plant clump variants (2026-10-25)
+
+Silverwood Grove, Edge 156 SwiftShader at 1440 × 960, DPR 1, using the existing
+2-second warmup and 2-second movement measurement:
+
+| Measurement | Before | Natural detail pass |
+| --- | --- | --- |
+| Objects | 297 | 301 |
+| Adaptive canvas pixels | 649 × 497 | 835 × 497 |
+| Animation-frame cadence | 33.7 FPS | 30.2 FPS |
+| p95 frame interval | 33.4 ms | 41.6 ms |
+| Mean draw calls per rendered frame | 12.4 | 23.5 |
+| Idle overview / standing draws | 0 / 0 | 0 / 0 |
+
+The pixel dimensions differ because fallback timing depends on observed frame
+cost. These are not matched-resolution speed measurements, and neither is a
+hardware benchmark. The structural cost increase is known: four merged props
+and up to three instanced plant shapes per palette instead of one. There is no
+increase to generated object limits or permanent animation loop. Software frame
+rates remain modest; physical-device/hardware GPU performance is unverified.
+Raw reports: `artifacts/natural-detail-performance-before.json` and
+`artifacts/performance-silverwood-grove.json` (ignored diagnostic files).

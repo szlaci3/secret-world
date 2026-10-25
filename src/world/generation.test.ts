@@ -5,6 +5,15 @@ import { createNavigation, isWalkable } from '../controls/navigation'
 import { testBlueprint } from './generation-fixture'
 
 describe('generation compiler', () => {
+  it.each(['fallen-log', 'stump'])('supplies blocking collision and boundary checks for %s', variety => {
+    const plan = { ...testBlueprint(), ground: { size: [48, 48], color: '#708060' },
+      assets: [{ type: 'structure', variety, color: '#635448', accentColor: '#bd9a69' }],
+      placements: [{ asset: 0, position: [0, 0], rotation: 0.6, scale: [1.2, 1, 0.8] }] }
+    const world = compileBlueprint(plan, 'natural-prop')
+    expect(isWalkable({ x: 0, z: 0 }, createNavigation(world))).toBe(false)
+    expect(world.objects[0].collision).toHaveLength(1)
+    expect(() => compileBlueprint({ ...plan, placements: [{ ...plan.placements[0], position: [23.9, 0] }] }, 'overhanging-prop')).toThrow('Object outside the world')
+  })
   it.each([[48, 48], [64, 64], [96, 96], [128, 128], [48, 64]])('accepts a %s by %s world with an authored arrival', (width, depth) => {
     const plan = { ...testBlueprint(), ground: { size: [width, depth], color: '#708060' }, arrival: [0, 10] }
     const world = compileBlueprint(plan, 'variable-size')

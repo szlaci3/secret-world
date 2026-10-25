@@ -27,13 +27,17 @@ content preserved: **Amber Meadow** (24 × 22 m), **Basalt Reach** (26 × 24 m),
 Each card shows the actual world dimensions. All sizes use the same renderer and walking controls.
 
 **Silverwood Grove** is the one additional Gemini-generated example: a snowy
-128 × 128m woodland with 297 objects, including 268 small plant clusters, spruce
-groves, a cabin, and a windmill. It passed the same schema, level-pavement, and
+128 × 128m woodland with 301 objects, including 268 small plant clusters, spruce
+groves, a cabin, a windmill, and four authored fallen-log/stump details. It passed the same schema, level-pavement, and
 walking-connectivity checks and is available beside the meadow.
 
 Terrain uses a bounded 32 × 32 grid: 1,089 vertices and 2,048 triangles (4m spacing at 128m; finer in compact worlds). Object
 counts remain bounded, repeated trees, plants, and paths are instanced, and rendering
 stays on demand. Slow devices automatically use simpler vegetation, no shadows, and a 0.6 pixel ratio. Walking uses the same controls at 3.6 m/s for the larger landscape.
+Plant clumps have three stable shape variants, with uneven stem heights, natural
+lean and subtle color variation. Mossy fallen logs and cut stumps have bark detail
+and growth rings; Silverwood Grove showcases them beside its route. Gemini can
+use these assets within the existing object budgets.
 Pavement stays horizontal on flat terrain; slabs whose rotated footprints cross
 slopes are omitted, including in imported or previously saved worlds. Grass
 openings remain walkable where hill routes have no pavement.

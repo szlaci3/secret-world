@@ -7,11 +7,13 @@ import { preview } from 'vite'
 // Same authored geometry, eye height, heading, FOV and viewport on both builds.
 // Only the walking spawn changes in an imported copy; no runtime debug hooks.
 const baseline = process.argv.includes('--baseline')
+const natural = process.argv.includes('--natural')
+const fixture = natural ? 'silverwood-grove' : 'open-meadow'
 const baselineRef = process.argv.find(arg => arg.startsWith('--baseline-ref='))?.split('=')[1] ?? '14cda4e'
 const world = baseline
-  ? JSON.parse(execFileSync('git', ['show', `${baselineRef}:src/world/open-meadow.json`], { encoding: 'utf8' }))
-  : JSON.parse(await readFile('src/world/open-meadow.json', 'utf8'))
-const views = process.argv.includes('--artifacts') ? [ ['arch', [0, 1.65, 5]], ['cabin', [45, 1.65, 43]], ['pavilion', [-36, 1.65, 24]], ['windmill', [-43, 1.65, -21]], ['beacon', [39, 1.65, -30]], ['pavement', [0, 1.65, 40]] ] : [ ['entrance', [0, 1.65, 40]], ['grove', [-42, 1.65, -14]], ['stone', [-32, 1.65, 5.5]] ]
+  ? JSON.parse(execFileSync('git', ['show', `${baselineRef}:src/world/${fixture}.json`], { encoding: 'utf8' }))
+  : JSON.parse(await readFile(`src/world/${fixture}.json`, 'utf8'))
+const views = natural ? [['natural-log', [-3.8, 0.95, 34.5]], ['natural-stump', [4.1, 0.8, 29]], ['natural-grove', [-26.5, 1.1, 15]]] : process.argv.includes('--artifacts') ? [ ['arch', [0, 1.65, 5]], ['cabin', [45, 1.65, 43]], ['pavilion', [-36, 1.65, 24]], ['windmill', [-43, 1.65, -21]], ['beacon', [39, 1.65, -30]], ['pavement', [0, 1.65, 40]] ] : [ ['entrance', [0, 1.65, 40]], ['grove', [-42, 1.65, -14]], ['stone', [-32, 1.65, 5.5]] ]
 const server = await preview({ build: { outDir: baseline ? 'artifacts/baseline-dist' : 'dist' }, preview: { host: '127.0.0.1', port: 0, open: false } })
 let browser
 try {

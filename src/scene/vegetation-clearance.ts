@@ -13,8 +13,8 @@ export function plantFootprint(plant: Plant): Bounds {
   let bounds = footprintCache.get(plant.variety)
   if (!bounds) {
     bounds = { minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity }
-    for (const lowDetail of [false, true]) {
-      const geometry = plantGeometry(plant, lowDetail)
+    for (const lowDetail of [false, true]) for (const variant of [0, 1, 2]) {
+      const geometry = plantGeometry(plant, lowDetail, variant)
       geometry.computeBoundingBox()
       const box = geometry.boundingBox!
       bounds.minX = Math.min(bounds.minX, box.min.x); bounds.maxX = Math.max(bounds.maxX, box.max.x)

@@ -6,7 +6,7 @@ import { SurfaceMaterial } from './SurfaceMaterial'
 export function Structure({ object, lowDetail = false }: { object: Artifact; lowDetail?: boolean }) {
   const geometry = useMemo(() => artifactGeometry(object), [object])
   useEffect(() => () => geometry.dispose(), [geometry])
-  const wood = object.type === 'entrance' || (object.type === 'structure' && ['bench', 'cabin', 'pavilion', 'windmill'].includes(object.variety))
+  const wood = object.type === 'entrance' || (object.type === 'structure' && ['bench', 'cabin', 'pavilion', 'windmill', 'fallen-log', 'stump'].includes(object.variety))
   return <group>
     <mesh geometry={geometry} castShadow receiveShadow>
       {lowDetail ? <meshStandardMaterial vertexColors roughness={0.94} /> : <SurfaceMaterial vertexColors grain={0.12} finish={wood ? 'wood' : 'stone'} relief={false} />}

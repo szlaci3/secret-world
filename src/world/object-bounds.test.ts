@@ -33,14 +33,14 @@ describe('generated object boundaries', () => {
     const objects: WorldObject[] = [
       ...(['pine', 'maple', 'spruce', 'palm'] as const).map(variety => ({ ...transform, type: 'tree' as const, variety, foliageColor: '#557755', trunkColor: '#665544' })),
       ...(['grass', 'flowers', 'reeds', 'bamboo', 'cactus', 'fern', 'mushrooms'] as const).map(variety => ({ ...transform, type: 'plant' as const, variety, color: '#557755', accentColor: '#ccaaaa' })),
-      ...(['arch', 'bench', 'cabin', 'column', 'pavilion', 'beacon', 'windmill'] as const).map(variety => ({ ...transform, type: 'structure' as const, variety, color: '#998877', accentColor: '#ccaaaa' })),
+      ...(['arch', 'bench', 'cabin', 'column', 'pavilion', 'beacon', 'windmill', 'fallen-log', 'stump'] as const).map(variety => ({ ...transform, type: 'structure' as const, variety, color: '#998877', accentColor: '#ccaaaa' })),
       { ...transform, type: 'entrance', woodColor: '#998877', roofColor: '#665544' },
       { ...transform, type: 'lantern', stoneColor: '#998877', glowColor: '#ccaaaa' },
       { ...transform, type: 'rock', color: '#998877' },
     ]
     for (const object of objects) for (const lowDetail of [false, true]) for (const variant of [0, 1, 2]) {
       const geometry = object.type === 'tree' ? treeGeometry(object, lowDetail, variant)
-        : object.type === 'plant' ? plantGeometry(object, lowDetail)
+        : object.type === 'plant' ? plantGeometry(object, lowDetail, variant)
         : object.type === 'rock' ? rockGeometry(object, variant)
         : artifactGeometry(object as Extract<WorldObject, { type: 'structure' | 'entrance' | 'lantern' }>)
       try {

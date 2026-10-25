@@ -3,7 +3,7 @@ import { artifactGeometry } from './artifact-geometry'
 import type { Artifact } from './artifact-geometry'
 const transform = { id: 'fixture', position: [0, 0, 0] as [number, number, number], scale: [1, 1, 1] as [number, number, number], rotation: 0 }
 const artifacts: Artifact[] = [
-  ...(['arch', 'pavilion', 'cabin', 'beacon', 'windmill', 'column', 'bench'] as const).map(variety => ({ ...transform, type: 'structure' as const, variety, color: '#786447', accentColor: '#6b7665' })),
+  ...(['arch', 'pavilion', 'cabin', 'beacon', 'windmill', 'column', 'bench', 'fallen-log', 'stump'] as const).map(variety => ({ ...transform, type: 'structure' as const, variety, color: '#786447', accentColor: '#6b7665' })),
   { ...transform, type: 'entrance', woodColor: '#786447', roofColor: '#6b7665' },
   { ...transform, type: 'lantern', stoneColor: '#786447', glowColor: '#ffeeaa' },
 ]

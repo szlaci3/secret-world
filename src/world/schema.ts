@@ -30,7 +30,7 @@ export const worldObjectSchema = z.discriminatedUnion('type', [
   z.strictObject({ ...transform, type: z.literal('rock'), color, mossColor: color.optional() }),
   z.strictObject({ ...transform, type: z.literal('tree'), variety: z.enum(['pine', 'maple', 'spruce', 'palm']), foliageColor: color, trunkColor: color }),
   z.strictObject({ ...transform, type: z.literal('plant'), variety: z.enum(['grass', 'flowers', 'reeds', 'bamboo', 'cactus', 'fern', 'mushrooms']), color, accentColor: color }),
-  z.strictObject({ ...transform, type: z.literal('structure'), variety: z.enum(['arch', 'pavilion', 'cabin', 'beacon', 'windmill', 'column', 'bench']), color, accentColor: color }),
+  z.strictObject({ ...transform, type: z.literal('structure'), variety: z.enum(['arch', 'pavilion', 'cabin', 'beacon', 'windmill', 'column', 'bench', 'fallen-log', 'stump']), color, accentColor: color }),
   z.strictObject({ ...transform, type: z.literal('patch'), radii: z.tuple([dimension, dimension]), color }),
   z.strictObject({ ...transform, type: z.literal('lantern'), stoneColor: color, glowColor: color }),
   z.strictObject({ ...transform, type: z.literal('entrance'), woodColor: color, roofColor: color }),

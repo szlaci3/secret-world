@@ -13,7 +13,7 @@ import { parseWorld } from './schema'
 // uses the same validated data boundary that future generated worlds will use.
 export const worldCatalog = [
   { data: meadow, theme: '128 × 128 m · Open landscape', description: 'Follow long meadow trails between a hilltop windmill, quiet lakes, and distant woodland groves.' },
-  { data: silverwood, theme: '128 × 128 m · Frosted woodland', description: 'Wander through blue-green spruce groves, silver grass, and white flowers to a quiet cabin and distant windmill.' },
+  { data: silverwood, theme: '128 × 128 m · Frosted woodland', description: 'Wander through blue-green spruce groves, fallen timber, silver grass, and white flowers to a quiet cabin and distant windmill.' },
   { data: amberMeadow, theme: '24 × 22 m · Flowering meadow', description: 'Explore a sunny meadow of flowering plants, rolling hills, and quiet garden landmarks.' },
   { data: basaltReach, theme: '26 × 24 m · Rocky highlands', description: 'Follow a rugged highland path among dark stone, hardy plants, and distant peaks.' },
   { data: frostlightGrove, theme: '24 × 22 m · Snowy grove', description: 'Wander a frosted grove of pale trees, snow, and a sheltered clearing.' },
