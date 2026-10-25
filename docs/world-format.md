@@ -10,7 +10,7 @@ model loading or generated code execution.
 ## Load a world
 
 1. Leave any active walk with Escape or Tab.
-2. Select **Worlds**. Choose The Open Meadow or Silverwood Grove, the 128 × 128m built-in landscapes. For file/paste imports, expand
+2. Select **Worlds**. Choose any of the nine built-in worlds, from compact gardens to 128 × 128m landscapes. For file/paste imports, expand
    **Open your own world JSON**, then select a `.json` file or paste JSON.
 3. Select **Load world** for file/paste input. Files populate the editor first;
    selecting a file does not replace the world by itself.
@@ -50,7 +50,7 @@ download of URLs from imported data. Keep your source JSON file for imports.
 }
 ```
 
-Current built-in and archived authoring examples (all dimensions in meters):
+Current selectable built-in worlds (all dimensions in meters):
 
 | Fixture | Ground | Objects | Design |
 | --- | --- | --- | --- |
@@ -63,8 +63,9 @@ Current built-in and archived authoring examples (all dimensions in meters):
 | `basalt-reach.json` | 26 × 24 | 70 | Large lake, crescent shore and beacon |
 | `violet-sanctuary.json` | 24 × 22 | 75 | Three pools, arches, columns and secluded pavilion |
 
-Files live under `src/world/`. `maple-courtyard.json` is a 15-object legacy fixture
-with flat ground and no new object kinds, retained to verify backward compatibility.
+| `maple-courtyard.json` | 14 × 12 | 15 | Flat maple courtyard, pond and entrance |
+
+Files live under `src/world/`. Maple Courtyard also verifies backward compatibility.
 
 ## Global rules
 
@@ -79,7 +80,7 @@ with flat ground and no new object kinds, retained to verify backward compatibil
 - Coordinates are meters, Y-up; ground is centered at `[0, 0, 0]`. Position/target/
   spawn components range from -1000 to 1000. Rotation/yaw are radians around Y;
   yaw zero faces negative Z. Object scales are positive X/Y/Z multipliers.
-- Ground width/depth are 0.1–128 m. Generated worlds use exactly 128 × 128 m. Object dimensions (except paths), radii, and scale components
+- Ground width/depth are 0.1–128 m. Generated worlds choose 24–128 m per axis to suit the biome. Object dimensions (except paths), radii, and scale components
   are 0.01–20. Path widths/depths can be up to 128m. The lower bounds prevent numerically degenerate render/collision data.
 - There are at most 512 objects. This is a structural limit, not a frame-rate
   guarantee; complex generated layouts may still render slowly.
@@ -224,7 +225,7 @@ generated layouts because geometric/visual alignment is the author's responsibil
 
 ## Built-in catalog
 
-`src/world/catalog.ts` validates the two selectable 128m fixtures with `parseWorld`
+`src/world/catalog.ts` validates all nine selectable fixtures (14 × 12m through 128 × 128m) with `parseWorld`
 and adds presentation-only theme/description metadata outside the versioned JSON
 contract. The picker sends each selection through the same `loadWorldJson` path
 as imports. The shared renderer, lighting, overview camera, and walking session
@@ -244,17 +245,31 @@ Design the composition before choosing counts: reserve clear routes and negative
 space, place a landmark, then cluster supporting plants and rocks asymmetrically.
 Vary water count/size, route topology, tree density, hill placement, and shelter
 locations between worlds. Keep ponds on flat terrain and footpaths out of water.
-The shipped small fixtures remain authoring examples but are disabled in the picker. The active fixture is `open-meadow.json` (128 × 128m, 337 objects). Catalog tests sample
+The six original compact worlds and Maple Courtyard are available in the picker
+beside The Open Meadow and Silverwood Grove. Their original dimensions and
+content are preserved, including legacy hillside stones that the shared renderer
+omits in favor of unpaved walkable ground. Catalog tests sample
 walkable connectivity and shoreline clearance; schema validity alone does not
 prove good composition, reachability, or visual alignment. The implemented Gemini
 endpoint uses a compact blueprint rather than repeating full object definitions.
-Its compiler adds collisions, expands plant/tree clusters, normalizes steep hills
+Its compiler adds collisions, expands plant/tree clusters, moves path-conflicting
+tree trunks to a nearby verge (or omits them if no clear verge fits), normalizes steep hills
 and flat shores, and checks a connected walking region before admitting the result.
 See the README for configuration, budgets, local storage, and verification scope.
 
 Generation limits and sampling: 512 expanded objects, including at most 64 complex
 objects, four ponds, and 14 reusable asset definitions. Plant/tree cluster radii
-can reach 12m; object anchors and hill centers span the full -64 to +64m extent.
+can reach 12m. Generated ground width/depth independently range 24–128m;
+object anchors (including expanded clusters) and hill centers must fit the chosen
+ground, not a fixed -64 to +64m landscape. Water banks must also fit the boundary.
+The version-1 world contract still accepts the original smaller worlds.
+An optional blueprint `arrival: [x,z]` suggests a composed entry; the compiler
+chooses a nearby safe point in the connected walking region. Omitted arrival
+uses `[0, depth * 0.32]`, preserving compatibility with older blueprints.
+Authored arrivals face toward the average paved-route center (or tree center when
+there is no pavement); legacy arrivals retain yaw zero.
+Blueprints accept 1–100 placement groups; expanded counts and layout, rather than
+an arbitrary minimum group count, control admission.
 The compiler uses a bounded 64-sample grid per axis to find connected exploration
 space; each connection uses exact swept collision. This is a sampled admission
 check, not a proof that every narrow route is reachable. Runtime collision and
@@ -264,3 +279,22 @@ Small plants can use up to 36 instances per authored drift. The current meadow
 has 252 small plant clusters, up from 84; solid/complex instances remain capped
 at 64, including blocking bamboo and cactus. Generation aims for lush small
 ground cover and explicitly avoids pavement on hillsides.
+
+Biome composition guidance: open meadow about 128 × 128m with 10–25 trees,
+woodland about 96 × 96m with 30–50, dense forest about 64 × 64m with 40–60,
+and small garden about 48 × 48m with 5–15. These are flexible instructions, not
+schema enums or count quotas. The request adds focused guidance for the brief;
+Gemini may mix biomes and choose intermediate or rectangular dimensions.
+Forests use interlocking larger tree crowns, close understory and narrow routes,
+including nearby planting at arrival. Canopy overlap is intentional; collisions
+cover trunks. The 64-complex-object cap includes trees, water, rocks, buildings,
+and blocking plants, so a forest reserves most of it for trees. No universal 60%
+open-ground requirement applies. The sampled connected region must still occupy
+at least 25% of ground and 70% of sampled walkable points; this measures traversable
+ground under canopy, not visual canopy openings. Safe arrival requires a one-meter
+clear movement in each cardinal direction. No giant clearing is required.
+
+Generation errors distinguish malformed JSON, invalid blueprint fields, instance
+budgets, out-of-bounds objects, water, and disconnected walking layouts. No automatic
+provider retry is made; validation remains authoritative even if Gemini misses
+its artistic guidelines. See `docs/generation-verification.md` for the live checks.

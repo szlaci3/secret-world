@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createHandler, config } from '../../netlify/functions/create-world'
+import { createHandler, config, biomeGuidance } from '../../netlify/functions/create-world'
 import { testBlueprint } from './generation-fixture'
 
 const request = (body: unknown = { prompt: 'A moonlit glade' }, headers = {}) => new Request('https://world.test/api/create-world', {
@@ -9,6 +9,21 @@ const env = (name: string) => name === 'GEMINI_API_KEY' ? 'test-secret' : undefi
 const success = () => Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(testBlueprint()) }] } }] })
 
 describe('create-world endpoint', () => {
+  it('focuses guidance on the biome while preserving creative dimensions', () => {
+    expect(biomeGuidance('Open Meadow')).toContain('128x128m')
+    expect(biomeGuidance('A misty woodland')).toContain('40 trees')
+    expect(biomeGuidance('Dense forest with a narrow path and soft fog')).toContain('48–56 trees')
+    expect(biomeGuidance('Small garden')).toContain('48x48m')
+  })
+  it('reports invalid fields and layout failures without exposing provider text', async () => {
+    for (const [plan, message] of [[{ ...testBlueprint(), ground: { size: [256, 256], color: '#708060' } }, 'ground.size'],
+      [{ ...testBlueprint(), placements: [{ ...testBlueprint().placements[0], asset: 13 }, ...testBlueprint().placements] }, 'Unknown asset reference']] as const) {
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(plan) }] } }] }))
+      const response = await createHandler(env, fetcher)(request())
+      expect(response.status).toBe(422)
+      expect((await response.json()).error).toContain(message)
+    }
+  })
   it('validates requests before making any paid call', async () => {
     const fetcher = vi.fn()
     const handler = createHandler(env, fetcher)
@@ -30,6 +45,8 @@ describe('create-world endpoint', () => {
     expect(url).not.toContain('test-secret')
     expect(init?.headers).toHaveProperty('x-goog-api-key', 'test-secret')
     expect(JSON.parse(init!.body as string).generationConfig.responseFormat.text.schema).toBeDefined()
+    expect(JSON.parse(init!.body as string).systemInstruction.parts[0].text).toContain('Focused guidance for this brief')
+    expect(JSON.parse(init!.body as string).generationConfig.responseFormat.text.schema.properties.placements.items.properties.scale).toMatchObject({ minItems: 3, maxItems: 3 })
     expect(config.rateLimit.windowLimit).toBe(3)
   })
   it('handles missing configuration, quota, upstream failure, malformed and truncated output without retries', async () => {

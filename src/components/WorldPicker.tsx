@@ -71,7 +71,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
       <div><p className="eyebrow">Find your own path</p><h2 id="world-picker-title">Choose a world</h2></div>
       {narrow && <button type="button" className="quiet-button" onClick={() => dialog.current?.close()}>Close</button>}
     </div>
-    <p className="picker-note">Room to roam. Worlds span 128 × 128 meters.</p>
+    <p className="picker-note">Explore compact gardens and wide landscapes. Sizes are shown below.</p>
     {creator}
     <div className="world-examples" aria-label="Worlds">
       {worldCatalog.map(({ world, theme, description }, index) => (

@@ -39,7 +39,7 @@ export async function checkWorlds(page) {
   const invalid = [
     ['{broken', /not valid JSON/],
     [JSON.stringify({ ...garden, schemaVersion: 2 }), /Only schema version 1/],
-    [JSON.stringify({ ...garden, walking: { ...garden.walking, spawn: [-25, 1.65, -5] } }), /walking.spawn/],
+    [JSON.stringify({ ...garden, walking: { ...garden.walking, spawn: [128, 1.65, -5] } }), /walking.spawn/],
     [JSON.stringify({ ...garden, script: 'untrusted code' }), /Unrecognized key/],
   ]
   for (const [text, expected] of invalid) {
@@ -70,7 +70,7 @@ export async function checkWorlds(page) {
   await page.waitForTimeout(150)
   assert(!spawn.equals(await page.locator('.scene canvas').screenshot()), 'An imported world must be immediately walkable')
   await leave(page)
-  assert(await sidebar.locator('summary').evaluate((element) => element === document.activeElement), 'Imported worlds return focus to import controls')
+  assert(await sidebar.getByRole('button', { name: courtyard.name, exact: true }).evaluate((element) => element === document.activeElement), 'An exact built-in import returns focus to its catalog card')
   await draft.fill(JSON.stringify({ ...courtyard, name: 'Courtyard from JSON' }))
   await load.click()
   await loaded('Courtyard from JSON')
@@ -80,7 +80,7 @@ export async function checkWorlds(page) {
   await load.click()
   assert.equal(await page.locator('h1').textContent(), 'Courtyard from JSON')
 
-  for (const filename of ['open-meadow', 'silverwood-grove', 'open-meadow']) {
+  for (const filename of ['open-meadow', 'silverwood-grove', 'amber-meadow', 'basalt-reach', 'frostlight-grove', 'garden', 'maple-courtyard', 'sandstone-oasis', 'violet-sanctuary', 'open-meadow']) {
     const fixture = JSON.parse(await readFile(`src/world/${filename}.json`, 'utf8'))
     const card = sidebar.getByRole('button', { name: fixture.name, exact: true })
     await card.click()

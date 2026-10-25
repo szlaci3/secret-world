@@ -10,6 +10,8 @@ const server = await createServer({ server: { middlewareMode: true } })
 try {
   const { createHandler } = await server.ssrLoadModule('/netlify/functions/create-world.ts')
   const { compileBlueprint } = await server.ssrLoadModule('/src/world/generation.ts')
+  const prompt = process.argv[3] || 'A moonlit violet woodland with a quiet pool, ancient arches and a winding path. Gentle hills behind the trees.'
+  const slug = prompt.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '')
   const started = Date.now()
   const handler = createHandler(name => process.env[name] || env[name], async (...args) => {
     const response = await fetch(...args)
@@ -23,6 +25,7 @@ try {
       if (text) {
         await mkdir('artifacts', { recursive: true })
         await writeFile('artifacts/generated-blueprint.json', text)
+        await writeFile(`artifacts/blueprint-${slug}.json`, text)
         try { compileBlueprint(JSON.parse(text), 'diagnostic') }
         catch (error) { console.log('Layout validation:', error.message.slice(0, 2000)) }
       }
@@ -31,13 +34,14 @@ try {
   })
   const response = await handler(new Request('http://localhost/api/create-world', {
     method: 'POST', headers: { 'Content-Type': 'application/json', origin: 'http://localhost' },
-    body: JSON.stringify({ prompt: process.argv[3] || 'A moonlit violet woodland with a quiet pool, ancient arches and a winding path. Gentle hills behind the trees.' }),
+    body: JSON.stringify({ prompt }),
   }))
   const data = await response.json()
   console.log(JSON.stringify({ status: response.status, seconds: (Date.now() - started) / 1000,
-    name: data.world?.name, objects: data.world?.objects.length, size: data.world?.ground.size, error: data.error }))
+    name: data.world?.name, objects: data.world?.objects.length, trees: data.world?.objects.filter(o => o.type === 'tree').length, size: data.world?.ground.size, error: data.error }))
   assert.equal(response.status, 200, 'Live generation failed; see the safe error above.')
   await mkdir('artifacts', { recursive: true })
   await writeFile('artifacts/generated-world.json', JSON.stringify(data.world, null, 2))
+  await writeFile(`artifacts/generated-${slug}.json`, JSON.stringify(data.world, null, 2))
   if (data.world.ground.size.every(size => size === 128)) await writeFile('artifacts/generated-large-world.json', JSON.stringify(data.world, null, 2))
 } finally { await server.close() }

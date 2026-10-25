@@ -10,7 +10,8 @@ import { isLevelPath } from './paths'
 const assets = worldObjectSchema.options.map((schema) => (schema as z.ZodObject).omit({ id: true, position: true, rotation: true, scale: true, collision: true }))
 export const blueprintSchema = z.strictObject({
   name: z.string().trim().min(1).max(80),
-  ground: worldSchema.shape.ground.extend({ size: z.tuple([z.literal(WORLD_SIZE), z.literal(WORLD_SIZE)]), hills: z.array(z.strictObject({
+  arrival: z.tuple([z.number().min(-64).max(64), z.number().min(-64).max(64)]).optional(),
+  ground: worldSchema.shape.ground.extend({ size: z.tuple([z.number().min(24).max(WORLD_SIZE), z.number().min(24).max(WORLD_SIZE)]), hills: z.array(z.strictObject({
     center: z.tuple([z.number().min(-64).max(64), z.number().min(-64).max(64)]),
     radius: z.number().min(2).max(32), height: z.number().min(0).max(6),
   })).max(8).optional() }),
@@ -23,7 +24,7 @@ export const blueprintSchema = z.strictObject({
     scale: z.tuple([z.number().min(0.3).max(2), z.number().min(0.3).max(2), z.number().min(0.3).max(2)]),
     count: z.number().int().min(1).max(36).optional().describe('For plants use 24–36 instances per drift; for trees use 3–12 per grove; other assets use 1.'),
     spread: z.number().min(0).max(12).optional().describe('Radius in meters of a plant/tree cluster. Use 5–12 for groves across the landscape, 0 for single objects.'),
-  })).min(12).max(100),
+  })).min(1).max(100),
 })
 
 function collisions(object: WorldObject): WorldObject['collision'] {
@@ -52,6 +53,9 @@ export function compileBlueprint(input: unknown, id: string) {
   plan.environment.ambientIntensity = Math.max(0.75, plan.environment.ambientIntensity)
   plan.environment.sunlight.intensity = Math.max(1.4, plan.environment.sunlight.intensity)
   const [width, depth] = plan.ground.size
+  if (plan.ground.hills?.some(h => Math.abs(h.center[0]) > width / 2 || Math.abs(h.center[1]) > depth / 2)) {
+    throw new Error('Hill center outside the world.')
+  }
   const placements = plan.placements.flatMap(placement => {
     const asset = plan.assets[placement.asset]
     const count = placement.count ?? 1
@@ -86,6 +90,35 @@ export function compileBlueprint(input: unknown, id: string) {
   // Clip soft planting and tree groves around authored water/structure footprints.
   const solidNavigation = createNavigation({ ground: plan.ground, objects: objects.filter(o => ['pond', 'structure', 'entrance', 'rock'].includes(o.type)) })
   objects = objects.filter(object => !['plant', 'tree'].includes(object.type) || isWalkable({ x: object.position[0], z: object.position[2] }, solidNavigation))
+  const walkingRadius = 0.28
+  // Preserve narrow paved routes below overlapping crowns. Gemini may center
+  // a grove on a route: move only conflicting trunks to its nearest verge.
+  const paths = objects.filter((o): o is Extract<WorldObject, { type: 'path' }> => o.type === 'path')
+  const routeOverlap = (tree: WorldObject, path: typeof paths[number]) => {
+    const cos = Math.cos(path.rotation), sin = Math.sin(path.rotation)
+    const dx = tree.position[0] - path.position[0], dz = tree.position[2] - path.position[2]
+    const x = cos * dx - sin * dz, z = sin * dx + cos * dz
+    // Trunk plus player clearance; overhead foliage intentionally does not block.
+    const radius = 0.32 * Math.max(tree.scale[0], tree.scale[2]) + walkingRadius
+    const halfX = path.size[0] * path.scale[0] / 2 + radius
+    const halfZ = path.size[1] * path.scale[2] / 2 + radius
+    return { x, z, halfX, halfZ, cos, sin, overlaps: Math.abs(x) < halfX && Math.abs(z) < halfZ }
+  }
+  objects = objects.filter(object => {
+    if (object.type !== 'tree') return true
+    for (let pass = 0; pass < 8; pass++) {
+      const path = paths.find(path => routeOverlap(object, path).overlaps)
+      if (!path) return true
+      const { x, z, halfX, halfZ, cos, sin } = routeOverlap(object, path)
+      const newX = halfX - Math.abs(x) <= halfZ - Math.abs(z) ? (x < 0 ? -1 : 1) * (halfX + 0.02) : x
+      const newZ = newX === x ? (z < 0 ? -1 : 1) * (halfZ + 0.02) : z
+      object.position = [path.position[0] + cos * newX + sin * newZ, 0, path.position[2] - sin * newX + cos * newZ]
+      if (Math.abs(object.position[0]) > width / 2 - 1 || Math.abs(object.position[2]) > depth / 2 - 1
+        || !isWalkable({ x: object.position[0], z: object.position[2] }, solidNavigation)) return false
+    }
+    // Intersecting paths can leave no stable verge; omit rather than block them.
+    return !paths.some(path => routeOverlap(object, path).overlaps)
+  })
   if (objects.filter(o => !['plant', 'path', 'patch'].includes(o.type) || !!o.collision?.length).length > MAX_COMPLEX_OBJECTS) throw new Error('Too many complex objects.')
   if (objects.filter(o => o.type === 'pond').length > 4) throw new Error('Too many water features.')
   const walking = { spawn: [0, 1.65, 0] as [number, number, number], yaw: 0, speed: 3.6, fov: 65, lookSensitivity: 0.002, radius: 0.28 }
@@ -123,10 +156,20 @@ export function compileBlueprint(input: unknown, id: string) {
       const moved = moveWithinGarden(p, { x: dx, z: dz }, navigation)
       return Math.hypot(moved.x - p.x - dx, moved.z - p.z - dz) < 0.001
     }))
-  candidates.sort((a, b) => Math.hypot(a.x, a.z - depth * 0.32) - Math.hypot(b.x, b.z - depth * 0.32))
+  const [arrivalX, arrivalZ] = plan.arrival ?? [0, depth * 0.32]
+  if (Math.abs(arrivalX) > width / 2 || Math.abs(arrivalZ) > depth / 2) throw new Error('No clear arrival space: arrival outside the world.')
+  candidates.sort((a, b) => Math.hypot(a.x - arrivalX, a.z - arrivalZ) - Math.hypot(b.x - arrivalX, b.z - arrivalZ))
   const spawn = candidates[0]
   if (!spawn) throw new Error('No clear arrival space.')
   walking.spawn = [spawn.x, 1.65, spawn.z]
+  if (plan.arrival) {
+    // An authored arrival may be on any edge. Face into the composed route
+    // rather than always looking north, which can face out of a forest.
+    const focus = paths.length ? paths : objects.filter(o => o.type === 'tree')
+    const targetX = focus.length ? focus.reduce((sum, o) => sum + o.position[0], 0) / focus.length : 0
+    const targetZ = focus.length ? focus.reduce((sum, o) => sum + o.position[2], 0) / focus.length : 0
+    if (Math.hypot(spawn.x - targetX, spawn.z - targetZ) > 0.5) walking.yaw = Math.atan2(spawn.x - targetX, spawn.z - targetZ)
+  }
   // Move the sun away from the origin so its shadow frustum covers a large land.
   const sunlight = plan.environment.sunlight.position
   const sunDistance = Math.hypot(...sunlight)

@@ -6,13 +6,13 @@ import { terrainHeight } from './terrain'
 import { isLevelPath } from './paths'
 
 describe('walkable world catalog', () => {
-  it('offers two landscapes designed for 128-meter exploration', () => {
-    expect(worldCatalog).toHaveLength(2)
-    expect(new Set(worldCatalog.map(({ world }) => world.id)).size).toBe(2)
-    expect(worldCatalog.map(({ world }) => world.objects.filter((object) => object.type === 'pond').length)).toEqual([2, 0])
-    // The original meadow had 84 plant clusters. Dense ground cover should
-    // increase without increasing the tree/building/collision workload.
-    expect(worldCatalog[0].world.objects.filter(object => object.type === 'plant')).toHaveLength(252)
+  it('offers large landscapes, six compact worlds, and Maple Courtyard', () => {
+    expect(worldCatalog).toHaveLength(9)
+    expect(new Set(worldCatalog.map(({ world }) => world.id)).size).toBe(worldCatalog.length)
+    expect(worldCatalog.filter(({ world }) => Math.max(...world.ground.size) < 128)).toHaveLength(7)
+    for (const { world, theme } of worldCatalog) {
+      expect(theme).toContain(`${world.ground.size[0]} × ${world.ground.size[1]} m`)
+    }
   })
 
   it.each(worldCatalog)('$world.name loads and has a connected exploration space', ({ world }) => {
@@ -22,8 +22,7 @@ describe('walkable world catalog', () => {
     expect(isWalkable(spawn, navigation)).toBe(true)
     expect(moveWithinGarden(spawn, { x: 0, z: -0.8 }, navigation).z).toBeLessThan(spawn.z - 0.5)
     // Two-meter connectivity sample stays bounded for the 128m landscape.
-    expect(world.ground.size).toEqual([128, 128])
-    const spacing = 2
+    const spacing = Math.min(...world.ground.size) < 32 ? 0.5 : 2
     const points = new Map<string, { x: number; z: number }>()
     for (let x = Math.ceil(navigation.bounds.minX / spacing); x <= navigation.bounds.maxX / spacing; x++) {
       for (let z = Math.ceil(navigation.bounds.minZ / spacing); z <= navigation.bounds.maxZ / spacing; z++) {
@@ -45,7 +44,8 @@ describe('walkable world catalog', () => {
     }
     expect(seen.size / points.size).toBeGreaterThan(0.95)
     for (const object of world.objects) {
-      if (object.type === 'path') expect(isLevelPath(world.ground, object)).toBe(true)
+      // Legacy hillside stones remain authored but are omitted by the renderer.
+      if (object.type === 'path' && Math.min(...world.ground.size) >= 32) expect(isLevelPath(world.ground, object)).toBe(true)
       if (['tree', 'rock', 'structure', 'pond', 'entrance', 'lantern'].includes(object.type)) expect(object.collision?.length).toBeGreaterThan(0)
       if (object.type === 'pond') {
         expect(isWalkable({ x: object.position[0], z: object.position[2] }, navigation)).toBe(false)

@@ -5,6 +5,40 @@ import { createNavigation, isWalkable } from '../controls/navigation'
 import { testBlueprint } from './generation-fixture'
 
 describe('generation compiler', () => {
+  it.each([[48, 48], [64, 64], [96, 96], [128, 128], [48, 64]])('accepts a %s by %s world with an authored arrival', (width, depth) => {
+    const plan = { ...testBlueprint(), ground: { size: [width, depth], color: '#708060' }, arrival: [0, 10] }
+    const world = compileBlueprint(plan, 'variable-size')
+    expect(world.ground.size).toEqual([width, depth])
+    expect(Math.hypot(world.walking!.spawn[0], world.walking!.spawn[2] - 10)).toBeLessThanOrEqual(Math.max(width, depth) / 64)
+    expect(isWalkable({ x: 0, z: 10 }, createNavigation(world))).toBe(true)
+    expect(() => compileBlueprint({ ...plan, arrival: [width, 0] }, 'invalid-arrival')).toThrow()
+    expect(() => compileBlueprint({ ...plan, ground: { ...plan.ground, hills: [{ center: [width, 0], radius: 4, height: 1 }] } }, 'invalid-hill')).toThrow()
+    expect(() => compileBlueprint({ ...plan, placements: [{ ...plan.placements[0], position: [width / 2 - 1, 0], count: 8, spread: 5 }, ...plan.placements] }, 'invalid-grove')).toThrow('outside the world')
+  })
+  it('allows overlapping forest crowns within the unchanged complex-object budget', () => {
+    const tree = { type: 'tree', variety: 'spruce', foliageColor: '#557755', trunkColor: '#665544' }
+    const plan = { ...testBlueprint(), ground: { size: [64, 64], color: '#708060' }, assets: [tree],
+      placements: Array.from({ length: 12 }, (_, i) => ({ asset: 0, position: [-12 + (i % 4) * 8, -10 + Math.floor(i / 4) * 8], rotation: i / 3, scale: [1.8, 1.8, 1.8], count: 4, spread: 2.5 })) }
+    const forest = compileBlueprint(plan, 'forest')
+    expect(forest.objects.filter(o => o.type === 'tree')).toHaveLength(48)
+    expect(() => compileBlueprint({ ...plan, placements: plan.placements.map(p => ({ ...p, count: 6 })) }, 'too-many-trees')).toThrow('Too many complex')
+  })
+  it.each([0, 0.6, Math.PI / 2])('keeps trunks off a narrow route rotated %s radians', (angle) => {
+    const plan = { ...testBlueprint(), ground: { size: [64, 64], color: '#708060' },
+      assets: [{ type: 'tree', variety: 'maple', foliageColor: '#557755', trunkColor: '#665544' }, { type: 'path', size: [1.5, 30], color: '#999988' }],
+      placements: [{ asset: 0, position: [0, 0], rotation: 0, scale: [1.8, 1.8, 1.8], count: 8, spread: 5 },
+        { asset: 1, position: [0, 0], rotation: angle, scale: [1, 1, 1] }], arrival: [0, 10] }
+    const world = compileBlueprint(plan, 'clear-route'), navigation = createNavigation(world)
+    expect(world.objects.filter(o => o.type === 'tree')).toHaveLength(8)
+    for (let z = -14; z <= 14; z += 0.5) expect(isWalkable({ x: Math.sin(angle) * z, z: Math.cos(angle) * z }, navigation)).toBe(true)
+    expect(world.objects.some(o => o.type === 'tree' && Math.abs(o.position[0]) < 2)).toBe(true)
+  })
+  it('faces an authored southern arrival into the route and keeps legacy arrival orientation', () => {
+    const plan = { ...testBlueprint(), assets: [{ type: 'path', size: [1.5, 30], color: '#999988' }],
+      placements: [{ asset: 0, position: [0, 0], rotation: 0, scale: [1, 1, 1] }], arrival: [0, -20] }
+    expect(Math.abs(compileBlueprint(plan, 'south-arrival').walking!.yaw)).toBeCloseTo(Math.PI)
+    expect(compileBlueprint(testBlueprint(), 'legacy-arrival').walking!.yaw).toBe(0)
+  })
   it('supports dense small plants while removing hillside pavement', () => {
     const plan = testBlueprint()
     const dense = { ...plan, assets: [...plan.assets, { type: 'path', size: [3, 10], color: '#aabbcc' }],
@@ -54,7 +88,7 @@ describe('generation compiler', () => {
   it('rejects unknown assets, oversized worlds and unsupported models; reserves flat shores', () => {
     const invalidReference = testBlueprint(); invalidReference.placements[0].asset = 13
     expect(() => compileBlueprint(invalidReference, 'test')).toThrow('Unknown asset')
-    const oversized = testBlueprint(); oversized.ground.size = [100, 100]
+    const oversized = testBlueprint(); oversized.ground.size = [129, 100]
     expect(() => compileBlueprint(oversized, 'test')).toThrow()
     expect(() => compileBlueprint({ ...testBlueprint(), url: 'https://example.com/model.glb' }, 'test')).toThrow()
     const hilly = testBlueprint()
