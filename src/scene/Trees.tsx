@@ -9,11 +9,13 @@ export function treeGeometry(tree: Tree, lowDetail = false, variant = 0) {
   const random = randomSource(731 + variant * 137), builder = geometryBuilder()
   const palm = tree.variety === 'palm', spruce = tree.variety === 'spruce', pine = tree.variety === 'pine'
   const trunk = [new Vector3(0, 0, 0), new Vector3(0.06, 1.15, -0.03), new Vector3(-0.12, 2.3, 0.08), new Vector3(0.1, 3.6, 0)]
-  for (let i = 0; i < 3; i++) builder.add(branchGeometry(trunk[i], trunk[i + 1], 0.19 - i * 0.05, 0.14 - i * 0.055), tree.trunkColor, 0.85 + i * 0.05)
-  // Buttress roots ground the trunk without expanding the collision footprint.
-  for (let i = 0; i < 5; i++) {
-    const a = i * 2.4
-    builder.add(branchGeometry(new Vector3(Math.cos(a) * 0.3, 0.015, Math.sin(a) * 0.3), new Vector3(0, 0.48, 0), 0.07, 0.09), tree.trunkColor)
+  for (let i = 0; i < 3; i++) {
+    // Angled ends cannot meet flush at a bend. Extend both ends inside
+    // adjacent sections; at the base this also hides the cut below ground.
+    const direction = trunk[i + 1].clone().sub(trunk[i]).normalize()
+    const start = trunk[i].clone().addScaledVector(direction, -0.06)
+    const end = trunk[i + 1].clone().addScaledVector(direction, 0.06)
+    builder.add(branchGeometry(start, end, 0.19 - i * 0.05, 0.14 - i * 0.055), tree.trunkColor, 0.85 + i * 0.05)
   }
   const fullBranches = palm ? 9 : spruce ? 18 : 10
   const branches = lowDetail ? Math.ceil(fullBranches * 0.6) : fullBranches
