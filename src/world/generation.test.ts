@@ -39,6 +39,16 @@ describe('generation compiler', () => {
     expect(Math.abs(compileBlueprint(plan, 'south-arrival').walking!.yaw)).toBeCloseTo(Math.PI)
     expect(compileBlueprint(testBlueprint(), 'legacy-arrival').walking!.yaw).toBe(0)
   })
+  it('rejects overhanging paths even when their anchors are inside the terrain', () => {
+    const plan = { ...testBlueprint(), ground: { size: [24, 32], color: '#708060' },
+      assets: [{ type: 'path', size: [2, 12], color: '#999988' }],
+      placements: [{ asset: 0, position: [0, 12], rotation: 0, scale: [1, 1, 1] }] }
+    expect(() => compileBlueprint(plan, 'overhanging-route')).toThrow('Object outside the world: object-0 (path)')
+    expect(() => compileBlueprint({ ...plan, placements: [{ ...plan.placements[0], position: [0, 0], scale: [1, 1, 3 / 2] }] }, 'safe-route')).not.toThrow()
+    const grove = { ...plan, assets: [{ type: 'tree', variety: 'maple', foliageColor: '#557755', trunkColor: '#665544' }],
+      placements: [{ asset: 0, position: [6.5, 0], rotation: 0, scale: [1, 1, 1], count: 4, spread: 4 }] }
+    expect(() => compileBlueprint(grove, 'overhanging-canopy')).toThrow('Object outside the world')
+  })
   it('supports dense small plants while removing hillside pavement', () => {
     const plan = testBlueprint()
     const dense = { ...plan, assets: [...plan.assets, { type: 'path', size: [3, 10], color: '#aabbcc' }],
@@ -102,7 +112,7 @@ describe('generation compiler', () => {
     expect(() => compileBlueprint(flooded, 'test')).toThrow()
     const divided = { ...plan, assets: [...plan.assets, { type: 'rock', color: '#777777' }], placements: [
       ...plan.placements.filter(p => p.asset === 0),
-      ...Array.from({ length: 49 }, (_, i) => ({ asset: 3, position: [-63 + i * 2.625, 0], rotation: 0, scale: [2, 2, 2] })),
+      ...Array.from({ length: 49 }, (_, i) => ({ asset: 3, position: [-62.3 + i * (124.6 / 48), 0], rotation: 0, scale: [2, 2, 2] })),
     ] }
     expect(() => compileBlueprint(divided, 'test')).toThrow('connected walking space')
   })

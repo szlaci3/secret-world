@@ -17,7 +17,9 @@ describe('create-world endpoint', () => {
   })
   it('reports invalid fields and layout failures without exposing provider text', async () => {
     for (const [plan, message] of [[{ ...testBlueprint(), ground: { size: [256, 256], color: '#708060' } }, 'ground.size'],
-      [{ ...testBlueprint(), placements: [{ ...testBlueprint().placements[0], asset: 13 }, ...testBlueprint().placements] }, 'Unknown asset reference']] as const) {
+      [{ ...testBlueprint(), placements: [{ ...testBlueprint().placements[0], asset: 13 }, ...testBlueprint().placements] }, 'Unknown asset reference'],
+      [{ ...testBlueprint(), assets: [{ type: 'path', size: [2, 20], color: '#999988' }],
+        placements: [{ asset: 0, position: [0, 60], rotation: 0, scale: [1, 1, 1] }] }, 'Object outside the world: object-0 (path)']] as const) {
       const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(plan) }] } }] }))
       const response = await createHandler(env, fetcher)(request())
       expect(response.status).toBe(422)

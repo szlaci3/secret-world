@@ -261,7 +261,12 @@ Generation limits and sampling: 512 expanded objects, including at most 64 compl
 objects, four ponds, and 14 reusable asset definitions. Plant/tree cluster radii
 can reach 12m. Generated ground width/depth independently range 24–128m;
 object anchors (including expanded clusters) and hill centers must fit the chosen
-ground, not a fixed -64 to +64m landscape. Water banks must also fit the boundary.
+ground, not a fixed -64 to +64m landscape. The compiler checks complete scaled/rotated visible footprints, including path
+corners, water banks, patches, roofs, sails and conservative canopy/plant envelopes.
+Tree clearance moves are checked again. An overhanging object rejects generation
+with its ID, type and terrain size; checking the center alone is insufficient.
+These stricter placement checks apply to new Gemini blueprints and leave the
+version-1 import contract, built-ins and existing saved worlds unchanged.
 The version-1 world contract still accepts the original smaller worlds.
 An optional blueprint `arrival: [x,z]` suggests a composed entry; the compiler
 chooses a nearby safe point in the connected walking region. Omitted arrival

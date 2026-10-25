@@ -98,7 +98,9 @@ Gemini creates a compact asset/placement blueprint, validated with the existing
 Zod dependency. The compiler expands authored vegetation clusters, supplies solid
 and water colliders, reduces over-steep hills, reserves flat pond shores, clips
 vegetation out of water/structures, clears tree trunks from paved routes, and finds a safe spawn in a connected walking
-region. An optional blueprint arrival point lets Gemini compose the entry beside
+region. Full scaled/rotated object footprints must fit inside the terrain, including
+path ends, roof overhangs and tree canopies; an overhang rejects the design with
+a specific validation error. An optional blueprint arrival point lets Gemini compose the entry beside
 nearby vegetation; older blueprints retain the original arrival default. Lighting
 has a visibility floor. Generated dimensions may vary from 24–128m per axis;
 imports and built-in fixtures retain the broader version-1 size contract.

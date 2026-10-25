@@ -49,7 +49,11 @@ Asset types: tree (pine/maple/spruce/palm); plant (grass/flowers/reeds/bamboo/ca
 structure (arch/pavilion/cabin/beacon/windmill/column/bench); rock; pond; path; patch; lantern; entrance.
 Trees are 3–4m tall and 2–3m wide; plants 1–1.5m wide (bamboo 3m tall); cabin 3x2.5m;
 pavilion 3x3m; arch 3.8m wide; beacon/windmill 5m tall. Scale 0.3–2; prefer 0.7–1.3 except forest trees which benefit from 1.5–2.
-Keep objects within ground with margins for their full footprints. No overlapping buildings or trees in water.
+Keep objects within ground with margins for their full visible footprints, not only centers or colliders.
+For a rectangular path, multiply size by X/Z scale, rotate all four corners, then ensure EVERY corner fits.
+Leave room for roof overhangs, windmill sails, pond banks, plant spread and tree crowns; cluster spread adds to each instance's reach.
+The compiler rejects any object whose full scaled/rotated footprint crosses the chosen terrain boundary.
+No overlapping buildings or trees in water.
 Pond radii are meters; banks extend 1.15x. Keep ponds entirely outside every hill radius with extra bank clearance.
 Hills radius 8–32m, height 0–6m and height/radius <=0.4; separate them. Keep structures on flat ground.
 Paths use rectangular size [width,depth]; align adjacent segments into a route, avoid water, offset patches to avoid z-fighting.

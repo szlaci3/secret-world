@@ -5,6 +5,7 @@ import { createNavigation, isWalkable, moveWithinGarden } from '../controls/navi
 import { terrainHeight } from './terrain'
 import { WORLD_SIZE, MAX_GENERATED_OBJECTS, MAX_COMPLEX_OBJECTS, EXPLORATION_GRID_WIDTH } from './limits'
 import { isLevelPath } from './paths'
+import { objectFitsGround } from './object-bounds'
 
 // Reuse the renderer's material/geometry contract; instances keep AI output compact.
 const assets = worldObjectSchema.options.map((schema) => (schema as z.ZodObject).omit({ id: true, position: true, rotation: true, scale: true, collision: true }))
@@ -73,12 +74,11 @@ export function compileBlueprint(input: unknown, id: string) {
     const asset = plan.assets[placement.asset]
     if (!asset) throw new Error('Unknown asset reference.')
     const [x, z] = placement.position
-    if (Math.abs(x) > width / 2 - 1 || Math.abs(z) > depth / 2 - 1) throw new Error('Object outside the world.')
     const object = { ...asset, id: `object-${index}`, position: [x, 0, z], rotation: placement.rotation, scale: placement.scale } as WorldObject
     object.collision = collisions(object)
+    if (!objectFitsGround(object, plan.ground.size)) throw new Error(`Object outside the world: ${object.id} (${object.type}) exceeds the ${width} × ${depth}m terrain after size, scale and rotation.`)
     if (object.type === 'pond') {
       const reach = Math.max(object.radii[0] * object.scale[0], object.radii[1] * object.scale[2]) * 1.15
-      if (Math.abs(x) + reach > width / 2 || Math.abs(z) + reach > depth / 2) throw new Error('Water extends beyond the shore.')
       // Water is level geometry: reserve a flat shore by dropping intersecting
       // hills rather than spending a second provider request to repair terrain.
       plan.ground.hills = plan.ground.hills?.filter(h => Math.hypot(h.center[0] - x, h.center[1] - z) >= h.radius + reach)
@@ -113,7 +113,7 @@ export function compileBlueprint(input: unknown, id: string) {
       const newX = halfX - Math.abs(x) <= halfZ - Math.abs(z) ? (x < 0 ? -1 : 1) * (halfX + 0.02) : x
       const newZ = newX === x ? (z < 0 ? -1 : 1) * (halfZ + 0.02) : z
       object.position = [path.position[0] + cos * newX + sin * newZ, 0, path.position[2] - sin * newX + cos * newZ]
-      if (Math.abs(object.position[0]) > width / 2 - 1 || Math.abs(object.position[2]) > depth / 2 - 1
+      if (!objectFitsGround(object, plan.ground.size)
         || !isWalkable({ x: object.position[0], z: object.position[2] }, solidNavigation)) return false
     }
     // Intersecting paths can leave no stable verge; omit rather than block them.
