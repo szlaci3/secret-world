@@ -1,0 +1,6079 @@
+{
+  "schemaVersion": 1,
+  "id": "silverwood-grove",
+  "name": "Silverwood Grove",
+  "ground": {
+    "size": [
+      128,
+      128
+    ],
+    "color": "#e0e8f0",
+    "hills": [
+      {
+        "center": [
+          -40,
+          -40
+        ],
+        "radius": 20,
+        "height": 4
+      },
+      {
+        "center": [
+          45,
+          30
+        ],
+        "radius": 25,
+        "height": 5
+      },
+      {
+        "center": [
+          0,
+          50
+        ],
+        "radius": 15,
+        "height": 3
+      }
+    ]
+  },
+  "camera": {
+    "position": [
+      108.8,
+      102.4,
+      121.6
+    ],
+    "target": [
+      0,
+      0,
+      0
+    ],
+    "fov": 45
+  },
+  "environment": {
+    "background": "#b0c4de",
+    "ambientIntensity": 0.85,
+    "sunlight": {
+      "position": [
+        23.369495786887082,
+        116.84747893443541,
+        46.738991573774165
+      ],
+      "color": "#d0e0ff",
+      "intensity": 1.6
+    },
+    "skyLight": {
+      "skyColor": "#add8e6",
+      "groundColor": "#f0f8ff",
+      "intensity": 1.2
+    },
+    "fog": {
+      "color": "#a0b0c0",
+      "near": 10,
+      "far": 100
+    }
+  },
+  "walking": {
+    "spawn": [
+      0,
+      1.65,
+      42
+    ],
+    "yaw": 0,
+    "speed": 3.6,
+    "fov": 65,
+    "lookSensitivity": 0.002,
+    "radius": 0.28
+  },
+  "objects": [
+    {
+      "id": "object-0",
+      "position": [
+        0,
+        0,
+        40
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            -1.2,
+            0
+          ],
+          "radii": [
+            0.3,
+            0.3
+          ]
+        },
+        {
+          "kind": "ellipse",
+          "center": [
+            1.2,
+            0
+          ],
+          "radii": [
+            0.3,
+            0.3
+          ]
+        }
+      ],
+      "type": "entrance",
+      "woodColor": "#554433",
+      "roofColor": "#ffffff"
+    },
+    {
+      "id": "object-1",
+      "position": [
+        0,
+        0,
+        20
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "path",
+      "size": [
+        4,
+        20
+      ],
+      "color": "#c0c0c0"
+    },
+    {
+      "id": "object-2",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": 0,
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "collision": [
+        {
+          "kind": "box",
+          "center": [
+            0,
+            0
+          ],
+          "size": [
+            3,
+            2.5
+          ]
+        }
+      ],
+      "type": "structure",
+      "variety": "cabin",
+      "color": "#a08060",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-3",
+      "position": [
+        50,
+        0,
+        -50
+      ],
+      "rotation": 0.5,
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "collision": [
+        {
+          "kind": "box",
+          "center": [
+            0,
+            0
+          ],
+          "size": [
+            2.4,
+            2.4
+          ]
+        }
+      ],
+      "type": "structure",
+      "variety": "windmill",
+      "color": "#dcdcdc",
+      "accentColor": "#a0a0a0"
+    },
+    {
+      "id": "object-4",
+      "position": [
+        -10,
+        0,
+        5
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "box",
+          "center": [
+            0,
+            0
+          ],
+          "size": [
+            1.9,
+            0.7
+          ]
+        }
+      ],
+      "type": "structure",
+      "variety": "bench",
+      "color": "#808080",
+      "accentColor": "#a0a0a0"
+    },
+    {
+      "id": "object-5",
+      "position": [
+        -30,
+        0,
+        10
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-6",
+      "position": [
+        -32.9494748915953,
+        0,
+        12.701961854625061
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-7",
+      "position": [
+        -29.505448006751198,
+        0,
+        4.36480538703643
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-8",
+      "position": [
+        -25.784608128641054,
+        0,
+        15.49822438346062
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-9",
+      "position": [
+        -37.87770916298682,
+        0,
+        8.606551635906976
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-10",
+      "position": [
+        30,
+        0,
+        -20
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-11",
+      "position": [
+        27.01995978539647,
+        0,
+        -17.270037792811213
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-12",
+      "position": [
+        30.49967702125331,
+        0,
+        -25.693591971778282
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-13",
+      "position": [
+        34.259075855420484,
+        0,
+        -14.444797676252083
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-14",
+      "position": [
+        -40,
+        0,
+        -40
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-15",
+      "position": [
+        -43.29761317776796,
+        0,
+        -36.97911481022348
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-16",
+      "position": [
+        -39.44707406234383,
+        0,
+        -46.30033911051358
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-17",
+      "position": [
+        -35.287048611920675,
+        0,
+        -33.85279826151759
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-18",
+      "position": [
+        -48.80754659770575,
+        0,
+        -41.557922632623935
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-19",
+      "position": [
+        -31.562453216972226,
+        0,
+        -45.36729021799806
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-20",
+      "position": [
+        40,
+        0,
+        40
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-21",
+      "position": [
+        37.44567981605412,
+        0,
+        42.33996760616182
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-22",
+      "position": [
+        40.428294589645695,
+        0,
+        35.11977830990433
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-23",
+      "position": [
+        43.650636447503274,
+        0,
+        44.76160199178393
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-24",
+      "position": [
+        0,
+        0,
+        -50
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-25",
+      "position": [
+        -3.318159253044712,
+        0,
+        -46.96029291354681
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-26",
+      "position": [
+        0.5563709924049025,
+        0,
+        -56.33959393958402
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-27",
+      "position": [
+        4.742315855278815,
+        0,
+        -43.814497568606804
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-28",
+      "position": [
+        -8.86242280836017,
+        0,
+        -51.56762940960465
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [
+        {
+          "kind": "ellipse",
+          "center": [
+            0,
+            0
+          ],
+          "radii": [
+            0.32,
+            0.32
+          ]
+        }
+      ],
+      "type": "tree",
+      "variety": "spruce",
+      "foliageColor": "#709090",
+      "trunkColor": "#4a4a4a"
+    },
+    {
+      "id": "object-29",
+      "position": [
+        -20,
+        0,
+        20
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-30",
+      "position": [
+        -21.36925934359878,
+        0,
+        21.254354300840237
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-31",
+      "position": [
+        -19.770410000918822,
+        0,
+        17.38392657663057
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-32",
+      "position": [
+        -18.04305345224801,
+        0,
+        22.55248659065008
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-33",
+      "position": [
+        -23.657134667703243,
+        0,
+        19.353107836993715
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-34",
+      "position": [
+        -16.496499393075393,
+        0,
+        17.77135404166033
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-35",
+      "position": [
+        -21.180827039209795,
+        0,
+        24.392641878856598
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-36",
+      "position": [
+        -22.264460205684983,
+        0,
+        15.639936811082679
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-37",
+      "position": [
+        -15.066439539561893,
+        0,
+        21.801718091087906
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-38",
+      "position": [
+        -25.149395424377314,
+        0,
+        22.125608035838848
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-39",
+      "position": [
+        -17.51110283595595,
+        0,
+        14.681339498755055
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-40",
+      "position": [
+        -18.156750412064824,
+        0,
+        25.876518139113962
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-41",
+      "position": [
+        -25.56563159111034,
+        0,
+        16.7746232255964
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-42",
+      "position": [
+        -13.460827299907718,
+        0,
+        18.562360752739277
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-43",
+      "position": [
+        -23.996028922883816,
+        0,
+        25.68397879275086
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-44",
+      "position": [
+        -20.924266971558293,
+        0,
+        12.86768841844939
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-45",
+      "position": [
+        -14.320312253360708,
+        0,
+        24.78681114039179
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-46",
+      "position": [
+        -27.64987553452196,
+        0,
+        20.31637629730235
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-47",
+      "position": [
+        -14.415591266048555,
+        0,
+        14.442721474551757
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-48",
+      "position": [
+        -20.37385084117371,
+        0,
+        28.085633984287444
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-49",
+      "position": [
+        -25.320829134403905,
+        0,
+        13.623927967482025
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-50",
+      "position": [
+        -11.566361080102478,
+        0,
+        21.13469276557051
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-51",
+      "position": [
+        -27.14955526740617,
+        0,
+        24.974527961909747
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-52",
+      "position": [
+        -18.04542481994637,
+        0,
+        11.311502966962323
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-53",
+      "position": [
+        -15.477014297961762,
+        0,
+        27.893112252388967
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-54",
+      "position": [
+        -28.845546579030845,
+        0,
+        17.178085353891813
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-55",
+      "position": [
+        -11.404474893326608,
+        0,
+        16.028587083374426
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-56",
+      "position": [
+        -23.725053119203714,
+        0,
+        28.900979021151144
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-57",
+      "position": [
+        -23.325716513305682,
+        0,
+        10.753847621250397
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-58",
+      "position": [
+        -11.14807463188192,
+        0,
+        24.652248625908506
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-59",
+      "position": [
+        20,
+        0,
+        -10
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-60",
+      "position": [
+        18.63074065640122,
+        0,
+        -8.745645699159763
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-61",
+      "position": [
+        20.229589999081178,
+        0,
+        -12.616073423369427
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-62",
+      "position": [
+        21.95694654775199,
+        0,
+        -7.44751340934992
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-63",
+      "position": [
+        16.342865332296757,
+        0,
+        -10.646892163006283
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-64",
+      "position": [
+        23.503500606924607,
+        0,
+        -12.228645958339667
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-65",
+      "position": [
+        18.819172960790205,
+        0,
+        -5.6073581211434025
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-66",
+      "position": [
+        17.735539794315017,
+        0,
+        -14.360063188917321
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-67",
+      "position": [
+        24.93356046043811,
+        0,
+        -8.198281908912092
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-68",
+      "position": [
+        14.850604575622686,
+        0,
+        -7.874391964161152
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-69",
+      "position": [
+        22.48889716404405,
+        0,
+        -15.318660501244945
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-70",
+      "position": [
+        21.843249587935176,
+        0,
+        -4.123481860886038
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-71",
+      "position": [
+        14.43436840888966,
+        0,
+        -13.2253767744036
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-72",
+      "position": [
+        26.53917270009228,
+        0,
+        -11.437639247260725
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-73",
+      "position": [
+        16.003971077116184,
+        0,
+        -4.31602120724914
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-74",
+      "position": [
+        19.075733028441707,
+        0,
+        -17.13231158155061
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-75",
+      "position": [
+        25.679687746639292,
+        0,
+        -5.213188859608211
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-76",
+      "position": [
+        12.35012446547804,
+        0,
+        -9.68362370269765
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-77",
+      "position": [
+        25.584408733951445,
+        0,
+        -15.557278525448243
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-78",
+      "position": [
+        19.62614915882629,
+        0,
+        -1.914366015712556
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-79",
+      "position": [
+        14.679170865596095,
+        0,
+        -16.376072032517975
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-80",
+      "position": [
+        28.433638919897522,
+        0,
+        -8.86530723442949
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-81",
+      "position": [
+        12.85044473259383,
+        0,
+        -5.025472038090254
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-82",
+      "position": [
+        21.95457518005363,
+        0,
+        -18.688497033037677
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-83",
+      "position": [
+        24.522985702038238,
+        0,
+        -2.106887747611032
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-84",
+      "position": [
+        11.154453420969157,
+        0,
+        -12.821914646108187
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-85",
+      "position": [
+        28.595525106673392,
+        0,
+        -13.971412916625576
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-86",
+      "position": [
+        16.274946880796286,
+        0,
+        -1.0990209788488574
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-87",
+      "position": [
+        16.674283486694318,
+        0,
+        -19.246152378749603
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-88",
+      "position": [
+        28.85192536811808,
+        0,
+        -5.347751374091493
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-89",
+      "position": [
+        -30,
+        0,
+        -30
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-90",
+      "position": [
+        -31.36925934359878,
+        0,
+        -28.745645699159763
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-91",
+      "position": [
+        -29.770410000918822,
+        0,
+        -32.61607342336943
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-92",
+      "position": [
+        -28.04305345224801,
+        0,
+        -27.44751340934992
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-93",
+      "position": [
+        -33.65713466770325,
+        0,
+        -30.646892163006285
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-94",
+      "position": [
+        -26.496499393075393,
+        0,
+        -32.22864595833967
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-95",
+      "position": [
+        -31.180827039209795,
+        0,
+        -25.607358121143402
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-96",
+      "position": [
+        -32.26446020568498,
+        0,
+        -34.36006318891732
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-97",
+      "position": [
+        -25.06643953956189,
+        0,
+        -28.198281908912094
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-98",
+      "position": [
+        -35.14939542437731,
+        0,
+        -27.874391964161152
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-99",
+      "position": [
+        -27.51110283595595,
+        0,
+        -35.31866050124495
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-100",
+      "position": [
+        -28.156750412064824,
+        0,
+        -24.123481860886038
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-101",
+      "position": [
+        -35.56563159111034,
+        0,
+        -33.2253767744036
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-102",
+      "position": [
+        -23.46082729990772,
+        0,
+        -31.437639247260723
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-103",
+      "position": [
+        -33.996028922883816,
+        0,
+        -24.31602120724914
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-104",
+      "position": [
+        -30.924266971558293,
+        0,
+        -37.13231158155061
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-105",
+      "position": [
+        -24.320312253360708,
+        0,
+        -25.21318885960821
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-106",
+      "position": [
+        -37.64987553452196,
+        0,
+        -29.68362370269765
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-107",
+      "position": [
+        -24.415591266048555,
+        0,
+        -35.55727852544824
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-108",
+      "position": [
+        -30.37385084117371,
+        0,
+        -21.914366015712556
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-109",
+      "position": [
+        -35.3208291344039,
+        0,
+        -36.376072032517975
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-110",
+      "position": [
+        -21.566361080102478,
+        0,
+        -28.86530723442949
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-111",
+      "position": [
+        -37.14955526740617,
+        0,
+        -25.025472038090253
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-112",
+      "position": [
+        -28.04542481994637,
+        0,
+        -38.68849703303768
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-113",
+      "position": [
+        -25.477014297961762,
+        0,
+        -22.106887747611033
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-114",
+      "position": [
+        -38.845546579030845,
+        0,
+        -32.82191464610818
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-115",
+      "position": [
+        -21.404474893326608,
+        0,
+        -33.971412916625574
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-116",
+      "position": [
+        -33.725053119203714,
+        0,
+        -21.099020978848856
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-117",
+      "position": [
+        -33.325716513305686,
+        0,
+        -39.2461523787496
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-118",
+      "position": [
+        -21.14807463188192,
+        0,
+        -25.347751374091494
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-119",
+      "position": [
+        40,
+        0,
+        20
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-120",
+      "position": [
+        38.630740656401215,
+        0,
+        21.254354300840237
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-121",
+      "position": [
+        40.22958999908118,
+        0,
+        17.38392657663057
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-122",
+      "position": [
+        41.95694654775199,
+        0,
+        22.55248659065008
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-123",
+      "position": [
+        36.34286533229675,
+        0,
+        19.353107836993715
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-124",
+      "position": [
+        43.503500606924604,
+        0,
+        17.77135404166033
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-125",
+      "position": [
+        38.819172960790205,
+        0,
+        24.392641878856598
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-126",
+      "position": [
+        37.73553979431502,
+        0,
+        15.639936811082679
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-127",
+      "position": [
+        44.93356046043811,
+        0,
+        21.801718091087906
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-128",
+      "position": [
+        34.85060457562269,
+        0,
+        22.125608035838848
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-129",
+      "position": [
+        42.488897164044054,
+        0,
+        14.681339498755055
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-130",
+      "position": [
+        41.843249587935176,
+        0,
+        25.876518139113962
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-131",
+      "position": [
+        34.43436840888966,
+        0,
+        16.7746232255964
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-132",
+      "position": [
+        46.53917270009228,
+        0,
+        18.562360752739277
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-133",
+      "position": [
+        36.003971077116184,
+        0,
+        25.68397879275086
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-134",
+      "position": [
+        39.075733028441704,
+        0,
+        12.86768841844939
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-135",
+      "position": [
+        45.67968774663929,
+        0,
+        24.78681114039179
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-136",
+      "position": [
+        32.35012446547804,
+        0,
+        20.31637629730235
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-137",
+      "position": [
+        45.58440873395145,
+        0,
+        14.442721474551757
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-138",
+      "position": [
+        39.626149158826294,
+        0,
+        28.085633984287444
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-139",
+      "position": [
+        34.6791708655961,
+        0,
+        13.623927967482025
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-140",
+      "position": [
+        48.43363891989752,
+        0,
+        21.13469276557051
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-141",
+      "position": [
+        32.85044473259383,
+        0,
+        24.974527961909747
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-142",
+      "position": [
+        41.95457518005363,
+        0,
+        11.311502966962323
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-143",
+      "position": [
+        44.52298570203824,
+        0,
+        27.893112252388967
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-144",
+      "position": [
+        31.154453420969155,
+        0,
+        17.178085353891813
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-145",
+      "position": [
+        48.59552510667339,
+        0,
+        16.028587083374426
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-146",
+      "position": [
+        36.274946880796286,
+        0,
+        28.900979021151144
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-147",
+      "position": [
+        36.674283486694314,
+        0,
+        10.753847621250397
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-148",
+      "position": [
+        48.85192536811808,
+        0,
+        24.652248625908506
+      ],
+      "rotation": 0,
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-151",
+      "position": [
+        0.2755079988974141,
+        0,
+        -3.1392881080433126
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-152",
+      "position": [
+        2.348335857302386,
+        0,
+        3.0629839087800965
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-153",
+      "position": [
+        -4.388561601243892,
+        0,
+        -0.7762705956075407
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-154",
+      "position": [
+        4.204200728309528,
+        0,
+        -2.6743751500076014
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-155",
+      "position": [
+        -1.416992447051755,
+        0,
+        5.271170254627917
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-156",
+      "position": [
+        -2.7173522468219815,
+        0,
+        -5.232075826700784
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-157",
+      "position": [
+        5.920272552525728,
+        0,
+        2.162061709305489
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-158",
+      "position": [
+        -6.1792745092527745,
+        0,
+        2.550729643006618
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-159",
+      "position": [
+        2.9866765968528624,
+        0,
+        -6.382392601493933
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-160",
+      "position": [
+        2.211899505522212,
+        0,
+        7.051821766936755
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-161",
+      "position": [
+        -6.6787579093324085,
+        0,
+        -3.8704521292843204
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-162",
+      "position": [
+        7.847007240110736,
+        0,
+        -1.7251670967128687
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-163",
+      "position": [
+        -4.79523470746058,
+        0,
+        6.8207745513010325
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-164",
+      "position": [
+        -1.109120365869953,
+        0,
+        -8.55877389786073
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-165",
+      "position": [
+        6.815625295967149,
+        0,
+        5.744173368470147
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-166",
+      "position": [
+        -9.179850641426352,
+        0,
+        0.37965155676281986
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-167",
+      "position": [
+        6.7012904807417355,
+        0,
+        -6.668734230537891
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-168",
+      "position": [
+        -0.44862100940844946,
+        0,
+        9.702760781144933
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-169",
+      "position": [
+        -6.384994961284685,
+        0,
+        -7.65128643902157
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-170",
+      "position": [
+        10.120366703877025,
+        0,
+        1.3616313186846118
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-171",
+      "position": [
+        -8.579466320887404,
+        0,
+        5.969433554291695
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-172",
+      "position": [
+        2.3454902160643565,
+        0,
+        -10.426196439645212
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-173",
+      "position": [
+        5.427582842445885,
+        0,
+        9.471734702866762
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-174",
+      "position": [
+        -10.614655894837012,
+        0,
+        -3.3862975753298237
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-175",
+      "position": [
+        10.31463012800807,
+        0,
+        -4.765695499950691
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-176",
+      "position": [
+        -4.470063743044458,
+        0,
+        10.681174825381369
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-177",
+      "position": [
+        -3.990859815966819,
+        0,
+        -11.095382854499523
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-178",
+      "position": [
+        10.622310441741696,
+        0,
+        5.582698351090209
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-179",
+      "position": [
+        -50,
+        0,
+        40
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-180",
+      "position": [
+        -51.369259343598785,
+        0,
+        41.254354300840234
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-181",
+      "position": [
+        -49.77041000091882,
+        0,
+        37.38392657663057
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-182",
+      "position": [
+        -48.04305345224801,
+        0,
+        42.55248659065008
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-183",
+      "position": [
+        -53.65713466770325,
+        0,
+        39.353107836993715
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-184",
+      "position": [
+        -46.496499393075396,
+        0,
+        37.77135404166033
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-185",
+      "position": [
+        -51.180827039209795,
+        0,
+        44.392641878856594
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-186",
+      "position": [
+        -52.26446020568498,
+        0,
+        35.63993681108268
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-187",
+      "position": [
+        -45.06643953956189,
+        0,
+        41.801718091087906
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-188",
+      "position": [
+        -55.14939542437731,
+        0,
+        42.12560803583885
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-189",
+      "position": [
+        -47.511102835955946,
+        0,
+        34.68133949875505
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-190",
+      "position": [
+        -48.156750412064824,
+        0,
+        45.87651813911396
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-191",
+      "position": [
+        -55.56563159111034,
+        0,
+        36.7746232255964
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-192",
+      "position": [
+        -43.46082729990772,
+        0,
+        38.56236075273927
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-193",
+      "position": [
+        -53.996028922883816,
+        0,
+        45.683978792750864
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-194",
+      "position": [
+        -50.924266971558296,
+        0,
+        32.86768841844939
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-195",
+      "position": [
+        -44.32031225336071,
+        0,
+        44.78681114039179
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-196",
+      "position": [
+        -57.64987553452196,
+        0,
+        40.31637629730235
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-197",
+      "position": [
+        -44.41559126604855,
+        0,
+        34.44272147455176
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-198",
+      "position": [
+        -50.373850841173706,
+        0,
+        48.08563398428744
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-199",
+      "position": [
+        -55.3208291344039,
+        0,
+        33.623927967482025
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-200",
+      "position": [
+        -41.56636108010248,
+        0,
+        41.13469276557051
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-201",
+      "position": [
+        -57.14955526740617,
+        0,
+        44.97452796190974
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-202",
+      "position": [
+        -48.04542481994637,
+        0,
+        31.311502966962323
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-203",
+      "position": [
+        -45.47701429796176,
+        0,
+        47.89311225238897
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-204",
+      "position": [
+        -58.845546579030845,
+        0,
+        37.17808535389182
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-205",
+      "position": [
+        -41.40447489332661,
+        0,
+        36.028587083374426
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-206",
+      "position": [
+        -53.725053119203714,
+        0,
+        48.900979021151144
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-207",
+      "position": [
+        -53.325716513305686,
+        0,
+        30.753847621250397
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-208",
+      "position": [
+        -41.14807463188192,
+        0,
+        44.652248625908506
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "flowers",
+      "color": "#ffffff",
+      "accentColor": "#e0ffff"
+    },
+    {
+      "id": "object-209",
+      "position": [
+        50,
+        0,
+        -40
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-210",
+      "position": [
+        48.630740656401215,
+        0,
+        -38.745645699159766
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-211",
+      "position": [
+        50.22958999908118,
+        0,
+        -42.61607342336943
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-212",
+      "position": [
+        51.95694654775199,
+        0,
+        -37.44751340934992
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-213",
+      "position": [
+        46.34286533229675,
+        0,
+        -40.646892163006285
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-214",
+      "position": [
+        53.503500606924604,
+        0,
+        -42.22864595833967
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-215",
+      "position": [
+        48.819172960790205,
+        0,
+        -35.607358121143406
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-216",
+      "position": [
+        47.73553979431502,
+        0,
+        -44.36006318891732
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-217",
+      "position": [
+        54.93356046043811,
+        0,
+        -38.198281908912094
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-218",
+      "position": [
+        44.85060457562269,
+        0,
+        -37.87439196416115
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-219",
+      "position": [
+        52.488897164044054,
+        0,
+        -45.31866050124495
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-220",
+      "position": [
+        51.843249587935176,
+        0,
+        -34.12348186088604
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-221",
+      "position": [
+        44.43436840888966,
+        0,
+        -43.2253767744036
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-222",
+      "position": [
+        56.53917270009228,
+        0,
+        -41.43763924726073
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-223",
+      "position": [
+        46.003971077116184,
+        0,
+        -34.316021207249136
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-224",
+      "position": [
+        49.075733028441704,
+        0,
+        -47.13231158155061
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-225",
+      "position": [
+        55.67968774663929,
+        0,
+        -35.21318885960821
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-226",
+      "position": [
+        42.35012446547804,
+        0,
+        -39.68362370269765
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-227",
+      "position": [
+        55.58440873395145,
+        0,
+        -45.55727852544824
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-228",
+      "position": [
+        49.626149158826294,
+        0,
+        -31.914366015712556
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-229",
+      "position": [
+        44.6791708655961,
+        0,
+        -46.376072032517975
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-230",
+      "position": [
+        58.43363891989752,
+        0,
+        -38.86530723442949
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-231",
+      "position": [
+        42.85044473259383,
+        0,
+        -35.02547203809026
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-232",
+      "position": [
+        51.95457518005363,
+        0,
+        -48.68849703303768
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-233",
+      "position": [
+        54.52298570203824,
+        0,
+        -32.10688774761103
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-234",
+      "position": [
+        41.154453420969155,
+        0,
+        -42.82191464610818
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-235",
+      "position": [
+        58.59552510667339,
+        0,
+        -43.971412916625574
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-236",
+      "position": [
+        46.274946880796286,
+        0,
+        -31.099020978848856
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-237",
+      "position": [
+        46.674283486694314,
+        0,
+        -49.2461523787496
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-238",
+      "position": [
+        58.85192536811808,
+        0,
+        -35.347751374091494
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "fern",
+      "color": "#90a0a0",
+      "accentColor": "#c0d0d0"
+    },
+    {
+      "id": "object-239",
+      "position": [
+        -10,
+        0,
+        -50
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-240",
+      "position": [
+        -11.095407474879025,
+        0,
+        -48.99651655932781
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-241",
+      "position": [
+        -9.816328000735057,
+        0,
+        -52.09285873869554
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-242",
+      "position": [
+        -8.43444276179841,
+        0,
+        -47.95801072747994
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-243",
+      "position": [
+        -12.925707734162595,
+        0,
+        -50.51751373040503
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-244",
+      "position": [
+        -7.197199514460314,
+        0,
+        -51.78291676667173
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-245",
+      "position": [
+        -10.944661631367836,
+        0,
+        -46.48588649691472
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-246",
+      "position": [
+        -11.811568164547987,
+        0,
+        -53.48805055113385
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-247",
+      "position": [
+        -6.053151631649515,
+        0,
+        -48.55862552712967
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-248",
+      "position": [
+        -14.11951633950185,
+        0,
+        -48.29951357132892
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-249",
+      "position": [
+        -8.008882268764758,
+        0,
+        -54.25492840099596
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-250",
+      "position": [
+        -8.525400329651859,
+        0,
+        -45.29878548870883
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-251",
+      "position": [
+        -14.452505272888272,
+        0,
+        -52.58030141952288
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-252",
+      "position": [
+        -4.7686618399261755,
+        0,
+        -51.15011139780858
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-253",
+      "position": [
+        -13.196823138307053,
+        0,
+        -45.452816965799315
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-254",
+      "position": [
+        -10.739413577246635,
+        0,
+        -55.70584926524049
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-255",
+      "position": [
+        -5.456249802688567,
+        0,
+        -46.17055108768657
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-256",
+      "position": [
+        -16.11990042761757,
+        0,
+        -49.74689896215812
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-257",
+      "position": [
+        -5.532473012838843,
+        0,
+        -54.44582282035859
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-258",
+      "position": [
+        -10.299080672938967,
+        0,
+        -43.53149281257004
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-259",
+      "position": [
+        -14.256663307523123,
+        0,
+        -55.10085762601438
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-260",
+      "position": [
+        -3.253088864081983,
+        0,
+        -49.09224578754359
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-261",
+      "position": [
+        -15.719644213924937,
+        0,
+        -46.020377630472204
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-262",
+      "position": [
+        -8.436339855957096,
+        0,
+        -56.950797626430145
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-263",
+      "position": [
+        -6.38161143836941,
+        0,
+        -43.68551019808883
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-264",
+      "position": [
+        -17.076437263224676,
+        0,
+        -52.25753171688655
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-265",
+      "position": [
+        -3.1235799146612866,
+        0,
+        -53.17713033330046
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-266",
+      "position": [
+        -12.980042495362973,
+        0,
+        -42.87921678307909
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-267",
+      "position": [
+        -12.660573210644547,
+        0,
+        -57.39692190299968
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-268",
+      "position": [
+        -2.918459705505536,
+        0,
+        -46.2782010992732
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "mushrooms",
+      "color": "#f5f5f5",
+      "accentColor": "#d3d3d3"
+    },
+    {
+      "id": "object-269",
+      "position": [
+        20,
+        0,
+        40
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-270",
+      "position": [
+        18.63074065640122,
+        0,
+        41.254354300840234
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-271",
+      "position": [
+        20.229589999081178,
+        0,
+        37.38392657663057
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-272",
+      "position": [
+        21.95694654775199,
+        0,
+        42.55248659065008
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-273",
+      "position": [
+        16.342865332296757,
+        0,
+        39.353107836993715
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-274",
+      "position": [
+        23.503500606924607,
+        0,
+        37.77135404166033
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-275",
+      "position": [
+        18.819172960790205,
+        0,
+        44.392641878856594
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-276",
+      "position": [
+        17.735539794315017,
+        0,
+        35.63993681108268
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-277",
+      "position": [
+        24.93356046043811,
+        0,
+        41.801718091087906
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-278",
+      "position": [
+        14.850604575622686,
+        0,
+        42.12560803583885
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-279",
+      "position": [
+        22.48889716404405,
+        0,
+        34.68133949875505
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-280",
+      "position": [
+        21.843249587935176,
+        0,
+        45.87651813911396
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-281",
+      "position": [
+        14.43436840888966,
+        0,
+        36.7746232255964
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-282",
+      "position": [
+        26.53917270009228,
+        0,
+        38.56236075273927
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-283",
+      "position": [
+        16.003971077116184,
+        0,
+        45.683978792750864
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-284",
+      "position": [
+        19.075733028441707,
+        0,
+        32.86768841844939
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-285",
+      "position": [
+        25.679687746639292,
+        0,
+        44.78681114039179
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-286",
+      "position": [
+        12.35012446547804,
+        0,
+        40.31637629730235
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-287",
+      "position": [
+        25.584408733951445,
+        0,
+        34.44272147455176
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-288",
+      "position": [
+        19.62614915882629,
+        0,
+        48.08563398428744
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-289",
+      "position": [
+        14.679170865596095,
+        0,
+        33.623927967482025
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-290",
+      "position": [
+        28.433638919897522,
+        0,
+        41.13469276557051
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-291",
+      "position": [
+        12.85044473259383,
+        0,
+        44.97452796190974
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-292",
+      "position": [
+        21.95457518005363,
+        0,
+        31.311502966962323
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-293",
+      "position": [
+        24.522985702038238,
+        0,
+        47.89311225238897
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-294",
+      "position": [
+        11.154453420969157,
+        0,
+        37.17808535389182
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-295",
+      "position": [
+        28.595525106673392,
+        0,
+        36.028587083374426
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-296",
+      "position": [
+        16.274946880796286,
+        0,
+        48.900979021151144
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-297",
+      "position": [
+        16.674283486694318,
+        0,
+        30.753847621250397
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    },
+    {
+      "id": "object-298",
+      "position": [
+        28.85192536811808,
+        0,
+        44.652248625908506
+      ],
+      "rotation": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "collision": [],
+      "type": "plant",
+      "variety": "grass",
+      "color": "#dcdcdc",
+      "accentColor": "#ffffff"
+    }
+  ]
+}

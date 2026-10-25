@@ -1,12 +1,14 @@
 import { z } from 'zod'
 import { collisionShapeSchema } from './collision-schema'
 import { createNavigation, isWalkable } from '../controls/navigation'
+import { WORLD_SIZE, MAX_GENERATED_OBJECTS } from './limits'
 
 const coordinate = z.number().finite().min(-1000).max(1000)
 const vector3 = z.tuple([coordinate, coordinate, coordinate])
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use a six-digit hex color')
 const intensity = z.number().finite().min(0).max(10)
 const dimension = z.number().finite().min(0.01).max(20)
+const pathDimension = z.number().finite().min(0.01).max(WORLD_SIZE)
 const identifier = z.string().max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 const transform = {
   id: identifier,
@@ -18,7 +20,7 @@ const transform = {
 }
 
 export const worldObjectSchema = z.discriminatedUnion('type', [
-  z.strictObject({ ...transform, type: z.literal('path'), size: z.tuple([dimension, dimension]), color }),
+  z.strictObject({ ...transform, type: z.literal('path'), size: z.tuple([pathDimension, pathDimension]), color }),
   z.strictObject({ ...transform, type: z.literal('pond'), radii: z.tuple([dimension, dimension]), waterColor: color, bankColor: color,
     lilyPads: z.array(z.strictObject({
       position: z.tuple([z.number().finite().min(-0.8).max(0.8), z.number().finite().min(-0.8).max(0.8)]),
@@ -40,9 +42,9 @@ export const worldSchema = z.strictObject({
   id: identifier,
   name: z.string().trim().min(1).max(80),
   ground: z.strictObject({
-    size: z.tuple([z.number().finite().min(0.1).max(100), z.number().finite().min(0.1).max(100)]),
+    size: z.tuple([z.number().finite().min(0.1).max(WORLD_SIZE), z.number().finite().min(0.1).max(WORLD_SIZE)]),
     color,
-    hills: z.array(z.strictObject({ center: z.tuple([coordinate, coordinate]), radius: z.number().min(2).max(12), height: z.number().min(0).max(3) })
+    hills: z.array(z.strictObject({ center: z.tuple([coordinate, coordinate]), radius: z.number().min(2).max(32), height: z.number().min(0).max(6) })
       .refine((hill) => hill.height / hill.radius <= 0.4, 'Hills must have gentle slopes')).max(8).optional(),
   }),
   camera: z.strictObject({
@@ -68,7 +70,7 @@ export const worldSchema = z.strictObject({
     lookSensitivity: z.number().finite().positive().max(0.01),
     radius: z.number().finite().min(0.1).max(1).optional(),
   }).optional(),
-  objects: z.array(worldObjectSchema).max(200).superRefine((objects, context) => {
+  objects: z.array(worldObjectSchema).max(MAX_GENERATED_OBJECTS).superRefine((objects, context) => {
     const ids = new Set<string>()
     objects.forEach((object, index) => {
       if (ids.has(object.id)) {

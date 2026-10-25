@@ -25,7 +25,8 @@ function RenderBudget({ walking, light, onReduce, actions }: {
     if (!walking || light) return
     if (!actions.current?.isMoving()) { sample.current = { seconds: 0, frames: 0 }; return }
     // Idle on-demand frames are not evidence of a slow device.
-    if (delta > 0.25) { sample.current = { seconds: 0, frames: 0 }; return }
+    // Ignore tab suspension, but include genuinely slow moving frames.
+    if (delta > 1) { sample.current = { seconds: 0, frames: 0 }; return }
     sample.current.seconds += delta
     sample.current.frames++
     if (sample.current.seconds >= 1.5) {
@@ -47,10 +48,10 @@ export default function GardenCanvas({ world, actions, onStatus, onReady, onFail
   const [light, setLight] = useState(false)
   const reduce = useCallback(() => setLight(true), [])
   return (
-    <Canvas camera={world.camera} dpr={light ? 0.8 : [1, 1.5]} frameloop="demand" shadows={light ? false : 'basic'}
+    <Canvas camera={world.camera} dpr={light ? 0.6 : [1, 1.5]} frameloop="demand" shadows={light ? false : 'soft'}
       gl={{ antialias: true, powerPreference: 'low-power' }}
       fallback={<p className="graphics-message">The world needs a browser with WebGL support.</p>}>
-      <WorldScene world={world} walking={walking} />
+      <WorldScene world={world} walking={walking} lowDetail={light} />
       <WalkingControls world={world} ref={actions} onStatus={onStatus} onReady={onReady} />
       <ContextHealth onFailure={onFailure} />
       <RenderBudget walking={walking} light={light} onReduce={reduce} actions={actions} />

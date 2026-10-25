@@ -3,24 +3,26 @@ import { worldObjectSchema, worldSchema } from './schema'
 import type { WorldObject } from './schema'
 import { createNavigation, isWalkable, moveWithinGarden } from '../controls/navigation'
 import { terrainHeight } from './terrain'
+import { WORLD_SIZE, MAX_GENERATED_OBJECTS, MAX_COMPLEX_OBJECTS, EXPLORATION_GRID_WIDTH } from './limits'
+import { isLevelPath } from './paths'
 
 // Reuse the renderer's material/geometry contract; instances keep AI output compact.
 const assets = worldObjectSchema.options.map((schema) => (schema as z.ZodObject).omit({ id: true, position: true, rotation: true, scale: true, collision: true }))
 export const blueprintSchema = z.strictObject({
   name: z.string().trim().min(1).max(80),
-  ground: worldSchema.shape.ground.extend({ hills: z.array(z.strictObject({
-    center: z.tuple([z.number().min(-18).max(18), z.number().min(-18).max(18)]),
-    radius: z.number().min(2).max(12), height: z.number().min(0).max(3),
+  ground: worldSchema.shape.ground.extend({ size: z.tuple([z.literal(WORLD_SIZE), z.literal(WORLD_SIZE)]), hills: z.array(z.strictObject({
+    center: z.tuple([z.number().min(-64).max(64), z.number().min(-64).max(64)]),
+    radius: z.number().min(2).max(32), height: z.number().min(0).max(6),
   })).max(8).optional() }),
   environment: worldSchema.shape.environment,
   assets: z.array(z.union(assets as [typeof assets[number], typeof assets[number], ...typeof assets[number][]])).min(1).max(14),
   placements: z.array(z.strictObject({
     asset: z.number().int().min(0).max(13),
-    position: z.tuple([z.number().min(-20).max(20), z.number().min(-20).max(20)]),
+    position: z.tuple([z.number().min(-64).max(64), z.number().min(-64).max(64)]),
     rotation: z.number().min(-6.29).max(6.29),
     scale: z.tuple([z.number().min(0.3).max(2), z.number().min(0.3).max(2), z.number().min(0.3).max(2)]),
-    count: z.number().int().min(1).max(12).optional().describe('For plant/tree groves: number of instances in this deliberately placed cluster; otherwise 1.'),
-    spread: z.number().min(0).max(4).optional().describe('Radius in meters of a plant/tree cluster. Use 2–4 for groves, 0 for single objects.'),
+    count: z.number().int().min(1).max(36).optional().describe('For plants use 24–36 instances per drift; for trees use 3–12 per grove; other assets use 1.'),
+    spread: z.number().min(0).max(12).optional().describe('Radius in meters of a plant/tree cluster. Use 5–12 for groves across the landscape, 0 for single objects.'),
   })).min(12).max(100),
 })
 
@@ -50,7 +52,6 @@ export function compileBlueprint(input: unknown, id: string) {
   plan.environment.ambientIntensity = Math.max(0.75, plan.environment.ambientIntensity)
   plan.environment.sunlight.intensity = Math.max(1.4, plan.environment.sunlight.intensity)
   const [width, depth] = plan.ground.size
-  if (width < 16 || depth < 16 || width > 36 || depth > 36) throw new Error('World dimensions must be 16–36 meters.')
   const placements = plan.placements.flatMap(placement => {
     const asset = plan.assets[placement.asset]
     const count = placement.count ?? 1
@@ -63,7 +64,7 @@ export function compileBlueprint(input: unknown, id: string) {
         placement.position[1] + Math.sin(angle) * radius] }
     })
   })
-  if (placements.length > 100) throw new Error('Too many total instances.')
+  if (placements.length > MAX_GENERATED_OBJECTS) throw new Error('Too many total instances.')
   let objects = placements.map((placement, index) => {
     const asset = plan.assets[placement.asset]
     if (!asset) throw new Error('Unknown asset reference.')
@@ -80,18 +81,23 @@ export function compileBlueprint(input: unknown, id: string) {
     }
     return object
   })
+  // Remove hillside slabs instead of tilting pavement or flattening the hills.
+  objects = objects.filter(object => object.type !== 'path' || isLevelPath(plan.ground, object))
   // Clip soft planting and tree groves around authored water/structure footprints.
   const solidNavigation = createNavigation({ ground: plan.ground, objects: objects.filter(o => ['pond', 'structure', 'entrance', 'rock'].includes(o.type)) })
   objects = objects.filter(object => !['plant', 'tree'].includes(object.type) || isWalkable({ x: object.position[0], z: object.position[2] }, solidNavigation))
-  if (objects.filter(o => !['plant', 'path', 'patch'].includes(o.type)).length > 40) throw new Error('Too many complex objects.')
+  if (objects.filter(o => !['plant', 'path', 'patch'].includes(o.type) || !!o.collision?.length).length > MAX_COMPLEX_OBJECTS) throw new Error('Too many complex objects.')
   if (objects.filter(o => o.type === 'pond').length > 4) throw new Error('Too many water features.')
-  const walking = { spawn: [0, 1.65, 0] as [number, number, number], yaw: 0, speed: 2.4, fov: 65, lookSensitivity: 0.002, radius: 0.28 }
+  const walking = { spawn: [0, 1.65, 0] as [number, number, number], yaw: 0, speed: 3.6, fov: 65, lookSensitivity: 0.002, radius: 0.28 }
   const navigation = createNavigation({ ground: plan.ground, objects, walking })
-  // Find the largest connected half-meter walking region, using swept collision.
+  // Bound admission-time work to roughly 4096 samples even at 128m. Every edge
+  // still uses exact swept collision, so a coarse grid cannot cross a thin wall.
+  const step = Math.max(0.5, Math.max(width, depth) / EXPLORATION_GRID_WIDTH)
+  const keyFor = (x: number, z: number) => `${Math.round(x / step)},${Math.round(z / step)}`
   const points = new Map<string, { x: number; z: number }>()
-  for (let x = Math.ceil(navigation.bounds.minX * 2); x <= navigation.bounds.maxX * 2; x++) {
-    for (let z = Math.ceil(navigation.bounds.minZ * 2); z <= navigation.bounds.maxZ * 2; z++) {
-      if (isWalkable({ x: x / 2, z: z / 2 }, navigation)) points.set(`${x},${z}`, { x: x / 2, z: z / 2 })
+  for (let x = Math.ceil(navigation.bounds.minX / step); x <= navigation.bounds.maxX / step; x++) {
+    for (let z = Math.ceil(navigation.bounds.minZ / step); z <= navigation.bounds.maxZ / step; z++) {
+      if (isWalkable({ x: x * step, z: z * step }, navigation)) points.set(`${x},${z}`, { x: x * step, z: z * step })
     }
   }
   const unseen = new Set(points.keys())
@@ -101,8 +107,8 @@ export function compileBlueprint(input: unknown, id: string) {
     unseen.delete(queue[0])
     for (let i = 0; i < queue.length; i++) {
       const start = points.get(queue[i])!
-      for (const [dx, dz] of [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]) {
-        const key = `${(start.x + dx) * 2},${(start.z + dz) * 2}`
+      for (const [dx, dz] of [[step, 0], [-step, 0], [0, step], [0, -step]]) {
+        const key = keyFor(start.x + dx, start.z + dz)
         if (!unseen.has(key)) continue
         const moved = moveWithinGarden(start, { x: dx, z: dz }, navigation)
         if (Math.hypot(moved.x - start.x - dx, moved.z - start.z - dz) > 0.001) continue
@@ -111,7 +117,7 @@ export function compileBlueprint(input: unknown, id: string) {
     }
     if (queue.length > largest.length) largest = queue
   }
-  if (largest.length < width * depth || largest.length < points.size * 0.7) throw new Error('Not enough connected walking space.')
+  if (largest.length * step ** 2 < width * depth * 0.25 || largest.length < points.size * 0.7) throw new Error('Not enough connected walking space.')
   const candidates = largest.map(key => points.get(key)!).filter(p =>
     [[0, -1], [1, 0], [-1, 0], [0, 1]].every(([dx, dz]) => {
       const moved = moveWithinGarden(p, { x: dx, z: dz }, navigation)
@@ -121,6 +127,12 @@ export function compileBlueprint(input: unknown, id: string) {
   const spawn = candidates[0]
   if (!spawn) throw new Error('No clear arrival space.')
   walking.spawn = [spawn.x, 1.65, spawn.z]
+  // Move the sun away from the origin so its shadow frustum covers a large land.
+  const sunlight = plan.environment.sunlight.position
+  const sunDistance = Math.hypot(...sunlight)
+  const lightScale = Math.max(width, depth) / Math.max(1, sunDistance)
+  if (sunDistance < 1) plan.environment.sunlight.position = [-64, 100, 48]
+  else if (lightScale > 1) plan.environment.sunlight.position = sunlight.map(value => value * lightScale) as [number, number, number]
   const elevation = terrainHeight(plan.ground, 0, 0)
   return worldSchema.parse({ schemaVersion: 1, id, name: plan.name, ground: plan.ground, environment: plan.environment,
     camera: { position: [width * 0.85, Math.max(width, depth) * 0.8, depth * 0.95], target: [0, elevation, 0], fov: 45 }, walking, objects })

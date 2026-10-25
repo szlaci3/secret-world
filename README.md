@@ -1,6 +1,6 @@
 # SecretWorld
 
-Six walkable low-poly worlds built with React, TypeScript, Vite, Three.js, and
+Walkable 128 × 128 meter low-poly worlds built with React, TypeScript, Vite, Three.js, and
 React Three Fiber, with Gemini-powered world creation (milestone 3).
 Describe a place, generate a walkable landscape, and keep favorites in your browser.
 
@@ -15,18 +15,26 @@ The sidebar collapses while walking; leaving restores selection focus. If the
 browser declines mouse capture, **Click to begin** offers another attempt.
 Touch devices support the overview; walking needs a keyboard and mouse.
 
-| World | Composition and landmarks | Water |
-| --- | --- | --- |
-| The Quiet Garden | Winding stones, torii, bamboo screen, tea pavilion, pond-side planting | One garden pond |
-| Sandstone Oasis | Dunes, sandstone spires, ruined gateway, scattered palms and cactus | Three unequal pools |
-| Frostlight Grove | Dense spruce pockets, a cabin clearing, branching trail and raised lookout | None |
-| Amber Meadow | Open rolling hills, flower drifts and a loop around a hilltop windmill | None |
-| Basalt Reach | Crescent shore path, basalt formations, reeds and a weathered beacon | One dominant lake |
-| Violet Sanctuary | Processional arches, broken columns, mushroom gardens and a secluded pavilion | Three reflecting pools |
+The built-in **The Open Meadow** spans **128 × 128 meters** (16,384 m²), with
+337 objects, including 252 small plant clusters (three times the previous 84): broad meadow routes, two ponds, distant groves, a hilltop windmill,
+a cabin, arches, and a lookout. Earlier small worlds are disabled in the picker;
+their source fixtures remain for geometry tests. New Gemini worlds use this same
+128-meter size rather than stretching an 18-meter layout.
 
-The six original layouts are authored JSON. Trees, plants, structures, ground patches, stones,
-water, terrain, and lighting use the same reusable components across worlds.
-The six fixtures contain 60–99 objects, with repeated plants and paths batched.
+**Silverwood Grove** is the one additional Gemini-generated example: a snowy
+128 × 128m woodland with 297 objects, including 268 small plant clusters, spruce
+groves, a cabin, and a windmill. It passed the same schema, level-pavement, and
+walking-connectivity checks and is available beside the meadow.
+
+Terrain uses a bounded 32 × 32 grid: 1,089 vertices and 2,048 triangles (4m spacing). Object
+counts remain bounded, repeated trees, plants, and paths are instanced, and rendering
+stays on demand. Slow devices automatically use simpler vegetation, no shadows, and a 0.6 pixel ratio. Walking uses the same controls at 3.6 m/s for the larger landscape.
+Pavement stays horizontal on flat terrain; slabs whose rotated footprints cross
+slopes are omitted, including in imported or previously saved worlds. Grass
+openings remain walkable where hill routes have no pavement.
+Generation samples at most 64 positions per terrain axis (a two-meter grid here)
+and sweeps each connection against exact collision geometry. This bounds server
+validation work; the runtime player collision remains continuous and exact.
 
 Descriptions appear on thumbnail hover or keyboard focus; touch users can read
 the selected world's description above the overview. The drawer uses native modal
@@ -52,7 +60,7 @@ Use **Create World** in the sidebar (or the **Worlds** drawer). Enter a title or
 description and select **Generate world**. When ready, select **Enter world** to
 capture the mouse and walk using the existing controls. **Save world** adds it to
 **Your worlds**; select its name to revisit. **Delete**, then **Confirm delete**,
-removes the saved copy. The six original worlds remain available below the creator.
+removes the saved copy. The Open Meadow and Silverwood Grove remain available below the creator.
 Up to 20 worlds are stored locally; no account or database is used. Unsaved results
 last until reload or replacement. Clearing browser data removes the saved collection.
 Storage failures leave the result available to explore and show a message.
@@ -85,30 +93,33 @@ Gemini creates a compact asset/placement blueprint, validated with the existing
 Zod dependency. The compiler expands authored vegetation clusters, supplies solid
 and water colliders, reduces over-steep hills, reserves flat pond shores, clips
 vegetation out of water/structures, and finds an open spawn in a connected walking
-region. Lighting has a visibility floor. Limits: 16–36m terrain, 14 reusable asset
-definitions, 100 expanded objects, 40 complex objects, four ponds. The result then
+region. Lighting has a visibility floor. Limits: 128 × 128m terrain, 14 reusable asset
+definitions, 512 expanded objects, 64 solid/complex objects, four ponds. The result then
 passes the original world schema on the server and in the browser. No model
 downloads, generated code, extra rendering engine, or new dependencies are involved.
+Mobile performance is outside the current verification scope.
 These checks do not prove artistic quality or reachability of every decorative prop.
 
 ```powershell
 npm.cmd test
 npm.cmd run build
 npm.cmd run smoke
-npm.cmd run inspect:worlds
+node scripts/inspect-garden.mjs --walk --collisions --worlds
 npm.cmd run inspect:generation
 # Optional: one real Gemini request using .env (incurs provider usage).
 npm.cmd run check:generation
 npm.cmd run measure:performance
-npm.cmd run measure:performance -- "--world=Amber Meadow"
+npm.cmd run measure:performance -- "--world=The Open Meadow"
 npm.cmd run capture:thumbnails
+# Rebuild the authored 128m fixture after editing its layout recipe.
+node scripts/build-meadow.mjs
 npm.cmd run preview
 ```
 
 `build` includes TypeScript checking and writes `dist/`. `inspect:worlds` is the
 full production browser gate: real pointer lock, walking, collision traversal,
 focus loss/re-entry, responsive/touch layouts, graphics recovery, JSON rejection
-and import, all six selections, repeated switches, and a persistent WebGL canvas.
+and import, the large-world selection, repeated switches, and a persistent WebGL canvas.
 The smaller `inspect:garden`, `inspect:walking`, `inspect:collisions`, and
 `inspect:experience` gates remain available.
 
@@ -126,17 +137,16 @@ generated world in `artifacts/` when present, otherwise a built-in fixture.
 the validated world to `artifacts/`. Neither check proves hosted deployment or
 Netlify's edge rate limiting; those require a deployed site with its Function secret.
 
-`capture:thumbnails` captures the six actual scenes from the current production
+`capture:thumbnails` captures the current built-in landscapes from the current production
 build into `public/worlds/`. Run `build` first, capture, then build again to include
-refreshed images in `dist/`. The sidebar uses these static JPEGs, with lazy loading
-for later cards, and never creates additional WebGL contexts for previews. Captures
+refreshed images in `dist/`. The sidebar uses these static JPEGs, and never creates additional WebGL contexts for previews. Captures
 use a centered 16:9 crop with 1.7× magnification to make landmarks easier to see.
 
 ## Shared architecture
 
 - `src/world/schema.ts` validates unknown input and derives TypeScript types.
 - `src/world/load-world.ts` limits JSON to 1 MiB before parsing and validation.
-- `src/world/catalog.ts` pairs six fixtures with presentation-only descriptions.
+- `src/world/catalog.ts` pairs the current landscape with presentation-only descriptions.
 - `src/world/terrain.ts` supplies the same triangle-grid elevation to geometry,
   object placement, paths, and the walking camera. Hills are optional.
 - `src/scene/WorldScene.tsx` renders any validated world. `Terrain.tsx` builds

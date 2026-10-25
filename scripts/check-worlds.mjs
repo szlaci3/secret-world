@@ -13,7 +13,7 @@ const leave = async (page) => {
 }
 
 export async function checkWorlds(page) {
-  const garden = JSON.parse(await readFile('src/world/garden.json', 'utf8'))
+  const garden = JSON.parse(await readFile('src/world/open-meadow.json', 'utf8'))
   const courtyard = JSON.parse(await readFile('src/world/maple-courtyard.json', 'utf8'))
   const sidebar = page.getByRole('complementary', { name: 'Choose a world', exact: true })
   const draft = sidebar.getByRole('textbox', { name: 'World JSON', exact: true })
@@ -39,7 +39,7 @@ export async function checkWorlds(page) {
   const invalid = [
     ['{broken', /not valid JSON/],
     [JSON.stringify({ ...garden, schemaVersion: 2 }), /Only schema version 1/],
-    [JSON.stringify({ ...garden, walking: { ...garden.walking, spawn: [3.1, 1.65, 0.1] } }), /walking.spawn/],
+    [JSON.stringify({ ...garden, walking: { ...garden.walking, spawn: [-25, 1.65, -5] } }), /walking.spawn/],
     [JSON.stringify({ ...garden, script: 'untrusted code' }), /Unrecognized key/],
   ]
   for (const [text, expected] of invalid) {
@@ -80,7 +80,7 @@ export async function checkWorlds(page) {
   await load.click()
   assert.equal(await page.locator('h1').textContent(), 'Courtyard from JSON')
 
-  for (const filename of ['garden', 'sandstone-oasis', 'frostlight-grove', 'amber-meadow', 'basalt-reach', 'violet-sanctuary', 'garden', 'sandstone-oasis']) {
+  for (const filename of ['open-meadow', 'silverwood-grove', 'open-meadow']) {
     const fixture = JSON.parse(await readFile(`src/world/${filename}.json`, 'utf8'))
     const card = sidebar.getByRole('button', { name: fixture.name, exact: true })
     await card.click()
@@ -112,5 +112,5 @@ export async function checkWorlds(page) {
   // Restore the initial world for any following inspections.
   await page.reload({ waitUntil: 'networkidle' })
   await ready(page)
-  console.log('World checks passed: six screenshot images and one canvas, invalid/oversized imports preserve the scene, file/paste imports enter directly, all six thumbnails enter with real pointer lock, repeated switches, focus return, and overview-only imports.')
+  console.log('World checks passed: large-world screenshot and one canvas, invalid/oversized imports preserve the scene, file/paste imports enter directly, large-world thumbnail enter with real pointer lock, repeated switches, focus return, and overview-only imports.')
 }

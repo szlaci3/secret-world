@@ -39,7 +39,7 @@ try {
   assert(graphics.webgl2 && graphics.width > 0 && graphics.height > 0, 'Expected an active WebGL2 canvas')
   assert.equal(graphics.error, 0, 'Unexpected WebGL error')
   assert.equal(await page.locator('.graphics-message:visible').count(), 0, 'Graphics fallback was shown')
-  assert.equal(await page.locator('h1').textContent(), 'The Quiet Garden')
+  assert.equal(await page.locator('h1').textContent(), 'The Open Meadow')
   assert.deepEqual(errors, [], 'Unexpected browser errors')
   await mkdir('artifacts', { recursive: true })
   const screenshot = resolve('artifacts/garden-desktop.png')

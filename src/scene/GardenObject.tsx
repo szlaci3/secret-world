@@ -33,58 +33,6 @@ function Pond({ object }: { object: ObjectOf<'pond'> }) {
   )
 }
 
-function Rock({ object }: { object: ObjectOf<'rock'> }) {
-  return (
-    <group>
-      <mesh castShadow position-y={0.32} rotation={[0.15, 0.3, 0.1]} scale={[0.85, 0.65, 0.72]}>
-        <dodecahedronGeometry args={[0.8, 0]} />
-        <meshStandardMaterial color={object.color} roughness={1} flatShading />
-      </mesh>
-      {object.mossColor && <mesh castShadow position={[-0.08, 0.68, 0.02]} scale={[0.48, 0.075, 0.4]}>
-        <icosahedronGeometry args={[1, 1]} />
-        <meshStandardMaterial color={object.mossColor} roughness={1} />
-      </mesh>}
-    </group>
-  )
-}
-
-function Tree({ object }: { object: ObjectOf<'tree'> }) {
-  if (object.variety === 'spruce') return <group>
-    <mesh castShadow position-y={1.5}><cylinderGeometry args={[0.1, 0.22, 3, 6]} /><meshStandardMaterial color={object.trunkColor} /></mesh>
-    {[0, 1, 2].map((tier) => <mesh key={tier} castShadow position-y={1.5 + tier * 0.8}>
-      <coneGeometry args={[1.25 - tier * 0.28, 1.9, 7]} /><meshStandardMaterial color={object.foliageColor} roughness={1} flatShading />
-    </mesh>)}
-  </group>
-  if (object.variety === 'palm') return <group>
-    <mesh castShadow position-y={1.65} rotation-z={0.12}><cylinderGeometry args={[0.1, 0.22, 3.3, 7]} /><meshStandardMaterial color={object.trunkColor} /></mesh>
-    {[0, 1, 2, 3, 4, 5].map((leaf) => <group key={leaf} rotation-y={leaf * Math.PI / 3}>
-      <mesh castShadow position={[0.6, 3.2, 0]} rotation-z={-0.25} scale={[1.25, 0.12, 0.35]}><icosahedronGeometry args={[1, 0]} /><meshStandardMaterial color={object.foliageColor} roughness={1} /></mesh>
-    </group>)}
-  </group>
-  const pine = object.variety === 'pine'
-  const crowns: [number, number, number, number, number][] = pine
-    ? [[-0.65, 2.05, 0, 1.05, 0.38], [0.6, 2.65, 0.12, 1.1, 0.4], [-0.1, 3.25, 0, 0.9, 0.42]]
-    : [[-0.85, 2.45, 0.1, 1.2, 0.8], [0.8, 2.55, 0, 1.25, 0.85], [0, 3.1, -0.25, 1.3, 0.8], [0.05, 2.35, 0.8, 1, 0.6]]
-  return (
-    <group>
-      <mesh castShadow position={[0.1, 1.35, 0]} rotation={[0, 0, -0.1]}>
-        <cylinderGeometry args={[0.09, 0.2, 2.7, 7]} />
-        <meshStandardMaterial color={object.trunkColor} roughness={1} />
-      </mesh>
-      <mesh castShadow position={[-0.35, 1.9, 0]} rotation={[0, 0, 0.8]}>
-        <cylinderGeometry args={[0.045, 0.09, 1.3, 6]} />
-        <meshStandardMaterial color={object.trunkColor} roughness={1} />
-      </mesh>
-      {crowns.map(([x, y, z, width, height], index) => (
-        <mesh castShadow key={index} position={[x, y, z]} scale={[width, height, width * 0.85]}>
-          <icosahedronGeometry args={[1, 1]} />
-          <meshStandardMaterial color={object.foliageColor} roughness={1} flatShading />
-        </mesh>
-      ))}
-    </group>
-  )
-}
-
 function Lantern({ object }: { object: ObjectOf<'lantern'> }) {
   return (
     <group>
@@ -161,8 +109,8 @@ function ObjectShape({ object }: { object: WorldObject }) {
   switch (object.type) {
     case 'path': return <Path object={object} />
     case 'pond': return <Pond object={object} />
-    case 'rock': return <Rock object={object} />
-    case 'tree': return <Tree object={object} />
+    case 'rock': return null // Batched by Rocks.
+    case 'tree': return null // Batched by Trees.
     case 'lantern': return <Lantern object={object} />
     case 'entrance': return <Entrance object={object} />
     case 'structure': return <Structure object={object} />

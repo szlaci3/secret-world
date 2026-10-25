@@ -6,8 +6,10 @@ import { useLayoutEffect, useMemo } from 'react'
 import { terrainHeight } from '../world/terrain'
 import { Terrain, GroundPatch } from './Terrain'
 import { Plants } from './Plants'
+import { Trees } from './Trees'
+import { Rocks } from './Rocks'
 
-export function WorldScene({ world, walking }: { world: WorldDefinition; walking: boolean }) {
+export function WorldScene({ world, walking, lowDetail }: { world: WorldDefinition; walking: boolean; lowDetail: boolean }) {
   const { ground, environment } = world
   const { gl, invalidate, size } = useThree()
   const small = size.width < 600
@@ -32,15 +34,17 @@ export function WorldScene({ world, walking }: { world: WorldDefinition; walking
       <ambientLight intensity={environment.ambientIntensity} />
       {environment.skyLight && <hemisphereLight args={[environment.skyLight.skyColor, environment.skyLight.groundColor, environment.skyLight.intensity]} />}
       <directionalLight {...environment.sunlight} castShadow
-        shadow-mapSize={[small ? 512 : 1024, small ? 512 : 1024]}
+        shadow-mapSize={[small ? 512 : 2048, small ? 512 : 2048]}
         shadow-normalBias={0.025} shadow-bias={-0.00015}>
-        <orthographicCamera attach="shadow-camera" args={[-extent, extent, extent, -extent, 0.5, 120]} />
+        <orthographicCamera attach="shadow-camera" args={[-extent, extent, extent, -extent, 0.5, Math.max(120, Math.hypot(...environment.sunlight.position) + extent * 2)]} />
       </directionalLight>
-      <Terrain ground={ground} />
+      <Terrain ground={ground} lowDetail={lowDetail} />
       <InstancedPaths objects={objects} ground={ground} />
-      <Plants objects={objects} />
+      <Plants objects={objects} lowDetail={lowDetail} />
+      <Trees objects={objects} lowDetail={lowDetail} />
+      <Rocks objects={objects} lowDetail={lowDetail} />
       {world.objects.filter((object) => object.type === 'patch').map((object) => <GroundPatch key={object.id} object={object} ground={ground} />)}
-      {objects.filter((object) => object.type !== 'path' && object.type !== 'plant' && object.type !== 'patch').map((object) => <GardenObject key={object.id} object={object} />)}
+      {objects.filter((object) => !['path', 'plant', 'patch', 'tree', 'rock'].includes(object.type)).map((object) => <GardenObject key={object.id} object={object} />)}
     </>
   )
 }

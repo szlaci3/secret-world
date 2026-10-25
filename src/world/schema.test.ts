@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { MAX_GENERATED_OBJECTS } from './limits'
 import garden from './garden.json'
 import { parseWorld, worldObjectSchema } from './schema'
 
@@ -67,7 +68,7 @@ describe('world data boundary', () => {
   })
 
   it('caps the number of objects in generated worlds', () => {
-    const objects = Array.from({ length: 201 }, (_, index) => ({ ...garden.objects[0], id: `stone-${index}` }))
+    const objects = Array.from({ length: MAX_GENERATED_OBJECTS + 1 }, (_, index) => ({ ...garden.objects[0], id: `stone-${index}` }))
     expect(() => parseWorld({ ...garden, objects })).toThrow()
   })
 

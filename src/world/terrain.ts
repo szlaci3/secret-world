@@ -1,6 +1,8 @@
 // Shared by terrain geometry, object placement, and the walking camera.
 export type TerrainGround = { size: [number, number]; hills?: { center: [number, number]; radius: number; height: number }[] }
-export const terrainSegments = (ground: TerrainGround) => ground.size.map((size) => Math.ceil(size)) as [number, number]
+// Broad hills do not need one-meter tessellation over a 128m landscape. Cap
+// each axis while keeping rendering and walking on the very same triangle grid.
+export const terrainSegments = (ground: TerrainGround) => ground.size.map((size) => Math.min(32, Math.ceil(size))) as [number, number]
 
 export function hillHeight(ground: TerrainGround, x: number, z: number) {
   return (ground.hills ?? []).reduce((height, hill) => {

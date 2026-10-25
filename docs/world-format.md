@@ -10,7 +10,7 @@ model loading or generated code execution.
 ## Load a world
 
 1. Leave any active walk with Escape or Tab.
-2. Select **Worlds**. Choose one of the six worlds. For file/paste imports, expand
+2. Select **Worlds**. Choose The Open Meadow or Silverwood Grove, the 128 × 128m built-in landscapes. For file/paste imports, expand
    **Open your own world JSON**, then select a `.json` file or paste JSON.
 3. Select **Load world** for file/paste input. Files populate the editor first;
    selecting a file does not replace the world by itself.
@@ -24,7 +24,7 @@ The native modal supports Close and Escape and returns focus to Worlds.
 Graphics failure dismisses the picker so the focused recovery action remains usable.
 
 File/paste imports are in this tab's memory only. Reloading, including graphics
-**Try again**, returns to The Quiet Garden. Generated worlds can be explicitly
+**Try again**, returns to The Open Meadow. Generated worlds can be explicitly
 saved in the browser and revisited from **Your worlds**. There is no automatic
 download of URLs from imported data. Keep your source JSON file for imports.
 
@@ -50,10 +50,12 @@ download of URLs from imported data. Keep your source JSON file for imports.
 }
 ```
 
-Complete populated examples (all dimensions in meters):
+Current built-in and archived authoring examples (all dimensions in meters):
 
 | Fixture | Ground | Objects | Design |
 | --- | --- | --- | --- |
+| `open-meadow.json` | 128 × 128 | 337 | Long routes, two ponds, distant groves, windmill and cabin |
+| `silverwood-grove.json` | 128 × 128 | 297 | Gemini-generated snowy woodland, spruce groves, cabin and windmill |
 | `garden.json` | 18 × 18 | 60 | One pond, winding path, bamboo screen, tea pavilion |
 | `sandstone-oasis.json` | 24 × 22 | 64 | Three pools, dunes, palms and gateway ruins |
 | `frostlight-grove.json` | 24 × 22 | 60 | No water, spruce pockets, cabin and hillside lookout |
@@ -77,9 +79,9 @@ with flat ground and no new object kinds, retained to verify backward compatibil
 - Coordinates are meters, Y-up; ground is centered at `[0, 0, 0]`. Position/target/
   spawn components range from -1000 to 1000. Rotation/yaw are radians around Y;
   yaw zero faces negative Z. Object scales are positive X/Y/Z multipliers.
-- Ground width/depth are 0.1–100 m. Object dimensions, radii, and scale components
-  are 0.01–20. The lower bounds prevent numerically degenerate render/collision data.
-- There are at most 200 objects. This is a structural limit, not a frame-rate
+- Ground width/depth are 0.1–128 m. Generated worlds use exactly 128 × 128 m. Object dimensions (except paths), radii, and scale components
+  are 0.01–20. Path widths/depths can be up to 128m. The lower bounds prevent numerically degenerate render/collision data.
+- There are at most 512 objects. This is a structural limit, not a frame-rate
   guarantee; complex generated layouts may still render slowly.
 
 ## Root settings
@@ -108,16 +110,16 @@ Optional `ground.hills` is an array of at most eight compact radial hills:
 "hills": [{ "center": [0, -3], "radius": 6, "height": 1.9 }]
 ```
 
-Centers use bounded X/Z coordinates. Radius is 2–12 m, height 0–3 m, and
+Centers use bounded X/Z coordinates. Radius is 2–32 m, height 0–6 m, and
 height/radius must not exceed 0.4. Each hill contributes
 `height * max(0, 1 - distanceSquared / radiusSquared)^2`. Overlapping hills add;
 keep them separated or lightly overlapping to retain gentle slopes. This is a
 height field with no caves, overhangs, cliffs, or vertical terrain walls.
 
-The surface samples a grid of at most 1 m spacing. Walking height uses exact
+The surface samples a grid with at most 32 segments per axis (4m spacing at 128m). Walking height uses exact
 triangle interpolation from that grid. Object Y is an offset above the terrain
 at its X/Z anchor; `walking.spawn[1]` is eye height above the terrain. Omitted
-hills preserve the previous flat-ground behavior. Paths tilt to the local slope;
+hills preserve the previous flat-ground behavior. Paths remain horizontal; any path with more than 2cm of terrain variation across its sampled rotated footprint is omitted by generation and the renderer;
 `patch` meshes conform to the surface. Keep large structures and pond footprints
 on flat ground: other rigid objects are anchored at their centers and stay upright.
 Ponds do not flatten terrain, and collision footprints remain horizontal.
@@ -222,7 +224,7 @@ generated layouts because geometric/visual alignment is the author's responsibil
 
 ## Built-in catalog
 
-`src/world/catalog.ts` validates the six selectable fixtures with `parseWorld`
+`src/world/catalog.ts` validates the two selectable 128m fixtures with `parseWorld`
 and adds presentation-only theme/description metadata outside the versioned JSON
 contract. The picker sends each selection through the same `loadWorldJson` path
 as imports. The shared renderer, lighting, overview camera, and walking session
@@ -242,10 +244,23 @@ Design the composition before choosing counts: reserve clear routes and negative
 space, place a landmark, then cluster supporting plants and rocks asymmetrically.
 Vary water count/size, route topology, tree density, hill placement, and shelter
 locations between worlds. Keep ponds on flat terrain and footpaths out of water.
-The shipped fixtures provide six contrasting examples. Catalog tests sample
+The shipped small fixtures remain authoring examples but are disabled in the picker. The active fixture is `open-meadow.json` (128 × 128m, 337 objects). Catalog tests sample
 walkable connectivity and shoreline clearance; schema validity alone does not
 prove good composition, reachability, or visual alignment. The implemented Gemini
 endpoint uses a compact blueprint rather than repeating full object definitions.
 Its compiler adds collisions, expands plant/tree clusters, normalizes steep hills
 and flat shores, and checks a connected walking region before admitting the result.
 See the README for configuration, budgets, local storage, and verification scope.
+
+Generation limits and sampling: 512 expanded objects, including at most 64 complex
+objects, four ponds, and 14 reusable asset definitions. Plant/tree cluster radii
+can reach 12m; object anchors and hill centers span the full -64 to +64m extent.
+The compiler uses a bounded 64-sample grid per axis to find connected exploration
+space; each connection uses exact swept collision. This is a sampled admission
+check, not a proof that every narrow route is reachable. Runtime collision and
+terrain height still use the exact player footprint and rendered terrain triangles.
+
+Small plants can use up to 36 instances per authored drift. The current meadow
+has 252 small plant clusters, up from 84; solid/complex instances remain capped
+at 64, including blocking bamboo and cactus. Generation aims for lush small
+ground cover and explicitly avoids pavement on hillsides.
