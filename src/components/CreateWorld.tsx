@@ -72,7 +72,7 @@ export function useWorldCreator({ disabled, onSelect }: { disabled: boolean; onS
 
   return <section className="create-world" aria-labelledby="create-world-title">
     <h3 id="create-world-title">Create World</h3>
-    <p className="import-note">Imagine a place. Let Gemini shape it.</p>
+    <p className="import-note">Imagine a place. Let Gemini shape it. Write in any language.</p>
     <form onSubmit={event => { event.preventDefault(); void generate() }}>
       <label htmlFor="world-description">Title or description</label>
       <textarea id="world-description" rows={3} minLength={3} maxLength={600} required value={prompt}
