@@ -4,6 +4,7 @@ import { worldCatalog } from '../world/catalog'
 import { loadWorldJson, MAX_WORLD_BYTES } from '../world/load-world'
 import type { WorldDefinition } from '../world/schema'
 import { useWorldCreator } from './CreateWorld'
+import type { WorldStyle } from '../world/icon-types'
 
 export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, onClose }: {
   disabled: boolean
@@ -18,6 +19,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
   const [draft, setDraft] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [reading, setReading] = useState(false)
+  const [style, setStyle] = useState<WorldStyle>('standard')
   const reject = (message: string) => setError(`${message}\nThe current world is unchanged.`)
 
   useLayoutEffect(() => {
@@ -45,7 +47,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
     if (!result.ok) { reject(result.message); return }
     choose(result.world)
   }
-  const creator = useWorldCreator({ disabled: disabled || reading, onSelect: choose })
+  const creator = useWorldCreator({ disabled: disabled || reading, onSelect: choose, style })
   const chooseFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0]
     event.currentTarget.value = ''
@@ -72,9 +74,21 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
       {narrow && <button type="button" className="quiet-button" onClick={() => dialog.current?.close()}>Close</button>}
     </div>
     <p className="picker-note">Explore compact gardens and wide landscapes. Sizes are shown below.</p>
+    <div className="world-style">
+      <label htmlFor="world-style">World style</label>
+      <select id="world-style" value={style} disabled={disabled || reading} aria-describedby="world-style-note"
+        onChange={event => setStyle(event.target.value as WorldStyle)}>
+        <option value="standard">Standard 3D objects</option>
+        <option value="icons">Extruded icons</option>
+        <option value="auto" disabled>Let Gemini decide</option>
+      </select>
+      <p id="world-style-note" className="import-note">{style === 'icons'
+        ? 'Explore the built-in Icon World below. Icon generation is coming later.'
+        : 'Browse a style, then choose a world. Let Gemini decide is coming later.'}</p>
+    </div>
     {creator}
     <div className="world-examples" aria-label="Worlds">
-      {worldCatalog.map(({ world, theme, description }, index) => (
+      {worldCatalog.filter(({ world }) => (world.style ?? 'standard') === style).map(({ world, theme, description }, index) => (
         <button className="world-card" type="button" key={world.id} disabled={disabled || reading}
           aria-label={world.name} aria-describedby={`world-description-${world.id}`} aria-pressed={currentWorldId === world.id}
           onClick={() => choose(world)}>

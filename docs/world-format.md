@@ -10,7 +10,7 @@ model loading or generated code execution.
 ## Load a world
 
 1. Leave any active walk with Escape or Tab.
-2. Select **Worlds**. Choose any of the nine built-in worlds, from compact gardens to 128 × 128m landscapes. For file/paste imports, expand
+2. Select **Worlds**. Choose a style and one of ten built-in worlds, from compact gardens to 128 × 128m landscapes or Icon World. For file/paste imports, expand
    **Open your own world JSON**, then select a `.json` file or paste JSON.
 3. Select **Load world** for file/paste input. Files populate the editor first;
    selecting a file does not replace the world by itself.
@@ -62,8 +62,8 @@ Current selectable built-in worlds (all dimensions in meters):
 | `amber-meadow.json` | 24 × 22 | 99 | No water, rolling flower meadow and windmill loop |
 | `basalt-reach.json` | 26 × 24 | 70 | Large lake, crescent shore and beacon |
 | `violet-sanctuary.json` | 24 × 22 | 75 | Three pools, arches, columns and secluded pavilion |
-
 | `maple-courtyard.json` | 14 × 12 | 15 | Flat maple courtyard, pond and entrance |
+| `icon-world.json` | 48 × 44 | 22 | Ten extruded office icons and twelve small grass clumps |
 
 Files live under `src/world/`. Maple Courtyard also verifies backward compatibility.
 
@@ -90,6 +90,7 @@ Files live under `src/world/`. Maple Courtyard also verifies backward compatibil
 | Field | Required value/shape |
 | --- | --- |
 | `schemaVersion`, `id`, `name` | As above |
+| `style` | Optional `standard` or `icons`; absent means standard for catalog browsing |
 | `ground` | `size: [width, depth]`, `color`, optional `hills` (below) |
 | `camera` | `position: [x,y,z]`, distinct `target: [x,y,z]`, `fov: 20–100` vertical degrees |
 | `environment` | `background`, `ambientIntensity: 0–10`, `sunlight` |

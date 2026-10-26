@@ -1,7 +1,7 @@
 :root { font-family: 'Segoe UI', system-ui, sans-serif; color: #24392e; background: #f3f2eb; font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; }
-button, input, textarea { font: inherit; }
+button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 button:disabled { opacity: .55; cursor: default; }
 [hidden] { display: none !important; }
@@ -63,7 +63,7 @@ footer span:last-child { text-align: right; }
 .scene-notice h2 { font: 400 1.7rem Georgia, serif; margin: 0; }
 .loading-mark { font-size: 2.5rem; color: #6a7e60; }
 .worlds-toggle, .quiet-button { min-height: 44px; padding: .6rem .9rem; border: 1px solid #24392e40; border-radius: 3px; background: transparent; color: inherit; font-size: .8rem; }
-a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 3px solid #a86643; outline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #a86643; outline-offset: 3px; }
 .world-drawer { position: fixed; inset: 0 auto 0 0; width: min(350px, calc(100vw - 1.5rem)); max-width: none; height: 100svh; max-height: 100svh; min-height: 0; margin: 0; padding: 1.5rem 1.25rem; border: 0; border-right: 1px solid #24392e30; background: #f3f2eb; color: inherit; box-shadow: 8px 0 60px #12271e40; }
 .world-drawer::backdrop { background: #152a2477; }
 @media (max-width: 900px) {
@@ -88,6 +88,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 @media (prefers-reduced-motion: reduce) { .world-description { transition: none; } }
 .create-world { margin-bottom: 1.5rem; padding: 1rem .8rem; border: 1px solid #24392e25; border-radius: 6px; background: #e8ecdf; }
+.world-style { display: grid; gap: .5rem; margin-bottom: 1.2rem; }
+.world-style label { font-size: .75rem; font-weight: 600; }
+.world-style select { width: 100%; min-height: 44px; padding: .6rem; border: 1px solid #24392e50; border-radius: 3px; background: #fffdf6; color: inherit; font-size: .8rem; }
 .create-world h3 { font: 400 1.25rem Georgia, serif; margin: 0 0 .5rem; }
 .create-world form { display: grid; gap: .65rem; margin-top: .9rem; }
 .create-world label { font-size: .75rem; font-weight: 600; }

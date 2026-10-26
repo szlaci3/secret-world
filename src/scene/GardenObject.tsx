@@ -3,6 +3,7 @@ import { Structure } from './Structure'
 import { SurfaceMaterial } from './SurfaceMaterial'
 import { useEffect, useMemo } from 'react'
 import { pondGeometry } from './pond-geometry'
+import { ExtrudedIcon } from './ExtrudedIcon'
 
 type ObjectOf<T extends WorldObject['type']> = Extract<WorldObject, { type: T }>
 
@@ -38,6 +39,7 @@ function Pond({ object, lowDetail }: { object: ObjectOf<'pond'>; lowDetail: bool
 
 function ObjectShape({ object, lowDetail }: { object: WorldObject; lowDetail: boolean }) {
   switch (object.type) {
+    case 'icon': return <ExtrudedIcon object={object} />
     case 'path': return <Path object={object} />
     case 'pond': return <Pond object={object} lowDetail={lowDetail} />
     case 'rock': return null // Batched by Rocks.

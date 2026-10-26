@@ -8,7 +8,9 @@ import { isLevelPath } from './paths'
 import { objectFitsGround } from './object-bounds'
 
 // Reuse the renderer's material/geometry contract; instances keep AI output compact.
-const assets = worldObjectSchema.options.map((schema) => (schema as z.ZodObject).omit({ id: true, position: true, rotation: true, scale: true, collision: true }))
+// Icon generation is outside this MVP; keep the existing provider contract.
+const assets = worldObjectSchema.options.filter(schema => schema.shape.type.value !== 'icon')
+  .map((schema) => (schema as z.ZodObject).omit({ id: true, position: true, rotation: true, scale: true, collision: true }))
 export const blueprintSchema = z.strictObject({
   name: z.string().trim().min(1).max(80),
   arrival: z.tuple([z.number().min(-64).max(64), z.number().min(-64).max(64)]).optional(),

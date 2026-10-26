@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { loadWorldJson } from '../world/load-world'
 import type { WorldDefinition } from '../world/schema'
 import { readSavedWorlds, writeSavedWorlds, SAVED_WORLDS_KEY } from '../world/saved-worlds'
+import type { WorldStyle } from '../world/icon-types'
 
 // State belongs to WorldPicker so switching its sidebar/drawer shell preserves
 // in-flight generation, unsaved results, and the user's description.
-export function useWorldCreator({ disabled, onSelect }: { disabled: boolean; onSelect: (world: WorldDefinition) => void }) {
+export function useWorldCreator({ disabled, onSelect, style }: { disabled: boolean; onSelect: (world: WorldDefinition) => void; style: WorldStyle }) {
   const [prompt, setPrompt] = useState('')
   const [pending, setPending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -32,7 +33,7 @@ export function useWorldCreator({ disabled, onSelect }: { disabled: boolean; onS
   useEffect(() => { if (result && !disabled) resultHeading.current?.focus() }, [result, disabled])
 
   const generate = async () => {
-    if (pending || disabled || active.current) return
+    if (pending || disabled || active.current || style === 'icons') return
     if (Date.now() - lastRequest.current < 10000) { setMessage('Please wait a few seconds before generating another world.'); return }
     const controller = new AbortController()
     active.current = controller
@@ -72,8 +73,8 @@ export function useWorldCreator({ disabled, onSelect }: { disabled: boolean; onS
 
   return <section className="create-world" aria-labelledby="create-world-title">
     <h3 id="create-world-title">Create World</h3>
-    <p className="import-note">Imagine a place. Let Gemini shape it. Write in any language.</p>
-    <form onSubmit={event => { event.preventDefault(); void generate() }}>
+    <p className="import-note">{style === 'icons' ? 'Icon World is ready to explore below.' : 'Imagine a place. Let Gemini shape it. Write in any language.'}</p>
+    <form hidden={style === 'icons'} onSubmit={event => { event.preventDefault(); void generate() }}>
       <label htmlFor="world-description">Title or description</label>
       <textarea id="world-description" rows={3} minLength={3} maxLength={600} required value={prompt}
         disabled={disabled || pending} onChange={event => setPrompt(event.target.value)}

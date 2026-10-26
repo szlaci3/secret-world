@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { collisionShapeSchema } from './collision-schema'
 import { createNavigation, isWalkable } from '../controls/navigation'
 import { WORLD_SIZE, MAX_GENERATED_OBJECTS } from './limits'
+import { iconNames, ICON_FOOTPRINT } from './icon-types'
 
 const coordinate = z.number().finite().min(-1000).max(1000)
 const vector3 = z.tuple([coordinate, coordinate, coordinate])
@@ -20,6 +21,14 @@ const transform = {
 }
 
 export const worldObjectSchema = z.discriminatedUnion('type', [
+  z.strictObject({ ...transform, type: z.literal('icon'), icon: z.enum(iconNames), color,
+    accentColor: color.optional(), detailColor: color.optional(),
+    // Always block the complete extrusion, including bevels, on JSON import too.
+    collision: z.array(collisionShapeSchema).max(8).default([
+      { kind: 'box', center: [0, 0], size: [...ICON_FOOTPRINT] },
+    ]).refine(shapes => shapes.some(shape => shape.kind === 'box' && shape.center.every(value => value === 0)
+      && shape.size[0] >= ICON_FOOTPRINT[0] && shape.size[1] >= ICON_FOOTPRINT[1]), 'Icons need a footprint covering the full extrusion'),
+  }),
   z.strictObject({ ...transform, type: z.literal('path'), size: z.tuple([pathDimension, pathDimension]), color }),
   z.strictObject({ ...transform, type: z.literal('pond'), radii: z.tuple([dimension, dimension]), waterColor: color, bankColor: color,
     lilyPads: z.array(z.strictObject({
@@ -36,11 +45,12 @@ export const worldObjectSchema = z.discriminatedUnion('type', [
   z.strictObject({ ...transform, type: z.literal('entrance'), woodColor: color, roofColor: color }),
 ])
 
-/** Version 1 accepts the foundation and a closed set of garden object kinds. */
+/** Version 1 accepts the foundation and a closed set of local object kinds. */
 export const worldSchema = z.strictObject({
   schemaVersion: z.literal(1),
   id: identifier,
   name: z.string().trim().min(1).max(80),
+  style: z.enum(['standard', 'icons']).optional(),
   ground: z.strictObject({
     size: z.tuple([z.number().finite().min(0.1).max(WORLD_SIZE), z.number().finite().min(0.1).max(WORLD_SIZE)]),
     color,

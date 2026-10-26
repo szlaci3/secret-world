@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "id": "icon-world",
+  "name": "Icon World",
+  "style": "icons",
+  "ground": {
+    "size": [
+      48,
+      44
+    ],
+    "color": "#9bc65b",
+    "hills": [
+      {
+        "center": [
+          -19,
+          -16
+        ],
+        "radius": 9,
+        "height": 1.2
+      },
+      {
+        "center": [
+          18,
+          -17
+        ],
+        "radius": 10,
+        "height": 1.5
+      }
+    ]
+  },
+  "camera": {
+    "position": [
+      19,
+      16,
+      29
+    ],
+    "target": [
+      0,
+      0.8,
+      0
+    ],
+    "fov": 45
+  },
+  "environment": {
+    "background": "#85cafa",
+    "ambientIntensity": 0.65,
+    "sunlight": {
+      "position": [
+        -12,
+        22,
+        14
+      ],
+      "color": "#fff3dc",
+      "intensity": 3.1
+    },
+    "skyLight": {
+      "skyColor": "#dbecff",
+      "groundColor": "#849a53",
+      "intensity": 1.5
+    },
+    "fog": {
+      "color": "#85cafa",
+      "near": 35,
+      "far": 75
+    }
+  },
+  "walking": {
+    "spawn": [
+      0,
+      1.65,
+      16
+    ],
+    "yaw": 0,
+    "speed": 3,
+    "fov": 65,
+    "lookSensitivity": 0.002,
+    "radius": 0.28
+  },
+  "objects": [
+    {
+      "id": "office-settings",
+      "type": "icon",
+      "icon": "settings",
+      "position": [
+        -7,
+        0,
+        6
+      ],
+      "rotation": 0.22,
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ],
+      "color": "#ad90e4"
+    },
+    {
+      "id": "office-paperclip",
+      "type": "icon",
+      "icon": "paperclip",
+      "position": [
+        -2.5,
+        0,
+        5
+      ],
+      "rotation": -0.2,
+      "scale": [
+        1.08,
+        1.08,
+        1.08
+      ],
+      "color": "#ff7662"
+    },
+    {
+      "id": "office-clock",
+      "type": "icon",
+      "icon": "clock",
+      "position": [
+        2.5,
+        0,
+        5.7
+      ],
+      "rotation": -0.12,
+      "scale": [
+        1.04,
+        1.04,
+        1.04
+      ],
+      "color": "#4e87df",
+      "accentColor": "#fff0d5",
+      "detailColor": "#314a6b"
+    },
+    {
+      "id": "office-folder",
+      "type": "icon",
+      "icon": "folder",
+      "position": [
+        7.2,
+        0,
+        5
+      ],
+      "rotation": -0.3,
+      "scale": [
+        1.08,
+        1.08,
+        1.08
+      ],
+      "color": "#ffd252"
+    },
+    {
+      "id": "office-briefcase",
+      "type": "icon",
+      "icon": "briefcase",
+      "position": [
+        -9,
+        0,
+        -0.8
+      ],
+      "rotation": 0.5,
+      "scale": [
+        0.94,
+        0.94,
+        0.94
+      ],
+      "color": "#efb5d3"
+    },
+    {
+      "id": "office-calculator",
+      "type": "icon",
+      "icon": "calculator",
+      "position": [
+        -3.6,
+        0,
+        -2
+      ],
+      "rotation": 0.14,
+      "scale": [
+        0.98,
+        0.98,
+        0.98
+      ],
+      "color": "#6bc9b4"
+    },
+    {
+      "id": "office-device-floppy",
+      "type": "icon",
+      "icon": "device-floppy",
+      "position": [
+        2.7,
+        0,
+        -1.8
+      ],
+      "rotation": -0.45,
+      "scale": [
+        0.93,
+        0.93,
+        0.93
+      ],
+      "color": "#a697ed"
+    },
+    {
+      "id": "office-bulb",
+      "type": "icon",
+      "icon": "bulb",
+      "position": [
+        8.6,
+        0,
+        -3
+      ],
+      "rotation": 0.45,
+      "scale": [
+        1.03,
+        1.03,
+        1.03
+      ],
+      "color": "#ffbf69"
+    },
+    {
+      "id": "office-bell",
+      "type": "icon",
+      "icon": "bell",
+      "position": [
+        -6.8,
+        0,
+        -8
+      ],
+      "rotation": -0.3,
+      "scale": [
+        0.97,
+        0.97,
+        0.97
+      ],
+      "color": "#70bce8"
+    },
+    {
+      "id": "office-book",
+      "type": "icon",
+      "icon": "book",
+      "position": [
+        3.8,
+        0,
+        -8.5
+      ],
+      "rotation": 0.35,
+      "scale": [
+        1.02,
+        1.02,
+        1.02
+      ],
+      "color": "#ef9d8c"
+    },
+    {
+      "id": "grass-0",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        -11,
+        0,
+        7
+      ],
+      "rotation": 0.0,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-1",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        -4,
+        0,
+        8
+      ],
+      "rotation": 0.8,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-2",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        5.5,
+        0,
+        8
+      ],
+      "rotation": 1.6,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-3",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        11,
+        0,
+        2
+      ],
+      "rotation": 2.4000000000000004,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-4",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        -11,
+        0,
+        -4
+      ],
+      "rotation": 3.2,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-5",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        0,
+        0,
+        -5
+      ],
+      "rotation": 4.0,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-6",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        7,
+        0,
+        -7
+      ],
+      "rotation": 4.800000000000001,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-7",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        -3,
+        0,
+        -10
+      ],
+      "rotation": 5.6000000000000005,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-8",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        11,
+        0,
+        -10
+      ],
+      "rotation": 6.4,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-9",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        -13,
+        0,
+        -11
+      ],
+      "rotation": 7.2,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-10",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        13,
+        0,
+        10
+      ],
+      "rotation": 8.0,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    },
+    {
+      "id": "grass-11",
+      "type": "plant",
+      "variety": "grass",
+      "position": [
+        -10,
+        0,
+        11
+      ],
+      "rotation": 8.8,
+      "scale": [
+        0.32,
+        0.32,
+        0.32
+      ],
+      "color": "#6d9e46",
+      "accentColor": "#a6c966"
+    }
+  ]
+}

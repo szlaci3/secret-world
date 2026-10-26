@@ -15,6 +15,19 @@ The sidebar collapses while walking; leaving restores selection focus. If the
 browser declines mouse capture, **Click to begin** offers another attempt.
 Touch devices support the overview; walking needs a keyboard and mouse.
 
+Select **World style → Extruded icons → Icon World** for the optional office
+playground. Ten local Tabler SVG icons stand on a 48 × 44 m grassy field:
+gear, paperclip, clock, folder, briefcase, calculator, floppy disk, bulb, bell,
+and book. They use constant-depth SVG extrusion, softly rounded bevels, pastel
+materials, and conservative walking footprints. Standard 3D objects remains the
+default browser style. **Let Gemini decide** is disabled for this MVP; icon
+generation is not connected. Existing Gemini generation still creates standard
+worlds. Browsing styles preserves the current scene until a card is selected.
+
+Tabler Icons v3.46.0 are [MIT licensed](https://github.com/tabler/tabler-icons/tree/v3.46.0).
+The original assets and license are in `src/assets/tabler/`; production also ships
+`/tabler-icons-LICENSE.txt`. See [Icon World implementation and checks](docs/icon-world.md).
+
 The built-in **The Open Meadow** spans **128 × 128 meters** (16,384 m²), with
 337 objects, including 252 small plant clusters (three times the previous 84): broad meadow routes, two ponds, distant groves, a hilltop windmill,
 a cabin, arches, and a lookout.
@@ -129,6 +142,7 @@ These checks do not prove artistic quality or reachability of every decorative p
 npm.cmd test
 npm.cmd run build
 npm.cmd run smoke
+npm.cmd run inspect:icons
 node scripts/inspect-garden.mjs --walk --collisions --worlds
 npm.cmd run inspect:generation
 # Optional: one real Gemini request using .env (incurs provider usage).

@@ -38,6 +38,8 @@ export async function checkExperience(page, browser, base) {
   await page.keyboard.press('Tab')
   assert(await page.locator('.wordmark').evaluate((element) => element === document.activeElement))
   await page.keyboard.press('Tab')
+  assert(await page.getByLabel('World style', { exact: true }).evaluate(element => element === document.activeElement), 'World style must be keyboard reachable')
+  await page.keyboard.press('Tab')
   assert(await page.getByLabel('Title or description').evaluate(element => element === document.activeElement), 'Create World must be keyboard reachable')
   await page.keyboard.press('Tab')
   const card = page.locator('.world-card[aria-pressed="true"]')

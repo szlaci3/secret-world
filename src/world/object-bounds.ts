@@ -1,10 +1,12 @@
 import type { WorldObject } from './schema'
+import { ICON_FOOTPRINT } from './icon-types'
 
 // Conservative local X/Z envelopes of the reusable geometry, including roofs,
 // sails, leaves and both detail levels, rather than collision-only footprints.
 // Geometry tests keep these envelopes in sync without loading meshes server-side.
 function localHalfSize(object: WorldObject): [number, number] {
   switch (object.type) {
+    case 'icon': return [ICON_FOOTPRINT[0] / 2, ICON_FOOTPRINT[1] / 2]
     case 'path': return [object.size[0] / 2, object.size[1] / 2]
     case 'pond': return [object.radii[0] * 1.15, object.radii[1] * 1.15]
     case 'patch': return object.radii

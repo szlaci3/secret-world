@@ -7,6 +7,7 @@ import garden from './garden.json'
 import mapleCourtyard from './maple-courtyard.json'
 import sandstoneOasis from './sandstone-oasis.json'
 import violetSanctuary from './violet-sanctuary.json'
+import iconWorld from './icon-world.json'
 import { parseWorld } from './schema'
 
 // Presentation metadata stays outside the versioned world contract. Every scene
@@ -21,4 +22,5 @@ export const worldCatalog = [
   { data: mapleCourtyard, theme: '14 × 12 m · Maple courtyard', description: 'Step into a small courtyard framed by maple trees, stonework, and a quiet seat.' },
   { data: sandstoneOasis, theme: '24 × 22 m · Desert oasis', description: 'Cross warm dunes between turquoise pools, palms, and weathered gateway ruins.' },
   { data: violetSanctuary, theme: '24 × 22 m · Moonlit sanctuary', description: 'Discover a quiet violet-toned refuge among sculpted stone, water, and sheltering trees.' },
+  { data: iconWorld, theme: '48 × 44 m · Extruded icons', description: 'A playful office on the grass. Wander among ten colorful, softly beveled icons, from a giant paperclip to a lavender gear.' },
 ].map(({ data, ...details }) => ({ ...details, world: parseWorld(data) }))

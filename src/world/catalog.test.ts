@@ -6,10 +6,10 @@ import { terrainHeight } from './terrain'
 import { isLevelPath } from './paths'
 
 describe('walkable world catalog', () => {
-  it('offers large landscapes, six compact worlds, and Maple Courtyard', () => {
-    expect(worldCatalog).toHaveLength(9)
+  it('offers the existing nine worlds and one Icon World', () => {
+    expect(worldCatalog).toHaveLength(10)
     expect(new Set(worldCatalog.map(({ world }) => world.id)).size).toBe(worldCatalog.length)
-    expect(worldCatalog.filter(({ world }) => Math.max(...world.ground.size) < 128)).toHaveLength(7)
+    expect(worldCatalog.filter(({ world }) => Math.max(...world.ground.size) < 128)).toHaveLength(8)
     for (const { world, theme } of worldCatalog) {
       expect(theme).toContain(`${world.ground.size[0]} × ${world.ground.size[1]} m`)
     }
@@ -46,7 +46,7 @@ describe('walkable world catalog', () => {
     for (const object of world.objects) {
       // Legacy hillside stones remain authored but are omitted by the renderer.
       if (object.type === 'path' && Math.min(...world.ground.size) >= 32) expect(isLevelPath(world.ground, object)).toBe(true)
-      if (['tree', 'rock', 'structure', 'pond', 'entrance', 'lantern'].includes(object.type)) expect(object.collision?.length).toBeGreaterThan(0)
+      if (['tree', 'rock', 'structure', 'pond', 'entrance', 'lantern', 'icon'].includes(object.type)) expect(object.collision?.length).toBeGreaterThan(0)
       if (object.type === 'pond') {
         expect(isWalkable({ x: object.position[0], z: object.position[2] }, navigation)).toBe(false)
         // Water remains level: no hill should protrude through the bank.
