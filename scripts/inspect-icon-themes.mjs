@@ -28,7 +28,7 @@ try {
   await sidebar.locator('summary').click()
   await mkdir('artifacts/icon-themes', { recursive: true })
   const worlds = []
-  for (const name of ['underwater', 'village', 'zoo', 'festival', 'office', 'auto-icons', 'large']) {
+  for (const name of ['underwater', 'village', 'zoo', 'festival', 'office', 'auto-icons', 'large', 'compact16', 'population75']) {
     try { worlds.push([name, JSON.parse(await readFile(`artifacts/icon-themes/${name}.json`, 'utf8'))]) }
     catch (error) { if (error.code !== 'ENOENT') throw error }
   }

@@ -10,6 +10,8 @@ import { ICON_FOOTPRINT } from './icon-types'
 import type { GenerationStyle } from './icon-types'
 import { MAX_ICON_OBJECTS, MAX_ICON_ASSETS, MAX_ICON_PLACEMENTS } from './icon-limits'
 import { iconFootprintsSeparated } from './icon-layout'
+import { composeIconBlueprint } from './icon-composition'
+import type { IconPopulation } from './icon-population'
 
 // Reuse the renderer's material/geometry contract; instances keep AI output compact.
 const assets = worldObjectSchema.options.filter(schema => schema.shape.type.value !== 'icon')
@@ -88,9 +90,10 @@ function collisions(object: WorldObject): WorldObject['collision'] {
   }
 }
 
-export function compileBlueprint(input: unknown, id: string, requestedStyle: GenerationStyle = 'standard') {
+export function compileBlueprint(input: unknown, id: string, requestedStyle: GenerationStyle = 'standard', options: { iconPopulation?: IconPopulation } = {}) {
   const style = requestedStyle === 'auto' ? autoBlueprintSchema.parse(input).style : requestedStyle
-  const plan = (style === 'icons' ? iconBlueprintSchema : blueprintSchema).parse(input)
+  let plan = (style === 'icons' ? iconBlueprintSchema : blueprintSchema).parse(input)
+  if (style === 'icons' && options.iconPopulation) plan = composeIconBlueprint(iconBlueprintSchema.parse(plan), options.iconPopulation)
   // Preserve hill placement while gently reducing any over-steep AI elevation.
   plan.ground.hills = plan.ground.hills?.map(hill => ({ ...hill, height: Math.min(hill.height, hill.radius * 0.39) }))
   // Night palettes remain atmospheric, but geometry must stay visible for walking.
@@ -242,6 +245,8 @@ export function compileBlueprint(input: unknown, id: string, requestedStyle: Gen
     const targetX = focus.length ? focus.reduce((sum, o) => sum + o.position[0], 0) / focus.length : 0
     const targetZ = focus.length ? focus.reduce((sum, o) => sum + o.position[2], 0) / focus.length : 0
     if (Math.hypot(spawn.x - targetX, spawn.z - targetZ) > 0.5) walking.yaw = Math.atan2(spawn.x - targetX, spawn.z - targetZ)
+    // Composed icon worlds reserve a straight northbound route from arrival.
+    if (style === 'icons' && options.iconPopulation) walking.yaw = 0
   }
   // Move the sun away from the origin so its shadow frustum covers a large land.
   const sunlight = plan.environment.sunlight.position

@@ -90,7 +90,7 @@ export function useWorldCreator({ disabled, onSelect, style }: { disabled: boole
     </form>
     {result && <div className="generated-result">
       <h4 ref={resultHeading} tabIndex={-1}>{result.name}</h4>
-      <p className="import-note generated-style">{worldStyleLabels[result.style ?? 'standard']} · {result.ground.size.join(' × ')} m</p>
+      <p className="import-note generated-style">{worldStyleLabels[result.style ?? 'standard']} · {result.ground.size.join(' × ')} m{result.style === 'icons' && ` · ${result.objects.filter(object => object.type === 'icon').length} icons`}</p>
       <p className="import-note">{saved ? 'Saved in this browser.' : 'Ready to explore. Save it to keep it after a reload.'}</p>
       <div className="world-actions">
         <button className="load-world" type="button" disabled={disabled} onClick={() => onSelect(result)}>Enter world</button>

@@ -231,3 +231,59 @@ full-detail and new medium-detail geometry checks, the LOD transition/ground ben
 production 96-icon walking checks, original Icon World checks, all-world walking/collision/
 import/responsive/recovery regression, generation-style UI regression, smoke and diff checks
 passed. Existing worlds and the three generation choices are preserved.
+
+## Density-aware generation and populations
+
+New `/api/create-world` icon results now pass through a deterministic composition step.
+Default briefs produce **32–48 actual icons**, aiming for 40 in the provider instructions.
+Small/tiny/minimal briefs target 12–20 and may use fewer copies when they select fewer than
+six distinct subjects. Rich/populous briefs target 72–96 (subject to configured capacity).
+Explicit counts attached to icon/object/symbol nouns, such as `16 icons`, `75 icon objects`
+or `96 objects`, are enforced exactly. Common small number words are supported; `up to`
+and `at least` are treated as bounds. Ground dimensions such as `96 by 96 meters` are not
+interpreted as population requests. An impossible explicit count in icon mode is rejected
+before a paid provider call. The current maximum remains 96 by default.
+
+Gemini chooses available subjects, palettes, scales and thematic grouping. The application
+repeats only selected assets when necessary; it does not invent unrelated filler icons.
+A provider result containing only a few asset definitions does not lower the normal
+population floor. If it supplies too many copies, the composition selects across its
+groups; if too few, it distributes additional copies across those groups.
+
+A deterministic nearby-position search compacts the relative group arrangement, uses the
+actual rotated/scaled footprint clearance, and reserves a continuous 2.4m central route,
+boundary margins and an arrival apron. It tries a compact packing area first and expands
+only when required. Final rectangular ground is fitted to the occupied icon bounds plus
+walking margins (minimum 24m per axis), rather than preserving an oversized provider field.
+Icon sizes are preserved. Decorative grass is transformed with the composition and cropped
+using the existing admission rules; it does not force the terrain to grow. Arrival faces
+the reserved route. Count, bounds, connected navigation and safe spawn are still validated.
+
+This composition policy is opt-in at provider generation: saved/imported worlds, direct
+legacy blueprint compilation and Standard generation retain their authored layouts. Auto
+applies the policy only when Gemini chooses icons. The result label now shows the actual
+icon count alongside style and dimensions. Generation remains one provider call with no
+automatic paid retry.
+
+Real Gemini results verified for this change:
+
+| Brief | Actual icons | Final ground |
+| --- | ---: | --- |
+| Default office | 42 | 44×44m |
+| Small village, explicitly 16 icons | 16 | 28×30m |
+| Underwater, explicitly 75 icons | 75 | 60×60m |
+| Music festival, explicitly 96 icons | 96 | 64×64m |
+
+One 75-icon request encountered a temporary provider high-demand 503; a separately
+initiated retry passed. Recorded provider blueprints can be recompiled without another
+provider call using `node scripts/check-icon-themes.mjs --recorded --only=office,compact16,population75,large`.
+The same cases can be rendered/walked with `node scripts/inspect-icon-themes.mjs --only=office,compact16,population75,large`.
+
+229 tests, production build/typecheck, generation-style save/revisit/walking/browser
+regression, original Icon World/Standard-return/mobile checks, four generated-world
+rendering/walking checks, smoke and diff checks passed. The 96-object/2×-scale case also
+passed automated footprint and capacity validation. The dense scenes retained zero idle
+redraws. Short adaptive SwiftShader walking samples measured roughly 15–16 FPS for the
+16/42/75-icon scenes and 9 FPS for the denser 96-icon festival at a 919×705 render buffer.
+Compaction increases simultaneously visible content, so these are not performance wins
+or hardware GPU capacity measurements; hardware and hosted behavior remain unverified.

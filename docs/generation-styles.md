@@ -33,8 +33,9 @@ and navigation checks. Icon generation uses:
 - Only validated catalog names (2,154 pinned Tabler SVGs) and optional `plant`/`grass` assets. No custom
   markup, SVG URLs, models or unsupported object kinds.
 - Flat ground with independent 24–128m axes, up to the configured icon budget (96 by default),
-  48 reusable assets and at most 96 retained grass clumps. Guidance aims for 20–40 icons unless
-  the brief calls for fewer, with compact repeated groups for larger worlds.
+  48 reusable assets and at most 96 retained grass clumps. Normal briefs enforce 32–48 actual icons, while small briefs may use fewer and explicit
+  populations are enforced up to the configured budget. Provider group positions are
+  compacted and the ground fitted to actual occupied bounds; see [Icon World](icon-world.md).
 - Uniform icon scale, using the blueprint's Y component for all three axes.
   Instance colors and Y rotations are retained; depth, bevels, materials and
   geometry reuse come from the existing icon renderer.

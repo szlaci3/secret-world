@@ -66,7 +66,7 @@ describe('create-world endpoint', () => {
       ['standard', testIconBlueprint()],
       ['auto', testBlueprint()],
       ['auto', { ...testIconBlueprint(), style: 'standard' }],
-      ['icons', { ...testIconBlueprint(), placements: Array(2).fill(testIconBlueprint().placements[0]) }],
+      ['icons', { ...testIconBlueprint(), placements: [testIconBlueprint().placements[10]] }],
     ] as const) {
       const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(plan) }] } }] }))
       const response = await createHandler(env, fetcher)(request({ prompt: 'A pastel office', style }))
