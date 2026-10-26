@@ -6,7 +6,7 @@ import { createServer, preview } from 'vite'
 // Validate real SVGLoader output in a browser (DOMParser), then exercise the
 // production app without runtime debug hooks or another renderer in the app.
 const dev = await createServer({ server: { host: '127.0.0.1', port: 0 },
-  optimizeDeps: { noDiscovery: true, include: ['three', 'three/addons/loaders/SVGLoader.js', 'three/addons/utils/BufferGeometryUtils.js'] },
+  optimizeDeps: { noDiscovery: true, include: ['three', 'clipper-lib', 'three/addons/loaders/SVGLoader.js', 'three/addons/utils/BufferGeometryUtils.js'] },
   plugins: [{ name: 'icon-geometry-inspection', configureServer(server) {
     server.middlewares.use('/__icon-test', (_request, response) => { response.setHeader('Content-Type', 'text/html'); response.end('<!doctype html><title>SVG geometry checks</title>') })
   } }] })
@@ -19,7 +19,7 @@ try {
   await geometryPage.goto(`http://127.0.0.1:${dev.httpServer.address().port}/__icon-test`)
   const geometryResults = await geometryPage.evaluate(async () => {
     const { iconGeometry } = await import('/src/scene/icon-geometry.ts')
-    const { iconNames, ICON_SIZE, ICON_DEPTH, ICON_BEVEL } = await import('/src/world/icon-types.ts')
+    const { legacyIconNames: iconNames, ICON_SIZE, ICON_DEPTH, ICON_BEVEL } = await import('/src/world/icon-types.ts')
     const { Box3, Vector3, Mesh, MeshBasicMaterial, Raycaster, DoubleSide } = await import('/node_modules/.vite/deps/three.js')
     const results = []
     for (const name of iconNames) {
@@ -31,7 +31,10 @@ try {
         finite &&= [...geometry.attributes.position.array, ...geometry.attributes.normal.array].every(Number.isFinite)
         const normals = geometry.attributes.normal
         for (const group of geometry.groups) if (group.materialIndex === 0) {
-          for (let i = group.start; i < group.start + group.count; i++) planarCaps &&= normals.getX(i) === 0 && normals.getY(i) === 0 && Math.abs(normals.getZ(i)) === 1
+          for (let i = group.start; i < group.start + group.count; i++) {
+            const vertex = geometry.index ? geometry.index.getX(i) : i
+            planarCaps &&= normals.getX(vertex) === 0 && normals.getY(vertex) === 0 && Math.abs(normals.getZ(vertex)) === 1
+          }
         }
       }
       const size = bounds.getSize(new Vector3())

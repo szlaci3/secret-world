@@ -1,6 +1,9 @@
 // A finite local asset catalog: world JSON never supplies SVG markup or URLs.
-export const iconNames = ['settings', 'paperclip', 'clock', 'folder', 'briefcase', 'calculator', 'device-floppy', 'bulb', 'bell', 'book'] as const
-export type IconName = typeof iconNames[number]
+import { catalogNames } from '../icons/names'
+
+export type IconName = typeof catalogNames[number]
+export const iconNames = catalogNames
+export const legacyIconNames = ['settings', 'paperclip', 'clock', 'folder', 'briefcase', 'calculator', 'device-floppy', 'bulb', 'bell', 'book'] as const
 export type WorldStyle = 'standard' | 'icons'
 export const generationStyles = ['standard', 'icons', 'auto'] as const
 export type GenerationStyle = typeof generationStyles[number]

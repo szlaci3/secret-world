@@ -16,6 +16,9 @@
     "inspect:generation": "node scripts/inspect-generation.mjs",
     "inspect:generation-styles": "node scripts/inspect-generation-styles.mjs",
     "inspect:icons": "node scripts/inspect-icons.mjs",
+    "check:icon-catalog": "node scripts/check-icon-catalog.mjs",
+    "check:icon-themes": "node scripts/check-icon-themes.mjs",
+    "inspect:icon-themes": "node scripts/inspect-icon-themes.mjs",
     "check:generation": "node scripts/check-generation.mjs --live",
     "measure:performance": "node scripts/measure-performance.mjs",
     "capture:thumbnails": "node scripts/capture-thumbnails.mjs",
@@ -24,12 +27,14 @@
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",
+    "clipper-lib": "^6.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "three": "^0.186.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/clipper-lib": "^6.4.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",

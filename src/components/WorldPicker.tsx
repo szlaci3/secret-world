@@ -83,7 +83,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
         <option value="auto">Let Gemini decide</option>
       </select>
       <p id="world-style-note" className="import-note">{style === 'icons'
-        ? 'Generate a colorful world of office icons, or explore Icon World below.'
+        ? 'Generate a colorful world of themed icons, or explore Icon World below.'
         : style === 'auto' ? 'Gemini chooses the style that suits your description. Browse all built-in worlds below.'
         : 'Generate a landscape with standard 3D objects, or choose a world below.'}</p>
     </div>

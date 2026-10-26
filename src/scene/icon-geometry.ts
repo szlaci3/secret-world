@@ -1,15 +1,28 @@
 import { Box3, ExtrudeGeometry, Path, Shape, Vector3 } from 'three'
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js'
-import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js'
+import { mergeVertices, toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js'
 import { ICON_BEVEL, ICON_DEPTH, ICON_SIZE } from '../world/icon-types'
 import type { IconName } from '../world/icon-types'
 import { closedStroke } from './icon-shapes'
+import { iconSource } from './icon-sources'
+import { iconContours } from './icon-contours'
+import { legacyIconNames } from '../world/icon-types'
 
-// Vite bundles these ten trusted SVGs as text. No CDN, user SVGs or extra canvas.
-const sources = import.meta.glob<string>('../assets/tabler/*.svg', { query: '?raw', import: 'default', eager: true })
 type ColorSlot = 'color' | 'accentColor' | 'detailColor'
 type IconPart = { geometry: ReturnType<typeof toCreasedNormals>; slot: ColorSlot }
-const cache = new Map<IconName, IconPart[]>()
+const cache = new Map<string, IconPart[]>()
+let active = new Set<IconName>()
+export function retainIconGeometries(names: IconName[]) {
+  active = new Set(names)
+  // Keep recent silhouettes between worlds without accumulating the full catalog
+  // in GPU memory. Never dispose a geometry used by the current world.
+  for (const [name, parts] of cache) {
+    if (cache.size <= 96) break
+    if (active.has(name.split(':')[0] as IconName)) continue
+    parts.forEach(part => part.geometry.dispose())
+    cache.delete(name)
+  }
+}
 
 function circle(radius: number) {
   const shape = new Shape()
@@ -17,14 +30,14 @@ function circle(radius: number) {
   return shape
 }
 
-function silhouettes(icon: IconName): { shapes: Shape[]; slot: ColorSlot }[] {
+function silhouettes(icon: IconName, lowDetail: boolean): { shapes: Shape[]; slot: ColorSlot }[] {
   // The mesh supplies color. Resolve CSS currentColor before SVGLoader parses it.
-  const { paths } = new SVGLoader().parse(sources[`../assets/tabler/${icon}.svg`].replaceAll('currentColor', '#000000'))
-  const shapes = paths.flatMap(path => {
+  const { paths } = new SVGLoader().parse(iconSource(icon).replaceAll('currentColor', '#000000'))
+  const shapes = ((legacyIconNames as readonly string[]).includes(icon) && (!lowDetail || icon === 'clock')) ? paths.flatMap(path => {
     const style = path.userData?.style as { fill?: string; strokeWidth?: number } | undefined
     if (style?.fill !== 'none') return path.toShapes()
     return path.subPaths.map(subpath => closedStroke(subpath.getPoints(32), Number(style.strokeWidth ?? 2)))
-  })
+  }) : iconContours(paths, lowDetail)
   if (icon !== 'clock') return [{ shapes, slot: 'color' }]
 
   // Partition Tabler's filled clock into rim, cream face and its original hand
@@ -41,13 +54,14 @@ function silhouettes(icon: IconName): { shapes: Shape[]; slot: ColorSlot }[] {
 /** One bounded, session-long cache keyed by silhouette, independent of transforms
  * and colors. R3F primitives do not dispose these shared geometries on unmount.
  */
-export function iconGeometry(icon: IconName): IconPart[] {
-  const found = cache.get(icon)
-  if (found) return found
-  const profiles = silhouettes(icon)
+export function iconGeometry(icon: IconName, lowDetail = false): IconPart[] {
+  const key = `${icon}:${lowDetail}`
+  const found = cache.get(key)
+  if (found) { cache.delete(key); cache.set(key, found); return found }
+  const profiles = silhouettes(icon, lowDetail)
   const parts = profiles.map(({ shapes, slot }) => {
     const geometry = new ExtrudeGeometry(shapes, {
-      depth: 1, bevelEnabled: false, steps: 1, curveSegments: 32,
+      depth: 1, bevelEnabled: false, steps: 1, curveSegments: lowDetail ? 6 : 32,
     })
     return { geometry, slot }
   })
@@ -69,26 +83,31 @@ export function iconGeometry(icon: IconName): IconPart[] {
       bevelThickness: ICON_BEVEL / factor, bevelSize: ICON_BEVEL / factor,
       // Round inward from the silhouette: adjoining clock colors never overlap.
       bevelOffset: -ICON_BEVEL / factor,
-      bevelSegments: 4, steps: 1, curveSegments: 32,
+      bevelSegments: lowDetail ? 2 : 4, steps: 1, curveSegments: lowDetail ? 6 : 32,
     })
     raw.rotateX(Math.PI)
     if (icon === 'paperclip') raw.rotateZ(Math.PI / 4)
     raw.scale(factor, factor, factor)
     raw.translate(-center.x * factor, -bounds.min.y * factor, ICON_DEPTH / 2)
-    const geometry = toCreasedNormals(raw, Math.PI / 3)
+    const smoothed = toCreasedNormals(raw, Math.PI / 3)
     // Smooth bevels/sidewalls, but keep broad cap triangles perfectly planar.
     // Averaging edge normals onto caps produces visible diagonal shading fans.
-    const normals = geometry.getAttribute('normal'), positions = geometry.getAttribute('position')
-    for (const group of geometry.groups) if (group.materialIndex === 0) {
+    const normals = smoothed.getAttribute('normal'), positions = smoothed.getAttribute('position')
+    for (const group of smoothed.groups) if (group.materialIndex === 0) {
       for (let i = group.start; i < group.start + group.count; i++) normals.setXYZ(i, 0, 0, Math.sign(positions.getZ(i)))
     }
-    if (geometry !== raw) raw.dispose()
+    // Creased normals expand triangles. Reindex equal vertices/normals/UVs so
+    // repeated instances benefit from the GPU's vertex cache without reshading.
+    const geometry = mergeVertices(smoothed)
+    if (smoothed !== raw) raw.dispose()
+    smoothed.dispose()
     geometry.computeBoundingBox()
     geometry.computeBoundingSphere()
     return { geometry, slot }
   })
   for (const { geometry } of parts) geometry.dispose()
-  cache.set(icon, result)
+  cache.set(key, result)
+  retainIconGeometries([...active])
   return result
 }
 

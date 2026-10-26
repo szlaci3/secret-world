@@ -8,6 +8,8 @@ import { isLevelPath } from './paths'
 import { objectFitsGround } from './object-bounds'
 import { ICON_FOOTPRINT } from './icon-types'
 import type { GenerationStyle } from './icon-types'
+import { MAX_ICON_OBJECTS, MAX_ICON_ASSETS, MAX_ICON_PLACEMENTS } from './icon-limits'
+import { iconFootprintsSeparated } from './icon-layout'
 
 // Reuse the renderer's material/geometry contract; instances keep AI output compact.
 const assets = worldObjectSchema.options.filter(schema => schema.shape.type.value !== 'icon')
@@ -35,41 +37,33 @@ export const blueprintSchema = z.strictObject({
 const iconAsset = worldObjectSchema.options[0].omit({ id: true, position: true, rotation: true, scale: true, collision: true })
 const grassAsset = z.strictObject({ type: z.literal('plant'), variety: z.literal('grass'),
   color: worldSchema.shape.ground.shape.color, accentColor: worldSchema.shape.ground.shape.color })
+const iconPlacements = z.array(blueprintSchema.shape.placements.element.extend({ asset: z.number().int().min(0).max(MAX_ICON_ASSETS - 1) })).min(1).max(MAX_ICON_PLACEMENTS)
 export const iconBlueprintSchema = blueprintSchema.extend({
   style: z.literal('icons').optional(),
   ground: blueprintSchema.shape.ground.extend({
-    size: z.tuple([z.number().min(24).max(64), z.number().min(24).max(64)]),
+    size: z.tuple([z.number().min(24).max(WORLD_SIZE), z.number().min(24).max(WORLD_SIZE)]),
     hills: blueprintSchema.shape.ground.shape.hills.unwrap().max(0).optional(),
   }),
-  assets: z.array(z.union([iconAsset, grassAsset])).min(1).max(14),
+  assets: z.array(z.union([iconAsset, grassAsset])).min(1).max(MAX_ICON_ASSETS),
+  placements: iconPlacements,
 })
 // Auto uses one provider call. The chosen style is required, then the compiler
 // revalidates against that style's narrower contract before building anything.
 const autoBlueprintSchema = blueprintSchema.extend({
   style: z.enum(['standard', 'icons']),
-  assets: z.array(z.union([iconAsset, ...assets] as [typeof iconAsset, typeof assets[number], ...typeof assets[number][]])).min(1).max(14),
+  assets: z.array(z.union([iconAsset, ...assets] as [typeof iconAsset, typeof assets[number], ...typeof assets[number][]])).min(1).max(MAX_ICON_ASSETS),
+  placements: iconPlacements,
 })
 export const blueprintForStyle = (style: GenerationStyle) => style === 'icons' ? iconBlueprintSchema : style === 'auto' ? autoBlueprintSchema : blueprintSchema
 
 function validateIconLayout(objects: WorldObject[]) {
   const icons = objects.filter(object => object.type === 'icon')
-  if (!icons.length || icons.length > 24) throw new Error('Icon layout: use 1–24 icon objects.')
+  if (!icons.length || icons.length > MAX_ICON_OBJECTS) throw new Error(`Icon layout: use 1–${MAX_ICON_OBJECTS} icon objects.`)
   if (objects.length - icons.length > 96) throw new Error('Icon layout: use at most 96 small grass clumps.')
-  const rectangles = icons.map(object => ({
-    object,
-    axes: [[Math.cos(object.rotation), -Math.sin(object.rotation)], [Math.sin(object.rotation), Math.cos(object.rotation)]],
-    half: [ICON_FOOTPRINT[0] * object.scale[0] / 2, ICON_FOOTPRINT[1] * object.scale[2] / 2],
-  }))
   // Separating axes of both rotated footprints, with 1.2m of walking clearance.
   // This is deliberately conservative near diagonal corners.
-  for (let i = 0; i < rectangles.length; i++) for (let j = i + 1; j < rectangles.length; j++) {
-    const a = rectangles[i], b = rectangles[j]
-    const dx = b.object.position[0] - a.object.position[0], dz = b.object.position[2] - a.object.position[2]
-    const separated = [...a.axes, ...b.axes].some(([x, z]) => {
-      const radius = (rect: typeof a) => rect.axes.reduce((sum, axis, k) => sum + rect.half[k] * Math.abs(axis[0] * x + axis[1] * z), 0)
-      return Math.abs(dx * x + dz * z) >= radius(a) + radius(b) + 1.2 - 1e-8
-    })
-    if (!separated) throw new Error('Icon layout: leave at least 1.2m between the full rotated icon footprints.')
+  for (let i = 0; i < icons.length; i++) for (let j = i + 1; j < icons.length; j++) {
+    if (!iconFootprintsSeparated(icons[i], icons[j])) throw new Error('Icon layout: leave at least 1.2m between the full rotated icon footprints.')
   }
 }
 
@@ -107,16 +101,37 @@ export function compileBlueprint(input: unknown, id: string, requestedStyle: Gen
   if (plan.ground.hills?.some(h => Math.abs(h.center[0]) > width / 2 || Math.abs(h.center[1]) > depth / 2)) {
     throw new Error('Hill center outside the world.')
   }
+  if (plan.placements.reduce((sum, placement) => sum + (placement.count ?? 1), 0) > MAX_GENERATED_OBJECTS) throw new Error('Too many total instances.')
+  const iconCount = plan.placements.reduce((sum, placement) => sum + (plan.assets[placement.asset]?.type === 'icon' ? placement.count ?? 1 : 0), 0)
+  if (style === 'icons' && (!iconCount || iconCount > MAX_ICON_OBJECTS)) throw new Error(`Icon layout: use 1–${MAX_ICON_OBJECTS} icon objects.`)
+  const packedIcons: WorldObject[] = []
   const placements = plan.placements.flatMap(placement => {
     const asset = plan.assets[placement.asset]
     const count = placement.count ?? 1
     const spread = placement.spread ?? 0
-    if (count > 1 && (!asset || !['tree', 'plant'].includes(String(asset.type)) || spread < 0.5)) throw new Error('Only vegetation can form spaced clusters.')
+    const iconCluster = style === 'icons' && asset?.type === 'icon'
+    if (count > 1 && (!asset || (!iconCluster && !['tree', 'plant'].includes(String(asset.type))) || spread < 0.5)) throw new Error('Only vegetation or icon-world icons can form spaced clusters.')
     return Array.from({ length: count }, (_, index) => {
       const angle = index * 2.399963 + placement.rotation
       const radius = count === 1 ? 0 : spread * Math.sqrt(index / (count - 1))
-      return { ...placement, position: [placement.position[0] + Math.cos(angle) * radius,
-        placement.position[1] + Math.sin(angle) * radius] }
+      let position = [placement.position[0] + Math.cos(angle) * radius, placement.position[1] + Math.sin(angle) * radius]
+      if (iconCluster) {
+        const object = { ...asset, id: 'packing', position: [position[0], 0, position[1]], rotation: placement.rotation, scale: [placement.scale[1], placement.scale[1], placement.scale[1]] } as WorldObject
+        if (count > 1) {
+          // Search only inside the authored group. Preserve counts, silhouettes,
+          // colors and group centers, with exactly the final admission clearance.
+          let found = false
+          for (let attempt = 0; attempt < 256; attempt++) {
+            const a = attempt * 2.399963 + placement.rotation, r = spread * Math.sqrt(attempt / 255)
+            object.position = [placement.position[0] + Math.cos(a) * r, 0, placement.position[1] + Math.sin(a) * r]
+            if (objectFitsGround(object, plan.ground.size) && packedIcons.every(other => iconFootprintsSeparated(object, other))) { found = true; break }
+          }
+          if (!found) throw new Error('Icon layout: a repeated group needs more space. Use fewer copies per group or a larger spread.')
+        }
+        packedIcons.push(object)
+        position = [object.position[0], object.position[2]]
+      }
+      return { ...placement, position }
     })
   })
   if (placements.length > MAX_GENERATED_OBJECTS) throw new Error('Too many total instances.')
@@ -177,7 +192,7 @@ export function compileBlueprint(input: unknown, id: string, requestedStyle: Gen
     // Intersecting paths can leave no stable verge; omit rather than block them.
     return !paths.some(path => routeOverlap(object, path).overlaps)
   })
-  if (objects.filter(o => !['plant', 'path', 'patch'].includes(o.type) || !!o.collision?.length).length > MAX_COMPLEX_OBJECTS) throw new Error('Too many complex objects.')
+  if (style !== 'icons' && objects.filter(o => !['plant', 'path', 'patch'].includes(o.type) || !!o.collision?.length).length > MAX_COMPLEX_OBJECTS) throw new Error('Too many complex objects.')
   if (objects.filter(o => o.type === 'pond').length > 4) throw new Error('Too many water features.')
   const walking = { spawn: [0, 1.65, 0] as [number, number, number], yaw: 0, speed: style === 'icons' ? 3 : 3.6, fov: 65, lookSensitivity: 0.002, radius: 0.28 }
   const navigation = createNavigation({ ground: plan.ground, objects, walking })

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { compileBlueprint } from './generation'
 import { testBlueprint, testIconBlueprint } from './generation-fixture'
+import { MAX_ICON_OBJECTS } from './icon-limits'
 import { ICON_FOOTPRINT } from './icon-types'
 import { createNavigation, isWalkable, moveWithinGarden } from '../controls/navigation'
 import { loadWorldJson } from './load-world'
@@ -60,14 +61,14 @@ describe('generated world styles', () => {
   })
   it('requires icons, caps icon/grass budgets and prevents overhangs and hillside props', () => {
     const plan = testIconBlueprint()
-    expect(() => compileBlueprint({ ...plan, placements: [plan.placements[10]] }, 'empty', 'icons')).toThrow('use 1–24 icon objects')
-    expect(() => compileBlueprint({ ...plan, placements: Array(25).fill(plan.placements[0]) }, 'crowded', 'icons')).toThrow('use 1–24 icon objects')
+    expect(() => compileBlueprint({ ...plan, placements: [plan.placements[10]] }, 'empty', 'icons')).toThrow(`use 1–${MAX_ICON_OBJECTS} icon objects`)
+    expect(() => compileBlueprint({ ...plan, placements: Array(MAX_ICON_OBJECTS + 1).fill(plan.placements[0]) }, 'crowded', 'icons')).toThrow(`use 1–${MAX_ICON_OBJECTS} icon objects`)
     expect(() => compileBlueprint({ ...plan, placements: [plan.placements[0],
       ...Array(3).fill({ ...plan.placements[10], count: 36 })] }, 'grass-budget', 'icons')).toThrow('at most 96')
     expect(() => compileBlueprint({ ...plan, placements: [{ ...plan.placements[0], position: [19, 0] }] }, 'overhang', 'icons')).toThrow('Object outside')
     expect(() => compileBlueprint({ ...plan, ground: { ...plan.ground, hills: [{ center: [0, 0], radius: 4, height: 1 }] } }, 'hills', 'icons')).toThrow()
-    expect(() => compileBlueprint({ ...plan, ground: { ...plan.ground, size: [128, 128] } }, 'oversized', 'icons')).toThrow()
-    expect(() => compileBlueprint({ ...plan, placements: [{ ...plan.placements[0], count: 2, spread: 3 }] }, 'icon-cluster', 'icons')).toThrow('Only vegetation')
+    expect(() => compileBlueprint({ ...plan, ground: { ...plan.ground, size: [129, 129] } }, 'oversized', 'icons')).toThrow()
+    expect(() => compileBlueprint({ ...plan, placements: [{ ...plan.placements[0], count: 2, spread: 0 }] }, 'icon-cluster', 'icons')).toThrow('Only vegetation')
   })
   it('removes supporting grass placed inside an icon footprint', () => {
     const plan = testIconBlueprint()

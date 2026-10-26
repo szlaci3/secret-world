@@ -28,10 +28,22 @@ export async function checkCollisions(page) {
     await page.keyboard.up(key)
     await page.waitForTimeout(150)
   }
+  const reachStop = async (key) => {
+    // Movement drops stalled-frame time, so wall-clock waits do not guarantee
+    // arrival in software WebGL. Wait for an actual stable view, with a bound.
+    await hold(key, 2500)
+    let previous = await canvas.screenshot()
+    for (let attempt = 0; attempt < 8; attempt++) {
+      await hold(key, 700)
+      const next = await canvas.screenshot()
+      if (previous.equals(next)) return next
+      previous = next
+    }
+    assert.fail(`Movement ${key} did not stop at the obstacle within the bounded check`)
+  }
   await enterAt([0, 1.65, 62.5])
   const spawn = await canvas.screenshot()
-  await hold('s', 2500)
-  const atEdge = await canvas.screenshot()
+  const atEdge = await reachStop('s')
   assert(!spawn.equals(atEdge), 'Movement reaches the 64-meter boundary')
   await hold('s', 700)
   assert(atEdge.equals(await canvas.screenshot()), 'Repeated input stops at the large-world edge')
@@ -52,8 +64,7 @@ export async function checkCollisions(page) {
   const ax = 0, az = rz, bx = Math.cos(Math.PI / 2 + Math.PI / 16) * rx, bz = Math.sin(Math.PI / 2 + Math.PI / 16) * rz
   const length = Math.hypot(bx - ax, bz - az), nx = (bz - az) / length, nz = -(bx - ax) / length
   await enterAt([pond.position[0] + (ax + bx) / 2 + nx * 1.8, 1.65, pond.position[2] + (az + bz) / 2 + nz * 1.8], Math.atan2(nx, nz))
-  await hold('w', 2500)
-  const bank = await canvas.screenshot()
+  const bank = await reachStop('w')
   await hold('w', 700)
   assert(bank.equals(await canvas.screenshot()), 'The large pond bank blocks entry into water')
   await hold('s', 500)

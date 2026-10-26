@@ -8,12 +8,12 @@ flow. Switching styles preserves the current scene and draft description.
 | Choice | Generation behavior | Built-in list |
 | --- | --- | --- |
 | Standard 3D objects | Existing landscape assets and biome guidance | Nine standard worlds |
-| Extruded icons | Bundled Tabler office icons, with optional small grass clumps | Icon World |
+| Extruded icons | Topic-selected Tabler icons, with optional small grass clumps | Icon World |
 | Let Gemini decide | Gemini chooses `standard` or `icons` and returns the complete blueprint in one call | All ten worlds |
 
 Results show the actual style and dimensions before entry. Saved worlds retain
 their style through reload and re-entry. Legacy saved/imported worlds without a
-style remain standard. The built-in fixtures and reusable SVG geometry are unchanged.
+style remain standard. The built-in fixtures remain unchanged; the original ten icon silhouettes retain their full-detail appearance.
 
 ## Server contract
 
@@ -30,17 +30,20 @@ is rejected; the compiler never silently changes the selected style.
 Standard generation retains the previous asset, terrain, biome, object-budget
 and navigation checks. Icon generation uses:
 
-- Only the ten bundled icon names and optional `plant`/`grass` assets. No custom
+- Only validated catalog names (2,154 pinned Tabler SVGs) and optional `plant`/`grass` assets. No custom
   markup, SVG URLs, models or unsupported object kinds.
-- Flat ground with independent 24–64m axes, 1–24 icon objects and at most 96
-  retained grass clumps. Artistic guidance aims for 8–12 icons and 12–36 clumps.
+- Flat ground with independent 24–128m axes, up to the configured icon budget (96 by default),
+  48 reusable assets and at most 96 retained grass clumps. Guidance aims for 20–40 icons unless
+  the brief calls for fewer, with compact repeated groups for larger worlds.
 - Uniform icon scale, using the blueprint's Y component for all three axes.
   Instance colors and Y rotations are retained; depth, bevels, materials and
   geometry reuse come from the existing icon renderer.
 - Full rotated/scaled icon footprints inside the ground and at least 1.2m
   separation along a separating axis between each pair. This conservatively
   reserves walkable gaps, including around diagonal neighbors. Icons use
-  explicit placements; only grass may expand from `count`/`spread`.
+  explicit placements or `count`/`spread` groups. Repeated icon groups are packed deterministically
+  inside the supplied radius, with exactly the final footprint clearance. Counts are preserved;
+  groups without room fail admission. Standard-world cluster rules remain unchanged.
 - Decorative grass outside the ground or centered inside icon footprints is
   omitted. Out-of-bounds icons still fail admission. Standard-world bounds
   validation is unchanged.
@@ -58,7 +61,7 @@ response guards apply to every style.
 
 ## Verification
 
-Completed on 2026-10-26: all 203 tests across 21 files, production build,
+Original style integration on 2026-10-26: all 203 tests across 21 files, production build,
 style-generation browser checks (including recorded live results), built-in icon
 checks, existing-world regressions, legacy generation checks, smoke test and
 `git diff --check` passed. The browser checks used Edge software WebGL.

@@ -81,7 +81,7 @@ export function useWorldCreator({ disabled, onSelect, style }: { disabled: boole
       <label htmlFor="world-description">Title or description</label>
       <textarea id="world-description" rows={3} minLength={3} maxLength={600} required value={prompt}
         disabled={disabled || pending} onChange={event => setPrompt(event.target.value)}
-        placeholder={style === 'icons' ? 'A playful office garden with pastel gears, clocks and giant paperclips…' : 'A misty woodland with violet flowers, quiet pools and ancient arches…'} aria-describedby="generation-note" />
+        placeholder={style === 'icons' ? 'An underwater world with colorful fish, shells and sailing boats…' : 'A misty woodland with violet flowers, quiet pools and ancient arches…'} aria-describedby="generation-note" />
       <p id="generation-note" className="import-note">Sent to Google Gemini. Usually takes 10–45 seconds. Save favorites on this browser.</p>
       <button className="load-world" disabled={disabled || pending || prompt.trim().length < 3} type="submit">{pending ? 'Creating…' : 'Generate world'}</button>
       {pending && <><p role="status" className="import-note">Composing your world and checking its walking routes…</p>

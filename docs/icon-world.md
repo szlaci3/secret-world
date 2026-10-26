@@ -10,11 +10,18 @@ between standard scenery and icons in the same request. See
 
 ## Geometry and reuse
 
-- Ten local Tabler Icons v3.46.0 SVGs, nine filled and one outline (paperclip).
-  Their original MIT license is retained in source and the production output.
-- `SVGLoader` parses trusted bundled markup; `ShapePath.toShapes()` preserves
+- A local catalog of 2,154 Tabler Icons v3.46.0 SVGs, preferring filled versions and
+  supplementing them with outline icons for animals, buildings, music, food, transport,
+  nature and other everyday subjects. The original ten are preserved byte-for-byte.
+  Their MIT license is retained in source and the production output.
+- Additional SVGs load on demand from same-origin static assets under `public/tabler/`,
+  before the existing canvas reports readiness. Loading errors use the existing retry flow.
+  There are no runtime CDN dependencies, generated model files or arbitrary SVG inputs.
+- `SVGLoader` parses trusted markup; `ShapePath.toShapes()` preserves
   filled contours and holes. The smooth paperclip stroke is expanded into one
-  closed silhouette with round caps before extrusion, then rotated upright.
+  closed silhouette with round caps before extrusion, then rotated upright. Other outline
+  icons use Clipper to expand open/closed strokes, union intersections and preserve holes.
+  This handles the pinned catalog, rather than claiming universal SVG support.
 - `ExtrudeGeometry` uses a 0.64 m straight depth with 0.05 m rounded bevels at
   either end (0.74 m overall), four bevel segments and 32 curve segments. The
   longest silhouette dimension is 3.2 m before per-object scaling. Bevels round
@@ -22,13 +29,45 @@ between standard scenery and icons in the same request. See
 - The clock partitions Tabler's silhouette into a blue rim, cream face and dark
   hands. Each section has the same full depth and colors on both front and back.
   Cap normals stay planar; side and bevel normals are smoothed. One pastel
-  material treatment and the world's sunlight/hemisphere fill cover every icon.
-- A bounded cache stores geometry per icon name, independent of color, position,
-  scale and Y rotation. R3F geometry primitives preserve shared geometry when
-  switching worlds. HMR releases the module cache. Materials remain per instance.
+  material treatment and the world's sunlight/hemisphere fill cover every icon. Indexed
+  geometry shares equal positions, normals and UVs without changing the surface shading.
+- A cache stores geometry per icon name/detail level, independent of color, position,
+  scale and Y rotation. It retains up to 96 recent entries plus any still-active geometry. R3F geometry primitives preserve shared geometry when
+  switching worlds. HMR releases the module cache. Spatial batches share geometry and
+  materials while retaining per-instance transforms and colors.
 - The ten office objects have varied placement, uniform per-instance scales and
   yaw. Existing terrain, grass, on-demand renderer, camera, pointer lock and
-  navigation are reused. No extra canvas, external SVG loading or model assets.
+  navigation are reused. No extra canvas or model assets. Under the existing slow-frame
+  fallback, icons use simpler contours and two bevel segments; populous icon worlds also
+  use a fogged 48m walking view. Overview and full-detail views retain the complete world.
+
+## Topic selection and capacity
+
+`src/icons/catalog.json` contains upstream categories and tags; `src/icons/names.ts`
+provides the validated runtime name list. Selection ranks names/tags against the brief,
+with related-term expansion for common subjects. Only up to 80 shortlisted names enter
+Gemini's instructions and decoding enum. The server also rejects off-shortlist results.
+This remains one provider call; no complete catalog is sent per request. Search metadata
+is English, so ambiguous or non-English descriptions may retrieve less useful candidates.
+Automatic mode chooses between natural 3D scenery and symbolic icon compositions on any topic.
+
+Edit `src/icons/config.json` (`maxObjects`) and rebuild/redeploy to change the shared
+server/browser generation budget. Default: **96**, supported configuration range **25–256**.
+Standard worlds keep their 64-complex-object budget. Icon worlds allow 48 reusable assets,
+128m ground axes, and the configured object count plus up to 96 decorative grass clumps.
+Admission still enforces bounds, walking gaps, connected navigation and a safe spawn.
+Higher configured capacity does not guarantee hardware-independent performance.
+
+To reproduce the vendored catalog, download the pinned package and run the importer:
+
+```powershell
+npm pack @tabler/icons@3.46.0 --pack-destination artifacts
+tar -xf artifacts/tabler-icons-3.46.0.tgz -C artifacts
+node scripts/import-icon-catalog.mjs
+```
+
+The importer prefers all filled icons plus outline icons from practical subject categories,
+excluding outline off/numbered variants. It retains upstream names, categories and search tags.
 
 ## JSON contract
 
@@ -59,12 +98,21 @@ scaling best preserves the authored proportions and bevel treatment.
 npm.cmd test
 npm.cmd run build
 npm.cmd run inspect:icons
+npm.cmd run check:icon-catalog
+npm.cmd run check:icon-catalog -- --low
+npm.cmd run check:icon-themes -- --live
+npm.cmd run inspect:icon-themes
 npm.cmd run inspect:worlds
 npm.cmd run smoke
 git diff --check
 ```
 
-`inspect:icons` uses real browser DOM parsing to check all ten geometries for
+`check:icon-catalog` checks all 2,154 geometries (including `--low`) for finite vertices/normals,
+bounds and cache reuse. `check:icon-themes --live` makes paid provider calls using the local
+server-only key; `inspect:icon-themes` renders those saved results and benchmarks 24/96/192
+objects. Artifacts stay under ignored `artifacts/`.
+
+`inspect:icons` uses real browser DOM parsing to check the original ten geometries for
 finite vertices/normals, dimensions, flat caps, cache identity, matching front
 and back silhouettes, solid sidewalls and the gear hole. It exercises the built
 production app for style filtering, walking, front/side/back views, switching
@@ -88,3 +136,40 @@ npm.cmd run capture:thumbnails -- --world=icon-world
 ```
 
 Build again after capturing to include the updated static thumbnail in `dist/`.
+
+## Topic-driven expansion verification (2026-10-26)
+
+Real Gemini requests produced admitted worlds for all five briefs: underwater (11 icons,
+9 names), village (7 icons, 6 names), zoo (25 icons, 8 names), music festival (9 icons,
+9 names) and office (10 icons, 8 names). A separate large music-festival brief produced
+exactly 96 icons with 8 reusable silhouettes. Automatic mode selected icons for a symbolic
+underwater brief and standard objects for a natural garden. Provider timeouts/high-demand
+503s and invalid initial designs also occurred; they returned bounded errors without
+automatic paid retries. Dense repeated icon groups were subsequently given collision-aware
+packing, and the admitted 96-object result was rendered and walked.
+
+All 2,154 catalog SVGs passed full- and reduced-detail finite-geometry, envelope and cache
+checks. Production rendering checks covered all five live themes, the 96-object result,
+world switching, retained canvas identity and zero redraws in settled overviews.
+
+The final local software-rendering benchmark used headless Edge/SwiftShader at a
+1440×960 viewport with the existing adaptive fallback (649×497 render buffer).
+
+| Scene | Distinct icons | Moving FPS | P95 frame | Settled redraws |
+| --- | ---: | ---: | ---: | ---: |
+| Synthetic 24 objects | 24 | 21.1 | 50.1 ms | 0 |
+| Synthetic 96 objects | 47 | 18.4 | 66.7 ms | 0 |
+| Synthetic 192 objects | 47 | 15.0 | 66.8 ms | 0 |
+| Gemini 96-object festival | 8 | 24.3 | 50.1 ms | 0 |
+
+These conservative software results support a 96-object default rather than enabling
+192 by default. They also show that silhouette variety matters: more unique shapes cost
+more than copies. Individual themed scenes measured about 16–29 FPS in the same software
+renderer. Hardware GPU performance, physical mobile performance and hosted deployment
+were not measured. Detailed local results/screenshots are under `artifacts/icon-themes/`.
+
+The final build/typecheck, 214 unit tests across 22 files, generation-style UI regression,
+all-world walking/collision/import/responsive/recovery regression, original Icon World
+regression, HTTP smoke and staged diff checks passed. The collision browser check now
+waits for a bounded stable view at obstacles instead of assuming software-rendered
+movement reaches the boundary after a fixed wall-clock delay.

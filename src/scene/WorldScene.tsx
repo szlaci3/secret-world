@@ -8,13 +8,25 @@ import { Terrain, GroundPatch } from './Terrain'
 import { Plants } from './Plants'
 import { Trees } from './Trees'
 import { Rocks } from './Rocks'
+import { Icons } from './Icons'
 import { pavementClearPlants } from './vegetation-clearance'
 
 export function WorldScene({ world, walking, lowDetail }: { world: WorldDefinition; walking: boolean; lowDetail: boolean }) {
   const { ground, environment } = world
-  const { gl, invalidate, size } = useThree()
+  const { gl, invalidate, size, camera } = useThree()
   const small = size.width < 600
   const extent = Math.hypot(...ground.size) * 0.6
+  const limitedView = lowDetail && walking && world.style === 'icons' && world.objects.filter(object => object.type === 'icon').length > 24
+  const fog = limitedView ? { color: environment.fog?.color ?? environment.background,
+    near: Math.min(environment.fog?.near ?? 24, 24), far: Math.min(environment.fog?.far ?? 48, 48) } : environment.fog
+  useLayoutEffect(() => {
+    if (!limitedView) return
+    const previous = camera.far
+    camera.far = 48
+    camera.updateProjectionMatrix()
+    invalidate()
+    return () => { camera.far = previous; camera.updateProjectionMatrix(); invalidate() }
+  }, [camera, limitedView, invalidate])
   // Overview starts well outside the world. Preserve local atmospheric depth
   // without obscuring the entire diorama from its distant overview camera.
   const fogOffset = walking ? 0 : Math.max(0, Math.hypot(...world.camera.position.map((value, axis) => value - world.camera.target[axis])) - 12)
@@ -32,7 +44,7 @@ export function WorldScene({ world, walking, lowDetail }: { world: WorldDefiniti
   return (
     <>
       <color attach="background" args={[environment.background]} />
-      {environment.fog && <fog attach="fog" args={[environment.fog.color, environment.fog.near + fogOffset, environment.fog.far + fogOffset]} />}
+      {fog && <fog attach="fog" args={[fog.color, fog.near + fogOffset, fog.far + fogOffset]} />}
       <ambientLight intensity={environment.ambientIntensity} />
       {environment.skyLight && <hemisphereLight args={[environment.skyLight.skyColor, environment.skyLight.groundColor, environment.skyLight.intensity]} />}
       <directionalLight {...environment.sunlight} castShadow
@@ -45,8 +57,9 @@ export function WorldScene({ world, walking, lowDetail }: { world: WorldDefiniti
       <Plants objects={plants} lowDetail={lowDetail} />
       <Trees objects={objects} lowDetail={lowDetail} />
       <Rocks objects={objects} lowDetail={lowDetail} />
+      <Icons objects={objects} lowDetail={lowDetail} />
       {world.objects.filter((object) => object.type === 'patch').map((object) => <GroundPatch key={object.id} object={object} ground={ground} />)}
-      {objects.filter((object) => !['path', 'plant', 'patch', 'tree', 'rock'].includes(object.type)).map((object) => <GardenObject key={object.id} object={object} lowDetail={lowDetail} />)}
+      {objects.filter((object) => !['icon', 'path', 'plant', 'patch', 'tree', 'rock'].includes(object.type)).map((object) => <GardenObject key={object.id} object={object} lowDetail={lowDetail} />)}
     </>
   )
 }

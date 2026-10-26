@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import iconWorld from './icon-world.json'
 import { parseWorld } from './schema'
-import { iconNames, ICON_FOOTPRINT } from './icon-types'
+import { legacyIconNames, ICON_FOOTPRINT } from './icon-types'
 import { blueprintSchema } from './generation'
 import { testBlueprint } from './generation-fixture'
 import { createNavigation, isWalkable, moveWithinGarden } from '../controls/navigation'
@@ -11,7 +11,7 @@ describe('Icon World admission and walking', () => {
   const world = parseWorld(iconWorld)
   const icons = world.objects.filter(object => object.type === 'icon')
   it('has exactly ten different local icons that fit the grass and block walking', () => {
-    expect(icons.map(object => object.icon).sort()).toEqual([...iconNames].sort())
+    expect(icons.map(object => object.icon).sort()).toEqual([...legacyIconNames].sort())
     const navigation = createNavigation(world)
     for (const object of icons) {
       expect(objectFitsGround(object, world.ground.size)).toBe(true)
