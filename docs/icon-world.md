@@ -1,10 +1,12 @@
-# Icon World MVP
+# Icon World
 
 Choose **World style → Extruded icons**, then select **Icon World**. Browsing
 styles does not replace the active scene. Standard worlds retain their existing
-data, materials, lighting and controls. The disabled **Let Gemini decide** option
-reserves future style generation; the existing Gemini blueprint explicitly
-excludes icons. No provider request is needed to explore this world.
+data, materials, lighting and controls. No provider request is needed to explore
+the built-in world. To generate a new one, enter a description under **Create
+World** with **Extruded icons** selected. **Let Gemini decide** lets Gemini choose
+between standard scenery and icons in the same request. See
+[generation styles](generation-styles.md) for the provider/compiler contract and checks.
 
 ## Geometry and reuse
 
@@ -72,11 +74,12 @@ existing walking, collision, import, responsive and graphics-recovery regression
 checks. Browser checks use installed Edge and software WebGL2; they do not
 establish physical-device or hardware GPU performance.
 
-Verified on 2026-10-26: all 190 unit tests, production build/typecheck,
+Initial built-in MVP verified on 2026-10-26: all 190 unit tests, production build/typecheck,
 `inspect:icons`, `inspect:worlds`, the mocked `inspect:generation` regression,
 HTTP smoke and `git diff --check` passed. Front, close, side, rear, overview and
 mobile screenshots were visually reviewed. Vite's existing large-chunk warning
-remains; no hosted deployment or live provider request was tested for this MVP.
+remains; no hosted deployment or live provider request was tested for that initial
+MVP. Subsequent Gemini integration is recorded in [generation styles](generation-styles.md).
 
 To refresh just the Icon World card after building:
 

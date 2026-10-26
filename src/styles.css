@@ -101,4 +101,5 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .saved-worlds h3 span { font: .7rem 'Segoe UI', sans-serif; }
 .saved-world { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; margin-top: .6rem; }
 .saved-world-enter { flex: 1; min-width: 0; min-height: 44px; padding: .7rem .5rem; border: 1px solid #24392e25; border-radius: 3px; background: #fffdf6; color: inherit; text-align: left; font-size: .8rem; overflow-wrap: anywhere; }
+.saved-world-enter small { display: block; margin-top: .3rem; font-size: .65rem; color: #506052; }
 .delete-world { min-height: 44px; padding: .5rem; background: transparent; border: 0; color: #823b2a; font-size: .7rem; }

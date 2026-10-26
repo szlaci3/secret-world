@@ -2,6 +2,9 @@
 export const iconNames = ['settings', 'paperclip', 'clock', 'folder', 'briefcase', 'calculator', 'device-floppy', 'bulb', 'bell', 'book'] as const
 export type IconName = typeof iconNames[number]
 export type WorldStyle = 'standard' | 'icons'
+export const generationStyles = ['standard', 'icons', 'auto'] as const
+export type GenerationStyle = typeof generationStyles[number]
+export const worldStyleLabels: Record<WorldStyle, string> = { standard: 'Standard 3D objects', icons: 'Extruded icons' }
 
 // Canonical geometry envelope, shared with navigation and ground bounds.
 export const ICON_SIZE = 3.2

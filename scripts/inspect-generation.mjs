@@ -3,7 +3,9 @@ import { readFile, mkdir } from 'node:fs/promises'
 import { chromium } from 'playwright'
 import { preview } from 'vite'
 
-const world = JSON.parse(await readFile(new URL('../artifacts/generated-world.json', import.meta.url), 'utf8').catch(() => readFile(new URL('../src/world/open-meadow.json', import.meta.url), 'utf8')))
+// Use a stable legacy fixture here; style-specific generation is covered by
+// inspect-generation-styles, and the latest live artifact may be an icon world.
+const world = JSON.parse(await readFile(new URL('../src/world/open-meadow.json', import.meta.url), 'utf8'))
 world.id = 'generated-browser-test'
 world.name = 'Browser Test Woodland'
 const server = await preview({ preview: { host: '127.0.0.1', port: 0 } })
@@ -21,6 +23,7 @@ try {
   await page.route('**/api/create-world', async route => {
     calls++
     assert.equal(route.request().postDataJSON().prompt, 'A violet woodland')
+    assert.equal(route.request().postDataJSON().style, 'standard')
     await new Promise(resolve => setTimeout(resolve, 300))
     await route.fulfill(fail ? { status: 429, body: 'Rate limited' } : { json: { world } })
   })

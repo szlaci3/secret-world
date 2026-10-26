@@ -37,7 +37,7 @@ describe('Icon World admission and walking', () => {
   it('rejects an icon placed over the walking spawn', () => {
     expect(() => parseWorld({ ...iconWorld, objects: [{ ...iconWorld.objects[0], position: [0, 0, 16] }] })).toThrow(/Walking spawn/)
   })
-  it('keeps icons out of the Gemini blueprint contract for this MVP', () => {
+  it('keeps icons out of the standard Gemini blueprint contract', () => {
     expect(blueprintSchema.safeParse({ ...testBlueprint(), assets: [{ type: 'icon', icon: 'folder', color: '#ffcc55' }] }).success).toBe(false)
   })
 })

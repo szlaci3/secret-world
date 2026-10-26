@@ -14,6 +14,7 @@
     "inspect:experience": "node scripts/inspect-garden.mjs --walk --collisions --experience",
     "inspect:worlds": "node scripts/inspect-garden.mjs --walk --collisions --experience --worlds",
     "inspect:generation": "node scripts/inspect-generation.mjs",
+    "inspect:generation-styles": "node scripts/inspect-generation-styles.mjs",
     "inspect:icons": "node scripts/inspect-icons.mjs",
     "check:generation": "node scripts/check-generation.mjs --live",
     "measure:performance": "node scripts/measure-performance.mjs",

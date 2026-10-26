@@ -20,9 +20,11 @@ playground. Ten local Tabler SVG icons stand on a 48 × 44 m grassy field:
 gear, paperclip, clock, folder, briefcase, calculator, floppy disk, bulb, bell,
 and book. They use constant-depth SVG extrusion, softly rounded bevels, pastel
 materials, and conservative walking footprints. Standard 3D objects remains the
-default browser style. **Let Gemini decide** is disabled for this MVP; icon
-generation is not connected. Existing Gemini generation still creates standard
-worlds. Browsing styles preserves the current scene until a card is selected.
+default browser style. All three choices also work with **Create World**:
+**Standard 3D objects** generates a landscape, **Extruded icons** generates from
+the bundled office icons, and **Let Gemini decide** chooses a style and composes
+the world in one request. Results and saved worlds show the resolved style.
+Browsing styles preserves the current scene until you choose a world to enter.
 
 Tabler Icons v3.46.0 are [MIT licensed](https://github.com/tabler/tabler-icons/tree/v3.46.0).
 The original assets and license are in `src/assets/tabler/`; production also ships
@@ -87,7 +89,8 @@ Use **Create World** in the sidebar (or the **Worlds** drawer). Enter a title or
 description and select **Generate world**. When ready, select **Enter world** to
 capture the mouse and walk using the existing controls. **Save world** adds it to
 **Your worlds**; select its name to revisit. **Delete**, then **Confirm delete**,
-removes the saved copy. All nine built-in worlds remain available below the creator.
+removes the saved copy. The built-in list follows the style selector: nine standard
+worlds, one Icon World, or all ten under **Let Gemini decide**.
 Up to 20 worlds are stored locally; no account or database is used. Unsaved results
 last until reload or replacement. Clearing browser data removes the saved collection.
 Storage failures leave the result available to explore and show a message.
@@ -145,6 +148,7 @@ npm.cmd run smoke
 npm.cmd run inspect:icons
 node scripts/inspect-garden.mjs --walk --collisions --worlds
 npm.cmd run inspect:generation
+npm.cmd run inspect:generation-styles
 # Optional: one real Gemini request using .env (incurs provider usage).
 npm.cmd run check:generation
 npm.cmd run measure:performance
@@ -170,12 +174,19 @@ connectivity. Performance measurements run separately from browser QA; see
 [the measurements and limitations](docs/performance.md).
 
 `inspect:generation` verifies the creation UI, walking, saving/revisiting/deleting,
-quota errors, and mobile layout against a mocked endpoint. It uses the last live
-generated world in `artifacts/` when present, otherwise a built-in fixture.
+quota errors, and mobile layout against a mocked endpoint and a stable legacy fixture.
+`inspect:generation-styles` drives the production UI through the real handler and
+compiler with simulated provider responses for explicit Standard, explicit Icons,
+and both automatic outcomes. It also verifies style persistence, cancellation,
+rejected output and responsive state. Add `-- --live-results` to import and walk
+the separately recorded live icon/auto artifacts without making provider requests.
 `check:generation` exercises the actual server handler against Gemini and writes
 the validated world to `artifacts/`, including a prompt-specific file. It reports
 dimensions, tree/total counts, status, and validation diagnostics. Pass a quoted
-prompt after `--live` to `node scripts/check-generation.mjs` for a specific brief. Neither check proves hosted deployment or
+prompt after `--live` to `node scripts/check-generation.mjs` for a specific brief.
+Use `--style=standard`, `--style=icons` or `--style=auto` (default: standard).
+See [generation style behavior and verification](docs/generation-styles.md).
+Neither check proves hosted deployment or
 Netlify's edge rate limiting; those require a deployed site with its Function secret.
 
 `capture:thumbnails` captures the current built-in landscapes from the current production

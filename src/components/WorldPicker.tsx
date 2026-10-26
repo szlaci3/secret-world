@@ -4,7 +4,7 @@ import { worldCatalog } from '../world/catalog'
 import { loadWorldJson, MAX_WORLD_BYTES } from '../world/load-world'
 import type { WorldDefinition } from '../world/schema'
 import { useWorldCreator } from './CreateWorld'
-import type { WorldStyle } from '../world/icon-types'
+import type { GenerationStyle } from '../world/icon-types'
 
 export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, onClose }: {
   disabled: boolean
@@ -19,7 +19,7 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
   const [draft, setDraft] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [reading, setReading] = useState(false)
-  const [style, setStyle] = useState<WorldStyle>('standard')
+  const [style, setStyle] = useState<GenerationStyle>('standard')
   const reject = (message: string) => setError(`${message}\nThe current world is unchanged.`)
 
   useLayoutEffect(() => {
@@ -76,19 +76,20 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
     <p className="picker-note">Explore compact gardens and wide landscapes. Sizes are shown below.</p>
     <div className="world-style">
       <label htmlFor="world-style">World style</label>
-      <select id="world-style" value={style} disabled={disabled || reading} aria-describedby="world-style-note"
-        onChange={event => setStyle(event.target.value as WorldStyle)}>
+      <select id="world-style" value={style} disabled={disabled || reading || creator.pending} aria-describedby="world-style-note"
+        onChange={event => setStyle(event.target.value as GenerationStyle)}>
         <option value="standard">Standard 3D objects</option>
         <option value="icons">Extruded icons</option>
-        <option value="auto" disabled>Let Gemini decide</option>
+        <option value="auto">Let Gemini decide</option>
       </select>
       <p id="world-style-note" className="import-note">{style === 'icons'
-        ? 'Explore the built-in Icon World below. Icon generation is coming later.'
-        : 'Browse a style, then choose a world. Let Gemini decide is coming later.'}</p>
+        ? 'Generate a colorful world of office icons, or explore Icon World below.'
+        : style === 'auto' ? 'Gemini chooses the style that suits your description. Browse all built-in worlds below.'
+        : 'Generate a landscape with standard 3D objects, or choose a world below.'}</p>
     </div>
-    {creator}
+    {creator.content}
     <div className="world-examples" aria-label="Worlds">
-      {worldCatalog.filter(({ world }) => (world.style ?? 'standard') === style).map(({ world, theme, description }, index) => (
+      {worldCatalog.filter(({ world }) => style === 'auto' || (world.style ?? 'standard') === style).map(({ world, theme, description }, index) => (
         <button className="world-card" type="button" key={world.id} disabled={disabled || reading}
           aria-label={world.name} aria-describedby={`world-description-${world.id}`} aria-pressed={currentWorldId === world.id}
           onClick={() => choose(world)}>

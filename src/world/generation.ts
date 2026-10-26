@@ -6,12 +6,14 @@ import { terrainHeight } from './terrain'
 import { WORLD_SIZE, MAX_GENERATED_OBJECTS, MAX_COMPLEX_OBJECTS, EXPLORATION_GRID_WIDTH } from './limits'
 import { isLevelPath } from './paths'
 import { objectFitsGround } from './object-bounds'
+import { ICON_FOOTPRINT } from './icon-types'
+import type { GenerationStyle } from './icon-types'
 
 // Reuse the renderer's material/geometry contract; instances keep AI output compact.
-// Icon generation is outside this MVP; keep the existing provider contract.
 const assets = worldObjectSchema.options.filter(schema => schema.shape.type.value !== 'icon')
   .map((schema) => (schema as z.ZodObject).omit({ id: true, position: true, rotation: true, scale: true, collision: true }))
 export const blueprintSchema = z.strictObject({
+  style: z.literal('standard').optional(),
   name: z.string().trim().min(1).max(80),
   arrival: z.tuple([z.number().min(-64).max(64), z.number().min(-64).max(64)]).optional(),
   ground: worldSchema.shape.ground.extend({ size: z.tuple([z.number().min(24).max(WORLD_SIZE), z.number().min(24).max(WORLD_SIZE)]), hills: z.array(z.strictObject({
@@ -30,10 +32,52 @@ export const blueprintSchema = z.strictObject({
   })).min(1).max(100),
 })
 
+const iconAsset = worldObjectSchema.options[0].omit({ id: true, position: true, rotation: true, scale: true, collision: true })
+const grassAsset = z.strictObject({ type: z.literal('plant'), variety: z.literal('grass'),
+  color: worldSchema.shape.ground.shape.color, accentColor: worldSchema.shape.ground.shape.color })
+export const iconBlueprintSchema = blueprintSchema.extend({
+  style: z.literal('icons').optional(),
+  ground: blueprintSchema.shape.ground.extend({
+    size: z.tuple([z.number().min(24).max(64), z.number().min(24).max(64)]),
+    hills: blueprintSchema.shape.ground.shape.hills.unwrap().max(0).optional(),
+  }),
+  assets: z.array(z.union([iconAsset, grassAsset])).min(1).max(14),
+})
+// Auto uses one provider call. The chosen style is required, then the compiler
+// revalidates against that style's narrower contract before building anything.
+const autoBlueprintSchema = blueprintSchema.extend({
+  style: z.enum(['standard', 'icons']),
+  assets: z.array(z.union([iconAsset, ...assets] as [typeof iconAsset, typeof assets[number], ...typeof assets[number][]])).min(1).max(14),
+})
+export const blueprintForStyle = (style: GenerationStyle) => style === 'icons' ? iconBlueprintSchema : style === 'auto' ? autoBlueprintSchema : blueprintSchema
+
+function validateIconLayout(objects: WorldObject[]) {
+  const icons = objects.filter(object => object.type === 'icon')
+  if (!icons.length || icons.length > 24) throw new Error('Icon layout: use 1–24 icon objects.')
+  if (objects.length - icons.length > 96) throw new Error('Icon layout: use at most 96 small grass clumps.')
+  const rectangles = icons.map(object => ({
+    object,
+    axes: [[Math.cos(object.rotation), -Math.sin(object.rotation)], [Math.sin(object.rotation), Math.cos(object.rotation)]],
+    half: [ICON_FOOTPRINT[0] * object.scale[0] / 2, ICON_FOOTPRINT[1] * object.scale[2] / 2],
+  }))
+  // Separating axes of both rotated footprints, with 1.2m of walking clearance.
+  // This is deliberately conservative near diagonal corners.
+  for (let i = 0; i < rectangles.length; i++) for (let j = i + 1; j < rectangles.length; j++) {
+    const a = rectangles[i], b = rectangles[j]
+    const dx = b.object.position[0] - a.object.position[0], dz = b.object.position[2] - a.object.position[2]
+    const separated = [...a.axes, ...b.axes].some(([x, z]) => {
+      const radius = (rect: typeof a) => rect.axes.reduce((sum, axis, k) => sum + rect.half[k] * Math.abs(axis[0] * x + axis[1] * z), 0)
+      return Math.abs(dx * x + dz * z) >= radius(a) + radius(b) + 1.2 - 1e-8
+    })
+    if (!separated) throw new Error('Icon layout: leave at least 1.2m between the full rotated icon footprints.')
+  }
+}
+
 function collisions(object: WorldObject): WorldObject['collision'] {
   const box = (size: [number, number], center: [number, number] = [0, 0]) => ({ kind: 'box' as const, size, center })
   const ellipse = (radii: [number, number], center: [number, number] = [0, 0]) => ({ kind: 'ellipse' as const, radii, center })
   switch (object.type) {
+    case 'icon': return [box([...ICON_FOOTPRINT])]
     case 'pond': return [ellipse([object.radii[0] * 1.15, object.radii[1] * 1.15])]
     case 'tree': return [ellipse([0.32, 0.32])]
     case 'rock': return [ellipse([0.7, 0.65])]
@@ -50,13 +94,15 @@ function collisions(object: WorldObject): WorldObject['collision'] {
   }
 }
 
-export function compileBlueprint(input: unknown, id: string) {
-  const plan = blueprintSchema.parse(input)
+export function compileBlueprint(input: unknown, id: string, requestedStyle: GenerationStyle = 'standard') {
+  const style = requestedStyle === 'auto' ? autoBlueprintSchema.parse(input).style : requestedStyle
+  const plan = (style === 'icons' ? iconBlueprintSchema : blueprintSchema).parse(input)
   // Preserve hill placement while gently reducing any over-steep AI elevation.
   plan.ground.hills = plan.ground.hills?.map(hill => ({ ...hill, height: Math.min(hill.height, hill.radius * 0.39) }))
   // Night palettes remain atmospheric, but geometry must stay visible for walking.
   plan.environment.ambientIntensity = Math.max(0.75, plan.environment.ambientIntensity)
   plan.environment.sunlight.intensity = Math.max(1.4, plan.environment.sunlight.intensity)
+  if (style === 'icons') plan.environment.skyLight ??= { skyColor: '#dbecff', groundColor: '#849a53', intensity: 1.5 }
   const [width, depth] = plan.ground.size
   if (plan.ground.hills?.some(h => Math.abs(h.center[0]) > width / 2 || Math.abs(h.center[1]) > depth / 2)) {
     throw new Error('Hill center outside the world.')
@@ -78,9 +124,16 @@ export function compileBlueprint(input: unknown, id: string) {
     const asset = plan.assets[placement.asset]
     if (!asset) throw new Error('Unknown asset reference.')
     const [x, z] = placement.position
-    const object = { ...asset, id: `object-${index}`, position: [x, 0, z], rotation: placement.rotation, scale: placement.scale } as WorldObject
+    // Keep icon proportions and bevels uniform; the supplied Y scale controls size.
+    const scale = asset.type === 'icon' ? placement.scale.map(() => placement.scale[1]) : placement.scale
+    const object = { ...asset, id: `object-${index}`, position: [x, 0, z], rotation: placement.rotation, scale } as WorldObject
     object.collision = collisions(object)
-    if (!objectFitsGround(object, plan.ground.size)) throw new Error(`Object outside the world: ${object.id} (${object.type}) exceeds the ${width} × ${depth}m terrain after size, scale and rotation.`)
+    if (!objectFitsGround(object, plan.ground.size)) {
+      // Decorative icon-world grass can be cropped at the edge. The authored
+      // icons and every standard-world object still require full bounds checks.
+      if (style === 'icons' && object.type === 'plant') return null
+      throw new Error(`Object outside the world: ${object.id} (${object.type}) exceeds the ${width} × ${depth}m terrain after size, scale and rotation.`)
+    }
     if (object.type === 'pond') {
       const reach = Math.max(object.radii[0] * object.scale[0], object.radii[1] * object.scale[2]) * 1.15
       // Water is level geometry: reserve a flat shore by dropping intersecting
@@ -88,11 +141,12 @@ export function compileBlueprint(input: unknown, id: string) {
       plan.ground.hills = plan.ground.hills?.filter(h => Math.hypot(h.center[0] - x, h.center[1] - z) >= h.radius + reach)
     }
     return object
-  })
+  }).filter((object): object is WorldObject => object !== null)
+  if (style === 'icons') validateIconLayout(objects)
   // Remove hillside slabs instead of tilting pavement or flattening the hills.
   objects = objects.filter(object => object.type !== 'path' || isLevelPath(plan.ground, object))
   // Clip soft planting and tree groves around authored water/structure footprints.
-  const solidNavigation = createNavigation({ ground: plan.ground, objects: objects.filter(o => ['pond', 'structure', 'entrance', 'rock'].includes(o.type)) })
+  const solidNavigation = createNavigation({ ground: plan.ground, objects: objects.filter(o => ['pond', 'structure', 'entrance', 'rock', 'icon'].includes(o.type)) })
   objects = objects.filter(object => !['plant', 'tree'].includes(object.type) || isWalkable({ x: object.position[0], z: object.position[2] }, solidNavigation))
   const walkingRadius = 0.28
   // Preserve narrow paved routes below overlapping crowns. Gemini may center
@@ -125,7 +179,7 @@ export function compileBlueprint(input: unknown, id: string) {
   })
   if (objects.filter(o => !['plant', 'path', 'patch'].includes(o.type) || !!o.collision?.length).length > MAX_COMPLEX_OBJECTS) throw new Error('Too many complex objects.')
   if (objects.filter(o => o.type === 'pond').length > 4) throw new Error('Too many water features.')
-  const walking = { spawn: [0, 1.65, 0] as [number, number, number], yaw: 0, speed: 3.6, fov: 65, lookSensitivity: 0.002, radius: 0.28 }
+  const walking = { spawn: [0, 1.65, 0] as [number, number, number], yaw: 0, speed: style === 'icons' ? 3 : 3.6, fov: 65, lookSensitivity: 0.002, radius: 0.28 }
   const navigation = createNavigation({ ground: plan.ground, objects, walking })
   // Bound admission-time work to roughly 4096 samples even at 128m. Every edge
   // still uses exact swept collision, so a coarse grid cannot cross a thin wall.
@@ -166,10 +220,10 @@ export function compileBlueprint(input: unknown, id: string) {
   const spawn = candidates[0]
   if (!spawn) throw new Error('No clear arrival space.')
   walking.spawn = [spawn.x, 1.65, spawn.z]
-  if (plan.arrival) {
+  if (plan.arrival || style === 'icons') {
     // An authored arrival may be on any edge. Face into the composed route
     // rather than always looking north, which can face out of a forest.
-    const focus = paths.length ? paths : objects.filter(o => o.type === 'tree')
+    const focus = style === 'icons' ? objects.filter(o => o.type === 'icon') : paths.length ? paths : objects.filter(o => o.type === 'tree')
     const targetX = focus.length ? focus.reduce((sum, o) => sum + o.position[0], 0) / focus.length : 0
     const targetZ = focus.length ? focus.reduce((sum, o) => sum + o.position[2], 0) / focus.length : 0
     if (Math.hypot(spawn.x - targetX, spawn.z - targetZ) > 0.5) walking.yaw = Math.atan2(spawn.x - targetX, spawn.z - targetZ)
@@ -181,6 +235,8 @@ export function compileBlueprint(input: unknown, id: string) {
   if (sunDistance < 1) plan.environment.sunlight.position = [-64, 100, 48]
   else if (lightScale > 1) plan.environment.sunlight.position = sunlight.map(value => value * lightScale) as [number, number, number]
   const elevation = terrainHeight(plan.ground, 0, 0)
-  return worldSchema.parse({ schemaVersion: 1, id, name: plan.name, ground: plan.ground, environment: plan.environment,
-    camera: { position: [width * 0.85, Math.max(width, depth) * 0.8, depth * 0.95], target: [0, elevation, 0], fov: 45 }, walking, objects })
+  const camera = style === 'icons'
+    ? { position: [width * 0.4, Math.max(width, depth) * 0.36, depth * 0.65], target: [0, 1, 0], fov: 45 }
+    : { position: [width * 0.85, Math.max(width, depth) * 0.8, depth * 0.95], target: [0, elevation, 0], fov: 45 }
+  return worldSchema.parse({ schemaVersion: 1, id, name: plan.name, style, ground: plan.ground, environment: plan.environment, camera, walking, objects })
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createHandler, config, biomeGuidance } from '../../netlify/functions/create-world'
-import { testBlueprint } from './generation-fixture'
+import { testBlueprint, testIconBlueprint } from './generation-fixture'
 
 const request = (body: unknown = { prompt: 'A moonlit glade' }, headers = {}) => new Request('https://world.test/api/create-world', {
   method: 'POST', headers: { 'Content-Type': 'application/json', origin: 'https://world.test', ...headers }, body: JSON.stringify(body),
@@ -33,8 +33,47 @@ describe('create-world endpoint', () => {
     expect((await handler(request({}, { origin: 'https://evil.test' }))).status).toBe(403)
     expect((await handler(request({ prompt: 'x'.repeat(601) }))).status).toBe(400)
     expect((await handler(request({ prompt: 'x'.repeat(9000) }))).status).toBe(413)
+    for (const style of ['invalid', '', null, 7, { style: 'icons' }]) {
+      expect((await handler(request({ prompt: 'A pastel office', style }))).status).toBe(400)
+    }
     expect((await handler(request({}, { 'Content-Type': 'text/plain' }))).status).toBe(415)
     expect(fetcher).not.toHaveBeenCalled()
+  })
+  it.each([
+    ['standard', 'standard'], ['icons', 'icons'], ['auto', 'standard'], ['auto', 'icons'],
+  ] as const)('honors %s selection with a %s result in exactly one provider call', async (style, resolved) => {
+    const plan = resolved === 'icons' ? testIconBlueprint() : { ...testBlueprint(), style: 'standard' }
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(plan) }] } }] }))
+    const response = await createHandler(env, fetcher)(request({ prompt: 'A colorful office garden', style }))
+    expect(response.status).toBe(200)
+    expect((await response.json()).world.style).toBe(resolved)
+    expect(fetcher).toHaveBeenCalledTimes(1)
+    const payload = JSON.parse(fetcher.mock.calls[0][1]!.body as string)
+    const schema = payload.generationConfig.responseFormat.text.schema
+    expect(schema.properties.style.enum).toEqual(style === 'auto' ? ['standard', 'icons'] : [style])
+    expect(schema.properties.placements.items.properties.scale).toMatchObject({ minItems: 3, maxItems: 3 })
+    const assetTypes = schema.properties.assets.items.anyOf.map((asset: { properties: { type: { enum: string[] } } }) => asset.properties.type.enum[0])
+    if (style === 'standard') expect(assetTypes).not.toContain('icon')
+    if (style === 'icons') expect(assetTypes).toEqual(['icon', 'plant'])
+    if (style === 'auto') {
+      expect(schema.required).toContain('style')
+      expect(payload.systemInstruction.parts[0].text).toContain('single response')
+    }
+  })
+  it('rejects provider style mismatches and invalid icon layouts without retrying', async () => {
+    for (const [style, plan] of [
+      ['icons', { ...testBlueprint(), style: 'standard' }],
+      ['standard', testIconBlueprint()],
+      ['auto', testBlueprint()],
+      ['auto', { ...testIconBlueprint(), style: 'standard' }],
+      ['icons', { ...testIconBlueprint(), placements: Array(2).fill(testIconBlueprint().placements[0]) }],
+    ] as const) {
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(plan) }] } }] }))
+      const response = await createHandler(env, fetcher)(request({ prompt: 'A pastel office', style }))
+      expect(response.status).toBe(422)
+      expect((await response.json()).error).toContain('did not pass validation')
+      expect(fetcher).toHaveBeenCalledTimes(1)
+    }
   })
   it('keeps the key server-side and returns a validated walkable world', async () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(success())

@@ -90,7 +90,7 @@ Files live under `src/world/`. Maple Courtyard also verifies backward compatibil
 | Field | Required value/shape |
 | --- | --- |
 | `schemaVersion`, `id`, `name` | As above |
-| `style` | Optional `standard` or `icons`; absent means standard for catalog browsing |
+| `style` | Optional `standard` or `icons`; absent means standard for legacy worlds. New generated worlds always store their resolved style. `auto` is a request choice only. |
 | `ground` | `size: [width, depth]`, `color`, optional `hills` (below) |
 | `camera` | `position: [x,y,z]`, distinct `target: [x,y,z]`, `fov: 20–100` vertical degrees |
 | `environment` | `background`, `ambientIntensity: 0–10`, `sunlight` |
