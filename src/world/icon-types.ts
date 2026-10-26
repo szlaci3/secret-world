@@ -5,6 +5,7 @@ export type IconName = typeof catalogNames[number]
 export const iconNames = catalogNames
 export const legacyIconNames = ['settings', 'paperclip', 'clock', 'folder', 'briefcase', 'calculator', 'device-floppy', 'bulb', 'bell', 'book'] as const
 export type WorldStyle = 'standard' | 'icons'
+export type IconGround = 'meadow' | 'plain'
 export const generationStyles = ['standard', 'icons', 'auto'] as const
 export type GenerationStyle = typeof generationStyles[number]
 export const worldStyleLabels: Record<WorldStyle, string> = { standard: 'Standard 3D objects', icons: 'Extruded icons' }

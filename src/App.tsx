@@ -4,6 +4,7 @@ import { worldCatalog } from './world/catalog'
 import type { WalkActions, WalkStatus } from './controls/WalkSession'
 import { WorldPicker } from './components/WorldPicker'
 import type { WorldDefinition } from './world/schema'
+import type { IconGround } from './world/icon-types'
 
 const initialWorld = worldCatalog[0].world
 const GardenCanvas = lazy(() => import('./scene/GardenCanvas'))
@@ -17,6 +18,7 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
 
 export default function App() {
   const [world, setWorld] = useState(initialWorld)
+  const [iconGround, setIconGround] = useState<IconGround>('meadow')
   const [status, setStatus] = useState<WalkStatus>({ phase: 'overview', error: null })
   const [sceneState, setSceneState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [touchOnly, setTouchOnly] = useState(() => window.matchMedia('(hover: none) and (pointer: coarse)').matches)
@@ -100,12 +102,13 @@ export default function App() {
       </header>
       <div className={`workspace${engaged || !ready ? ' sidebar-hidden' : ''}`}>
         <WorldPicker currentWorldId={worldDetails?.world.id} disabled={pickerDisabled} narrow={narrow}
+          iconGround={iconGround} onIconGroundChange={setIconGround} iconWorld={world.style === 'icons'}
           open={pickerOpen} onClose={closePicker} onSelect={selectWorld} />
         <section className={`garden${walking ? ' is-walking' : ''}`} id="garden" aria-labelledby="garden-title" style={{ background: world.environment.background }}>
           <div className="scene" role="region" aria-label={`${world.name}. ${walking ? 'First-person view.' : 'World overview.'}`} aria-busy={sceneState === 'loading'}>
             <SceneBoundary onFailure={onFailure}>
               <Suspense fallback={null}>
-                <GardenCanvas world={world} actions={actions} onStatus={onStatus} onReady={onReady} onFailure={onFailure} walking={walking} />
+                <GardenCanvas world={world} actions={actions} onStatus={onStatus} onReady={onReady} onFailure={onFailure} walking={walking} iconGround={iconGround} />
               </Suspense>
             </SceneBoundary>
             {sceneState === 'loading' && <div className="scene-notice" role="status"><span className="loading-mark" aria-hidden="true">◌</span><p>Preparing the world…</p></div>}

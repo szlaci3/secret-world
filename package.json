@@ -19,6 +19,7 @@
     "check:icon-catalog": "node scripts/check-icon-catalog.mjs",
     "check:icon-themes": "node scripts/check-icon-themes.mjs",
     "inspect:icon-themes": "node scripts/inspect-icon-themes.mjs",
+    "inspect:icon-lod": "node scripts/inspect-icon-lod.mjs",
     "check:generation": "node scripts/check-generation.mjs --live",
     "measure:performance": "node scripts/measure-performance.mjs",
     "capture:thumbnails": "node scripts/capture-thumbnails.mjs",

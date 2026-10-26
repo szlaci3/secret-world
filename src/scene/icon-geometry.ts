@@ -9,6 +9,7 @@ import { iconContours } from './icon-contours'
 import { legacyIconNames } from '../world/icon-types'
 
 type ColorSlot = 'color' | 'accentColor' | 'detailColor'
+export type IconDetail = 'full' | 'medium' | 'far'
 type IconPart = { geometry: ReturnType<typeof toCreasedNormals>; slot: ColorSlot }
 const cache = new Map<string, IconPart[]>()
 let active = new Set<IconName>()
@@ -30,14 +31,14 @@ function circle(radius: number) {
   return shape
 }
 
-function silhouettes(icon: IconName, lowDetail: boolean): { shapes: Shape[]; slot: ColorSlot }[] {
+function silhouettes(icon: IconName, detail: IconDetail): { shapes: Shape[]; slot: ColorSlot }[] {
   // The mesh supplies color. Resolve CSS currentColor before SVGLoader parses it.
   const { paths } = new SVGLoader().parse(iconSource(icon).replaceAll('currentColor', '#000000'))
-  const shapes = ((legacyIconNames as readonly string[]).includes(icon) && (!lowDetail || icon === 'clock')) ? paths.flatMap(path => {
+  const shapes = ((legacyIconNames as readonly string[]).includes(icon) && (detail === 'full' || icon === 'clock')) ? paths.flatMap(path => {
     const style = path.userData?.style as { fill?: string; strokeWidth?: number } | undefined
     if (style?.fill !== 'none') return path.toShapes()
     return path.subPaths.map(subpath => closedStroke(subpath.getPoints(32), Number(style.strokeWidth ?? 2)))
-  }) : iconContours(paths, lowDetail)
+  }) : iconContours(paths, detail === 'medium' ? 'medium' : detail === 'far')
   if (icon !== 'clock') return [{ shapes, slot: 'color' }]
 
   // Partition Tabler's filled clock into rim, cream face and its original hand
@@ -54,14 +55,16 @@ function silhouettes(icon: IconName, lowDetail: boolean): { shapes: Shape[]; slo
 /** One bounded, session-long cache keyed by silhouette, independent of transforms
  * and colors. R3F primitives do not dispose these shared geometries on unmount.
  */
-export function iconGeometry(icon: IconName, lowDetail = false): IconPart[] {
-  const key = `${icon}:${lowDetail}`
+export function iconGeometry(icon: IconName, quality: boolean | IconDetail = false): IconPart[] {
+  const detail = typeof quality === 'boolean' ? quality ? 'far' : 'full' : quality
+  const curveSegments = detail === 'full' ? 32 : detail === 'medium' ? 16 : 6
+  const key = `${icon}:${detail}`
   const found = cache.get(key)
   if (found) { cache.delete(key); cache.set(key, found); return found }
-  const profiles = silhouettes(icon, lowDetail)
+  const profiles = silhouettes(icon, detail)
   const parts = profiles.map(({ shapes, slot }) => {
     const geometry = new ExtrudeGeometry(shapes, {
-      depth: 1, bevelEnabled: false, steps: 1, curveSegments: lowDetail ? 6 : 32,
+      depth: 1, bevelEnabled: false, steps: 1, curveSegments,
     })
     return { geometry, slot }
   })
@@ -83,7 +86,7 @@ export function iconGeometry(icon: IconName, lowDetail = false): IconPart[] {
       bevelThickness: ICON_BEVEL / factor, bevelSize: ICON_BEVEL / factor,
       // Round inward from the silhouette: adjoining clock colors never overlap.
       bevelOffset: -ICON_BEVEL / factor,
-      bevelSegments: lowDetail ? 2 : 4, steps: 1, curveSegments: lowDetail ? 6 : 32,
+      bevelSegments: detail === 'full' ? 4 : detail === 'medium' ? 3 : 2, steps: 1, curveSegments,
     })
     raw.rotateX(Math.PI)
     if (icon === 'paperclip') raw.rotateZ(Math.PI / 4)

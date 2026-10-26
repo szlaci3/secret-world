@@ -10,6 +10,7 @@ const server = await createServer({ server: { host: '127.0.0.1', port: 0 },
 await server.listen()
 let browser
 const lowDetail = process.argv.includes('--low')
+const detail = process.argv.includes('--medium') ? 'medium' : lowDetail
 try {
   browser = await chromium.launch({ channel: process.env.SECRET_WORLD_BROWSER_CHANNEL ?? (process.platform === 'win32' ? 'msedge' : 'chromium'), headless: true })
   const page = await browser.newPage()
@@ -34,12 +35,12 @@ try {
           return { name, vertices, finite, bounded, cached: parts === iconGeometry(name, lowDetail) }
         } catch (error) { return { name, error: error.message } }
       })
-    }, { names: names.slice(start, start + 32), lowDetail })
+    }, { names: names.slice(start, start + 32), lowDetail: detail })
     results.push(...batch)
     if (start % 256 === 0) console.log(`Checked ${Math.min(start + 32, names.length)}/${names.length}`)
   }
   await mkdir('artifacts/icons', { recursive: true })
-  await writeFile(`artifacts/icons/catalog-check${lowDetail ? '-low' : ''}.json`, JSON.stringify(results))
+  await writeFile(`artifacts/icons/catalog-check${detail === 'medium' ? '-medium' : lowDetail ? '-low' : ''}.json`, JSON.stringify(results))
   const failed = results.filter(result => result.error || !result.finite || !result.bounded || !result.cached || result.vertices < 30)
   console.log(JSON.stringify({ checked: results.length, failed, maxVertices: Math.max(...results.map(result => result.vertices || 0)) }))
   assert.deepEqual(failed, [])

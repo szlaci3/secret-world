@@ -4,15 +4,18 @@ import { worldCatalog } from '../world/catalog'
 import { loadWorldJson, MAX_WORLD_BYTES } from '../world/load-world'
 import type { WorldDefinition } from '../world/schema'
 import { useWorldCreator } from './CreateWorld'
-import type { GenerationStyle } from '../world/icon-types'
+import type { GenerationStyle, IconGround } from '../world/icon-types'
 
-export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, onClose }: {
+export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, onClose, iconGround, onIconGroundChange, iconWorld }: {
   disabled: boolean
   currentWorldId?: string
   onSelect: (world: WorldDefinition) => void
   narrow: boolean
   open: boolean
   onClose: () => void
+  iconGround: IconGround
+  onIconGroundChange: (ground: IconGround) => void
+  iconWorld: boolean
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const readSequence = useRef(0)
@@ -87,6 +90,14 @@ export function WorldPicker({ disabled, currentWorldId, onSelect, narrow, open, 
         : style === 'auto' ? 'Gemini chooses the style that suits your description. Browse all built-in worlds below.'
         : 'Generate a landscape with standard 3D objects, or choose a world below.'}</p>
     </div>
+    {(style !== 'standard' || iconWorld) && <div className="world-style">
+      <label htmlFor="icon-ground">Icon ground</label>
+      <select id="icon-ground" value={iconGround} disabled={disabled || reading}
+        onChange={event => onIconGroundChange(event.target.value as IconGround)}>
+        <option value="meadow">Meadow</option>
+        <option value="plain">Plain monochrome</option>
+      </select>
+    </div>}
     {creator.content}
     <div className="world-examples" aria-label="Worlds">
       {worldCatalog.filter(({ world }) => style === 'auto' || (world.style ?? 'standard') === style).map(({ world, theme, description }, index) => (

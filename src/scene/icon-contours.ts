@@ -8,17 +8,18 @@ const vectors = (points: ClipperLib.Path) => points.map(point => new Vector2(poi
 
 /** Trusted Tabler fills and round strokes only. Union intersecting strokes before
  * extrusion so crossings do not leave internal walls or overlapping caps. */
-export function iconContours(paths: ShapePath[], lowDetail = false): Shape[] {
+export function iconContours(paths: ShapePath[], detail: boolean | 'medium' = false): Shape[] {
+  const divisions = detail === 'medium' ? 12 : detail ? 6 : 32
   const contours: ClipperLib.Paths = []
   for (const path of paths) {
     const style = path.userData?.style as { fill?: string; stroke?: string; strokeWidth?: number } | undefined
     if (style?.fill !== 'none') {
       for (const shape of path.toShapes()) {
-        const outer = integerPath(shape.getPoints(lowDetail ? 6 : 16))
+        const outer = integerPath(shape.getPoints(divisions))
         if (!ClipperLib.Clipper.Orientation(outer)) outer.reverse()
         contours.push(outer)
         for (const hole of shape.holes) {
-          const ring = integerPath(hole.getPoints(lowDetail ? 6 : 16))
+          const ring = integerPath(hole.getPoints(divisions))
           if (ClipperLib.Clipper.Orientation(ring)) ring.reverse()
           contours.push(ring)
         }
@@ -26,11 +27,11 @@ export function iconContours(paths: ShapePath[], lowDetail = false): Shape[] {
     }
     if (style?.fill === 'none' && style.stroke && style.stroke !== 'none') {
       for (const subpath of path.subPaths) {
-        const points = subpath.getPoints(lowDetail ? 6 : 16).filter((point, index, all) => !index || point.distanceToSquared(all[index - 1]) > 1e-10)
+        const points = subpath.getPoints(divisions).filter((point, index, all) => !index || point.distanceToSquared(all[index - 1]) > 1e-10)
         if (points.length < 2) continue // Tabler's empty bounding path.
         const closed = subpath.autoClose || points[0].distanceToSquared(points[points.length - 1]) < 1e-8
         if (closed && points[0].distanceToSquared(points[points.length - 1]) < 1e-8) points.pop()
-        const offset = new ClipperLib.ClipperOffset(2, precision * (lowDetail ? 0.12 : 0.015))
+        const offset = new ClipperLib.ClipperOffset(2, precision * (detail === 'medium' ? 0.045 : detail ? 0.12 : 0.015))
         offset.AddPath(integerPath(points), ClipperLib.JoinType.jtRound, closed ? ClipperLib.EndType.etClosedLine : ClipperLib.EndType.etOpenRound)
         const expanded: ClipperLib.Paths = []
         offset.Execute(expanded, Number(style.strokeWidth ?? 2) * precision / 2)
@@ -39,7 +40,7 @@ export function iconContours(paths: ShapePath[], lowDetail = false): Shape[] {
     }
   }
   const clipper = new ClipperLib.Clipper()
-  clipper.AddPaths(lowDetail ? ClipperLib.Clipper.CleanPolygons(contours, precision * 0.08) : contours, ClipperLib.PolyType.ptSubject, true)
+  clipper.AddPaths(detail ? ClipperLib.Clipper.CleanPolygons(contours, precision * (detail === 'medium' ? 0.025 : 0.08)) : contours, ClipperLib.PolyType.ptSubject, true)
   const tree = new ClipperLib.PolyTree()
   clipper.Execute(ClipperLib.ClipType.ctUnion, tree, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero)
   const shapes: Shape[] = []

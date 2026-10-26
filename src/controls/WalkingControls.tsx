@@ -42,6 +42,7 @@ export function WalkingControls({ world, ref, onStatus, onReady }: {
     session.current?.resizeOverview(size.width / size.height)
   }, [size.width, size.height])
 
-  useFrame((_, delta) => session.current?.update(delta))
+  // Camera movement precedes distance-based scene detail selection this frame.
+  useFrame((_, delta) => session.current?.update(delta), -1)
   return null
 }

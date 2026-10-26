@@ -31,15 +31,15 @@ between standard scenery and icons in the same request. See
   Cap normals stay planar; side and bevel normals are smoothed. One pastel
   material treatment and the world's sunlight/hemisphere fill cover every icon. Indexed
   geometry shares equal positions, normals and UVs without changing the surface shading.
-- A cache stores geometry per icon name/detail level, independent of color, position,
+- A cache stores geometry per icon name/detail level (full, medium, far), independent of color, position,
   scale and Y rotation. It retains up to 96 recent entries plus any still-active geometry. R3F geometry primitives preserve shared geometry when
   switching worlds. HMR releases the module cache. Spatial batches share geometry and
   materials while retaining per-instance transforms and colors.
 - The ten office objects have varied placement, uniform per-instance scales and
   yaw. Existing terrain, grass, on-demand renderer, camera, pointer lock and
-  navigation are reused. No extra canvas or model assets. Under the existing slow-frame
-  fallback, icons use simpler contours and two bevel segments; populous icon worlds also
-  use a fogged 48m walking view. Overview and full-detail views retain the complete world.
+  navigation are reused. No extra canvas or model assets. Icon geometry now follows
+  distance-based LOD rather than the global slow-frame fallback; see below. A fogged 48m
+  walking view remains available under rendering pressure in populous icon worlds.
 
 ## Topic selection and capacity
 
@@ -100,6 +100,9 @@ npm.cmd run build
 npm.cmd run inspect:icons
 npm.cmd run check:icon-catalog
 npm.cmd run check:icon-catalog -- --low
+npm.cmd run check:icon-catalog -- --medium
+npm.cmd run inspect:icon-lod
+node scripts/inspect-icon-walking.mjs
 npm.cmd run check:icon-themes -- --live
 npm.cmd run inspect:icon-themes
 npm.cmd run inspect:worlds
@@ -173,3 +176,58 @@ all-world walking/collision/import/responsive/recovery regression, original Icon
 regression, HTTP smoke and staged diff checks passed. The collision browser check now
 waits for a bounded stable view at obstacles instead of assuming software-rendered
 movement reaches the boundary after a fixed wall-clock delay.
+
+## Smooth nearby icons and optional plain ground
+
+Icons have three cached geometry levels, retaining the same 0.64m depth, 0.05m bevels
+and upright proportions. Full detail uses four bevel segments and denser curve sampling
+(including increased sampling for close-range catalog outlines/fills); medium uses three
+bevel segments, far uses two. The original clock partitions and original icon shapes remain.
+
+Distance is measured from the camera to the icon center, divided by its largest scale.
+Nominal boundaries are 14m and 36m, with 10% hysteresis: full detail is guaranteed on
+approach inside 12.6m and retained while leaving until 15.4m; far/medium boundaries are
+32.4m and 39.6m. Larger icons retain detail farther away. Each instance selects its own
+level, including copies within the same spatial batch. Only changed membership rewrites
+instance buffers; the camera updates before LOD selection. Empty levels are hidden and
+nonempty levels retain spatial culling and instancing. Cached shadows refresh when mesh
+silhouettes change. There is no extra permanent animation loop.
+
+Nearby icons use the same full mesh under both normal and reduced rendering budgets.
+Icon quality can recover after sustained fast moving frames: reduction below 28 FPS over
+a two-second window, recovery above 48 FPS for two windows after an eight-second moving
+cooldown. Standing still is not treated as evidence of spare rendering capacity. Icon
+reduced mode uses 0.85 DPR rather than the former 0.6, disables the directional shadow,
+and retains the existing pressure-dependent 48m view cap for populous worlds. Geometry
+LOD remains independent of those settings. Standard-world quality behavior is preserved.
+
+**Icon ground → Plain monochrome** is an optional view preference in the world picker.
+The default remains **Meadow**. Plain mode draws a flat, two-triangle, untextured plane
+in the world's existing ground color and hides decorative planting/patches. It avoids
+baking the ground-cover texture and using its textured/grain material. The selector is
+scoped to icon worlds; it does not change world JSON, generation requests, saved worlds
+or Standard rendering. The preference lasts for this app session and applies across icon
+world selections.
+
+The test-only `inspect:icon-lod` harness observes production components while moving the
+camera toward and away from a curved icon at both rendering budgets. It verifies exclusive
+LOD membership and identical nearby geometry, and captures transition screenshots. The
+production walking script exercises the real import UI, keyboard movement in both
+directions, meadow/plain/meadow switching, canvas reuse and zero idle redraws.
+
+A controlled paired software benchmark used 96 icons plus 96 meadow grass clumps, fixed
+reduced shading, a 1020×680 render buffer and the same repeatable camera motion. Four
+alternating samples (meadow/plain/plain/meadow) averaged **24.3 FPS meadow** and **27.5 FPS
+plain**, about **13% higher FPS** for plain ground. At the matched final camera pose, calls
+fell from **50 to 47**, and rendered triangles from **105,744 to 101,394** (about 4% fewer).
+This is a modest optional saving; distance LOD is the main visual-quality change. Hardware
+GPU and physical-mobile performance remain unmeasured. The real production walking samples
+were approximately **21.4 FPS meadow / 24.0 FPS plain**, with zero settled redraws.
+Artifacts and screenshots are under `artifacts/icon-lod/`; these numbers are not directly
+comparable to the earlier, lower-resolution benchmark above.
+
+Validation for this change: 218 tests across 23 files, production build/typecheck, all 2,154
+full-detail and new medium-detail geometry checks, the LOD transition/ground benchmark,
+production 96-icon walking checks, original Icon World checks, all-world walking/collision/
+import/responsive/recovery regression, generation-style UI regression, smoke and diff checks
+passed. Existing worlds and the three generation choices are preserved.
