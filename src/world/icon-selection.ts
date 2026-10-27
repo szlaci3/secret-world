@@ -23,7 +23,23 @@ const concepts = [
 ]
 const stop = new Set('a an the of with and in on at to for world icons icon extruded colorful colourful playful make create many lots large small'.split(' '))
 const words = (text: string) => text.toLowerCase().match(/[a-z0-9]+/g)?.filter(word => !stop.has(word)) ?? []
-const stem = (word: string) => word.length > 4 ? word.replace(/s$/, '') : word
+const aliases: Record<string, string> = { bicycle: 'bike', cycling: 'bike', cyclist: 'bike', automobile: 'car', aeroplane: 'plane', airplane: 'plane', house: 'home', notebook: 'book' }
+const stem = (word: string) => {
+  const singular = word.length > 4 ? word.replace(/s$/, '') : word
+  return aliases[singular] ?? singular
+}
+
+// Coverage is a retrieval heuristic, not language detection. Foreign and abstract
+// briefs tend to have few recognizable subjects; clear English topics stay fast.
+const subjectWords = new Set([...iconNames.flatMap(name => words(name)), ...concepts.flatMap(words)].map(stem))
+export function needsIconInterpretation(prompt: string): boolean {
+  // Abstract emotional themes can contain misleading literal matches (for
+  // example "spaces" in a brief about recovery being ranked as outer space).
+  if (/\b(burnout|reconnection|renewal|resilience|wellbeing|grief|loneliness|nostalgia)\b/i.test(prompt)) return true
+  const terms = [...new Set(words(prompt).filter(word => !/^\d+$/.test(word)).map(stem))]
+  const matches = terms.filter(word => subjectWords.has(word)).length
+  return terms.length === 0 || matches === 0 || matches / terms.length < 0.2
+}
 
 export function selectIcons(prompt: string, limit = 80): IconName[] {
   const direct = new Set(words(prompt).map(stem))

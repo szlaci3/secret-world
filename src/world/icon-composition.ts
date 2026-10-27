@@ -24,8 +24,31 @@ export function composeIconBlueprint(plan: Plan, population: IconPopulation): Pl
     ? Array.from({ length: placement.count ?? 1 }, () => placement) : [])
   if (!seeds.length) throw new Error('Icon layout: choose at least one relevant icon.')
   const unique = new Set(seeds.map(seed => (plan.assets[seed.asset] as { icon: string }).icon)).size
+  if (plan.composition) {
+    const actual = new Map<string, number>()
+    seeds.forEach(seed => {
+      const name = (plan.assets[seed.asset] as { icon: string }).icon
+      actual.set(name, (actual.get(name) ?? 0) + 1)
+    })
+    const choices = new Map<string, 'single' | 'group'>(plan.composition.kinds.map(kind => [kind.icon, kind.mode]))
+    if (choices.size !== plan.composition.kinds.length || choices.size !== actual.size || [...actual.keys()].some(name => !choices.has(name))) {
+      throw new Error('Icon layout: decide single or group exactly once for every placed icon kind.')
+    }
+    for (const [name, mode] of choices) {
+      const total = actual.get(name)!
+      if ((mode === 'single' && total !== 1) || (mode === 'group' && total < 2)) throw new Error('Icon layout: placements must match each kind\'s single/group decision.')
+    }
+    const modes = new Set(choices.values())
+    const mode = modes.size === 2 ? 'mixed' : modes.has('single') ? 'singles' : 'groups'
+    if (mode !== plan.composition.mode) throw new Error('Icon layout: world composition must match the per-kind decisions.')
+    if (seeds.length > population.max || (population.exact && seeds.length !== population.target) || (population.minimumRequested && seeds.length < population.min)) throw new Error('Icon layout: composition must respect the requested object count.')
+  }
   let count = population.exact ? population.target : Math.max(population.min, Math.min(population.max, seeds.length))
   if (!population.exact && population.max <= 20 && unique < 6) count = Math.min(count, unique * 4)
+  // A deliberate composition is authoritative. Do not clone singleton landmarks
+  // or cycle every kind to pad a default population. Legacy blueprints retain
+  // their previous population policy when no composition decision was supplied.
+  if (plan.composition) count = seeds.length
   const selected = Array.from({ length: count }, (_, index) => seeds[seeds.length > count ? Math.floor(index * seeds.length / count) : index % seeds.length])
   const minX = Math.min(...seeds.map(seed => seed.position[0])), maxX = Math.max(...seeds.map(seed => seed.position[0]))
   const minZ = Math.min(...seeds.map(seed => seed.position[1])), maxZ = Math.max(...seeds.map(seed => seed.position[1]))

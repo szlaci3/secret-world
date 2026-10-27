@@ -40,8 +40,16 @@ const iconAsset = worldObjectSchema.options[0].omit({ id: true, position: true, 
 const grassAsset = z.strictObject({ type: z.literal('plant'), variety: z.literal('grass'),
   color: worldSchema.shape.ground.shape.color, accentColor: worldSchema.shape.ground.shape.color })
 const iconPlacements = z.array(blueprintSchema.shape.placements.element.extend({ asset: z.number().int().min(0).max(MAX_ICON_ASSETS - 1) })).min(1).max(MAX_ICON_PLACEMENTS)
+const iconCompositionSchema = z.strictObject({
+  mode: z.enum(['singles', 'groups', 'mixed']).describe('Choose the world composition from the meaning of the brief.'),
+  kinds: z.array(z.strictObject({
+    icon: iconAsset.shape.icon,
+    mode: z.enum(['single', 'group']).describe('single means exactly one instance of this kind across all palettes; group means intentional repetition.'),
+  })).min(1).max(MAX_ICON_ASSETS),
+})
 export const iconBlueprintSchema = blueprintSchema.extend({
   style: z.literal('icons').optional(),
+  composition: iconCompositionSchema.optional(),
   ground: blueprintSchema.shape.ground.extend({
     size: z.tuple([z.number().min(24).max(WORLD_SIZE), z.number().min(24).max(WORLD_SIZE)]),
     hills: blueprintSchema.shape.ground.shape.hills.unwrap().max(0).optional(),
@@ -53,6 +61,7 @@ export const iconBlueprintSchema = blueprintSchema.extend({
 // revalidates against that style's narrower contract before building anything.
 const autoBlueprintSchema = blueprintSchema.extend({
   style: z.enum(['standard', 'icons']),
+  composition: iconCompositionSchema.optional(),
   assets: z.array(z.union([iconAsset, ...assets] as [typeof iconAsset, typeof assets[number], ...typeof assets[number][]])).min(1).max(MAX_ICON_ASSETS),
   placements: iconPlacements,
 })

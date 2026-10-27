@@ -9,6 +9,43 @@ import { createHandler } from '../../netlify/functions/create-world'
 import { MAX_ICON_OBJECTS } from './icon-limits'
 
 const compact = (prompt: string, input: unknown = testIconBlueprint()) => compileBlueprint(input, 'compact', 'icons', { iconPopulation: iconPopulation(prompt) })
+
+describe('Gemini composition decisions', () => {
+  const decision = (mode: 'singles' | 'groups' | 'mixed', counts: number[]) => {
+    const plan = testIconBlueprint()
+    return { ...plan, placements: plan.placements.slice(0, counts.length).map((placement, i) => ({ ...placement, count: counts[i], spread: counts[i] > 1 ? 10 : 0 })),
+      composition: { mode, kinds: counts.map((count, i) => ({ icon: 'icon' in plan.assets[i] ? plan.assets[i].icon : 'settings', mode: count === 1 ? 'single' as const : 'group' as const })) } }
+  }
+  it.each([
+    ['singles', [1, 1, 1]], ['groups', [3, 2, 4]], ['mixed', [1, 4, 1]],
+  ] as const)('preserves %s counts without filling the default population', (mode, counts) => {
+    const world = compact('An office', decision(mode, [...counts]))
+    const names = ['settings', 'paperclip', 'clock']
+    counts.forEach((count, i) => expect(world.objects.filter(object => object.type === 'icon' && object.icon === names[i])).toHaveLength(count))
+    world.objects.forEach(object => expect(objectFitsGround(object, world.ground.size)).toBe(true))
+    const icons = world.objects.filter(object => object.type === 'icon')
+    icons.forEach((icon, i) => icons.slice(i + 1).forEach(other => expect(iconFootprintsSeparated(icon, other)).toBe(true)))
+  })
+  it('validates the per-kind and world decisions', () => {
+    const plan = decision('mixed', [1, 3, 1])
+    expect(() => compact('An office', { ...plan, composition: { ...plan.composition, mode: 'singles' } })).toThrow(/world composition/)
+    expect(() => compact('An office', { ...plan, composition: { ...plan.composition, kinds: plan.composition.kinds.slice(1) } })).toThrow(/every placed icon kind/)
+    expect(() => compact('An office', { ...plan, placements: plan.placements.map((placement, i) => i === 0 ? { ...placement, count: 2 } : placement) })).toThrow(/single\/group decision/)
+    expect(() => compact('An office', { ...plan, composition: { ...plan.composition, kinds: [...plan.composition.kinds, plan.composition.kinds[0]] } })).toThrow(/every placed icon kind/)
+  })
+  it('honors explicit totals and minimums without cloning singleton choices', () => {
+    const plan = decision('mixed', [1, 3, 1])
+    expect(compact('Exactly 5 icons', plan).objects).toHaveLength(5)
+    expect(() => compact('Exactly 6 icons', plan)).toThrow(/requested object count/)
+    expect(() => compact('At least 6 icons', plan)).toThrow(/requested object count/)
+    expect(() => compact('Up to 4 icons', plan)).toThrow(/requested object count/)
+  })
+  it('supports the decision in automatic style generation too', () => {
+    const world = compileBlueprint(decision('singles', [1, 1, 1]), 'auto', 'auto', { iconPopulation: iconPopulation('An office') })
+    expect(world.objects).toHaveLength(3)
+  })
+})
+
 describe('icon population policy', () => {
   it('distinguishes population from field dimensions and other numbers', () => {
     expect(iconPopulation('An office on 96 by 96 meters')).toMatchObject({ min: 32, max: 48, exact: false })

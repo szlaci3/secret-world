@@ -33,8 +33,11 @@ and navigation checks. Icon generation uses:
 - Only validated catalog names (2,154 pinned Tabler SVGs) and optional `plant`/`grass` assets. No custom
   markup, SVG URLs, models or unsupported object kinds.
 - Flat ground with independent 24–128m axes, up to the configured icon budget (96 by default),
-  48 reusable assets and at most 96 retained grass clumps. Normal briefs enforce 32–48 actual icons, while small briefs may use fewer and explicit
-  populations are enforced up to the configured budget. Provider group positions are
+  48 reusable assets and at most 96 retained grass clumps. Gemini chooses singles,
+  groups or a mixed composition and a single/group policy for each icon kind.
+  Authored counts are preserved; the previous 32–48 default does not pad deliberate
+  compositions with duplicate symbols. Explicit counts and minimums are enforced
+  up to the configured budget. Provider group positions are
   compacted and the ground fitted to actual occupied bounds; see [Icon World](icon-world.md).
 - Uniform icon scale, using the blueprint's Y component for all three axes.
   Instance colors and Y rotations are retained; depth, bevels, materials and
@@ -55,12 +58,38 @@ and navigation checks. Icon generation uses:
 Generated worlds store `style: standard|icons`; `auto` is never stored as a world
 style. JSON admission and browser rendering use the same existing world schema.
 
-The endpoint still makes one provider call per request, with a 45-second timeout,
-10,000 output tokens and no automatic paid retry. Validation failures report a
+Standard generation and clear English icon topics use one provider call. Icon and
+automatic modes optionally add a search-term interpretation call for weak keyword
+coverage or recognized abstract themes; see [Icon World](icon-world.md). The extra
+call uses the same model/key, up to 800 output tokens and an 8-second timeout. Invalid,
+failed or timed-out interpretation falls back to keyword selection. Generation retains
+its 10,000 output-token limit. All stages share a 45-second deadline and cancellation;
+there is no automatic paid retry. Validation failures report a
 bounded diagnostic and leave the active world intact. Cancellation and stale
 response guards apply to every style.
 
 ## Verification
+
+Selective interpretation on 2026-10-27: 247 tests, production build/typecheck and
+production smoke check passed. Five real provider calls through the local handler
+produced validated worlds for all three briefs: English office (one call, 40 icons),
+Dutch village (two calls, 35 icons including bike, church, pig and trees), and burnout
+to balance (two calls, 37 icons including broken heart, bed, handshake and charging
+battery). These checks verify local/provider integration, not a hosted deployment.
+Results and usage metadata: `artifacts/selective-icons/results.json`.
+
+Composition decisions: 253 tests cover singleton preservation, grouped and mixed
+counts, world/per-kind consistency, explicit totals/minimums and automatic mode.
+Live checks produced three singles for a symbolic journey, a mixed aquarium with
+eight fish and single diver/submarine, and a village with one church, one sun,
+six cottages and eight tree symbols. An initial village response incorrectly
+listed decorative grass among icon kinds and was rejected; the prompt was clarified
+and the targeted live rerun passed. These are provider checks through the local
+handler; no hosted deployment is implied. Evidence is in `artifacts/icon-composition/`.
+
+```powershell
+node scripts/check-selective-icons.mjs --live
+```
 
 Original style integration on 2026-10-26: all 203 tests across 21 files, production build,
 style-generation browser checks (including recorded live results), built-in icon

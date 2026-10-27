@@ -45,10 +45,16 @@ between standard scenery and icons in the same request. See
 
 `src/icons/catalog.json` contains upstream categories and tags; `src/icons/names.ts`
 provides the validated runtime name list. Selection ranks names/tags against the brief,
-with related-term expansion for common subjects. Only up to 80 shortlisted names enter
+with related-term expansion and aliases such as bicycle → bike. Only up to 80 shortlisted names enter
 Gemini's instructions and decoding enum. The server also rejects off-shortlist results.
-This remains one provider call; no complete catalog is sent per request. Search metadata
-is English, so ambiguous or non-English descriptions may retrieve less useful candidates.
+Clear English topics use one provider call. In icon and automatic modes, briefs with
+weak subject-word coverage (under 20%) or recognized abstract emotional themes first
+use the configured Gemini model to suggest English search terms. This is a heuristic,
+not complete language detection; it helps many non-English and abstract descriptions.
+The terms augment local search; the original generation brief, population and style
+remain authoritative. Interpretation is limited to 8 seconds and validated locally;
+failure falls back to keyword search without a retry. Both calls share the existing
+45-second deadline and cancellation signal. No complete catalog is sent per request.
 Automatic mode chooses between natural 3D scenery and symbolic icon compositions on any topic.
 
 Edit `src/icons/config.json` (`maxObjects`) and rebuild/redeploy to change the shared
@@ -57,6 +63,17 @@ Standard worlds keep their 64-complex-object budget. Icon worlds allow 48 reusab
 128m ground axes, and the configured object count plus up to 96 decorative grass clumps.
 Admission still enforces bounds, walking gaps, connected navigation and a safe spawn.
 Higher configured capacity does not guarantee hardware-independent performance.
+
+New generations ask Gemini to choose a world-level `composition.mode` of `singles`,
+`groups` or `mixed`, plus one `single`/`group` decision for each placed icon name.
+A singleton appears once across all palettes; a grouped kind appears at least twice.
+For example, a village can have one church and one sun alongside repeated houses
+and trees. The compiler checks that placements match these decisions and preserves
+the authored counts rather than cycling through icons to fill a default population.
+Without an explicit requested count, a small set of meaningful single symbols is
+valid. Exact counts, explicit minimums and maximum budgets still apply. The optional
+blueprint field preserves compatibility with older blueprints; saved worlds and
+built-in fixtures retain their existing objects.
 
 To reproduce the vendored catalog, download the pinned package and run the importer:
 
