@@ -176,6 +176,32 @@ function shortlistedSchema(style: GenerationStyle, names: IconName[]) {
 }
 const reply = (status: number, error: string) => Response.json({ error }, { status, headers: { 'Cache-Control': 'no-store' } })
 
+async function providerFailure(response: Response, model: string, key: string): Promise<Response> {
+  const diagnosticId = crypto.randomUUID()
+  const body = await response.json().catch(() => null)
+  const parsed = z.object({ error: z.object({ status: z.string().optional(), message: z.string().optional() }) }).safeParse(body)
+  const upstream = parsed.success ? parsed.data.error : undefined
+  // Keep provider details in server logs, never return raw messages (which can
+  // contain request data or credentials) to this public endpoint.
+  const providerCode = upstream?.status && /^[A-Z_]{1,80}$/.test(upstream.status) ? upstream.status : undefined
+  console.error('world-generation-provider-error', {
+    diagnosticId, model, providerStatus: response.status, providerCode,
+    message: upstream?.message?.replaceAll(key, '[redacted]').slice(0, 1200),
+  })
+  const reason = response.status === 429 ? 'Gemini is busy or its usage limit was reached. Wait a few minutes before trying again.'
+    : response.status === 400 ? 'Gemini rejected the generation request. The request format or model settings may need updating.'
+    : response.status === 401 || response.status === 403 ? 'Gemini could not authorize world generation. The server API key or project permissions need checking.'
+    : response.status === 404 ? 'The configured Gemini model or API endpoint was not found.'
+    : response.status === 503 ? 'Gemini is temporarily overloaded or unavailable. Please try again later.'
+    : response.status === 504 ? 'Gemini’s server timed out while generating the world. Please try again.'
+    : response.status >= 500 ? 'Gemini reported an internal service error. Please try again later.'
+    : 'Gemini rejected the generation request. The server logs contain more details.'
+  return Response.json({
+    error: `${reason} (Gemini HTTP ${response.status}${providerCode ? `, ${providerCode}` : ''}; reference ${diagnosticId}.)`,
+    diagnosticId, providerStatus: response.status, ...(providerCode ? { providerCode } : {}),
+  }, { status: response.status === 429 ? 429 : 502, headers: { 'Cache-Control': 'no-store' } })
+}
+
 const interpretationSchema = z.strictObject({ searchTerms: z.array(z.string().trim().min(1).max(80)).min(1).max(16) })
 
 async function interpretIconTerms(prompt: string, key: string, model: string, signal: AbortSignal, fetcher: typeof fetch): Promise<string[]> {
@@ -254,10 +280,18 @@ export function createHandler(env: (name: string) => string | undefined, fetcher
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { responseFormat: { text: { mimeType: 'APPLICATION_JSON', schema: shortlistedSchema(style, names) } }, maxOutputTokens: 10000, temperature: 0.85 } }),
       })
-      if (response.status === 429) return reply(429, 'Generation is busy or its usage limit was reached. Wait a few minutes before trying again.')
-      if (!response.ok) return reply(502, 'Gemini is unavailable right now. Please try again later.')
-      const data = await response.json()
+      if (!response.ok) return await providerFailure(response, model, key)
+      let data
+      try { data = await response.json() }
+      catch (error) {
+        if (signal.aborted) throw error
+        return reply(502, 'Gemini returned an unreadable response instead of valid JSON. Please try again.')
+      }
+      if (!data || typeof data !== 'object') return reply(502, 'Gemini returned an invalid response. Please try again.')
       const candidate = data.candidates?.[0]
+      if (data.promptFeedback?.blockReason || ['SAFETY', 'BLOCKLIST', 'PROHIBITED_CONTENT', 'IMAGE_SAFETY', 'RECITATION'].includes(candidate?.finishReason)) {
+        return reply(422, 'Gemini blocked this request or its generated response under its content policies. Try a different description.')
+      }
       if (candidate?.finishReason === 'MAX_TOKENS') return reply(422, 'Gemini reached the output limit before finishing the blueprint. Try a simpler description.')
       if (candidate?.finishReason !== 'STOP') return reply(422, 'Gemini could not finish that world. Try a shorter or different description.')
       const text = candidate.content?.parts?.filter((part: { thought?: boolean; text?: string }) => !part.thought && typeof part.text === 'string').map((part: { text: string }) => part.text).join('')
@@ -278,8 +312,10 @@ export function createHandler(env: (name: string) => string | undefined, fetcher
       return Response.json({ world }, { headers: { 'Cache-Control': 'no-store' } })
     } catch (error) {
       if (request.signal.aborted) return reply(499, 'Generation cancelled.')
-      return reply(error instanceof Error && ['TimeoutError', 'AbortError'].includes(error.name) ? 504 : 502,
-        'World creation took too long or lost its connection. Please try again. No automatic retry was made.')
+      const timedOut = error instanceof Error && ['TimeoutError', 'AbortError'].includes(error.name)
+      return reply(timedOut ? 504 : 502, timedOut
+        ? 'World generation exceeded the 45-second server deadline. Please try again. No automatic retry was made.'
+        : 'The server could not complete its connection to Gemini or process its response. Please try again. No automatic retry was made.')
     }
   }
 }

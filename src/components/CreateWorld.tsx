@@ -44,7 +44,9 @@ export function useWorldCreator({ disabled, onSelect, style }: { disabled: boole
     try {
       const response = await fetch('/api/create-world', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: prompt.trim(), style }), signal: controller.signal })
-      if (response.status === 429) throw new Error('Generation is busy or its usage limit was reached. Wait a few minutes before trying again.')
+      // Netlify can rate-limit before the handler runs; provider quota errors
+      // are JSON and carry a more specific explanation and diagnostic reference.
+      if (response.status === 429 && !response.headers.get('content-type')?.includes('application/json')) throw new Error('Generation is busy or its usage limit was reached. Wait a few minutes before trying again.')
       if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('World creation is unavailable. Please try again later.')
       const data = await response.json()
       if (!response.ok) throw new Error(typeof data.error === 'string' ? data.error : 'World creation failed. Please try again later.')

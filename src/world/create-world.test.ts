@@ -9,6 +9,54 @@ const env = (name: string) => name === 'GEMINI_API_KEY' ? 'test-secret' : undefi
 const success = () => Response.json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(testBlueprint()) }] } }] })
 
 describe('create-world endpoint', () => {
+  it.each([
+    [400, 'INVALID_ARGUMENT', 'rejected the generation request'],
+    [403, 'PERMISSION_DENIED', 'could not authorize'],
+    [404, 'NOT_FOUND', 'was not found'],
+    [429, 'RESOURCE_EXHAUSTED', 'usage limit'],
+    [500, 'INTERNAL', 'internal service error'],
+    [503, 'UNAVAILABLE', 'overloaded'],
+    [504, 'DEADLINE_EXCEEDED', 'server timed out'],
+  ])('distinguishes upstream HTTP %s and correlates safe diagnostics with logs', async (status, code, message) => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ error: {
+        status: code, message: 'Provider detail with test-secret and private request information',
+      } }, { status }))
+      const response = await createHandler(env, fetcher)(request())
+      expect(response.status).toBe(status === 429 ? 429 : 502)
+      const data = await response.json()
+      expect(data).toMatchObject({ providerStatus: status, providerCode: code, diagnosticId: expect.any(String) })
+      expect(data.error).toContain(message)
+      expect(data.error).toContain(data.diagnosticId)
+      expect(JSON.stringify(data)).not.toMatch(/test-secret|private request information/)
+      expect(log).toHaveBeenCalledWith('world-generation-provider-error', expect.objectContaining({
+        diagnosticId: data.diagnosticId, providerStatus: status, providerCode: code,
+        message: 'Provider detail with [redacted] and private request information',
+      }))
+      expect(fetcher).toHaveBeenCalledTimes(1)
+    } finally { log.mockRestore() }
+  })
+  it('handles non-JSON provider failures and malformed successful envelopes distinctly', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      for (const upstream of [new Response('<html>gateway error</html>', { status: 503 }),
+        new Response('not json', { status: 200 }), Response.json(null)]) {
+        const response = await createHandler(env, vi.fn<typeof fetch>().mockResolvedValue(upstream))(request())
+        expect(response.status).toBe(502)
+        const body = await response.json()
+        expect(body.error).not.toContain('gateway error')
+        expect(body.error).toContain(upstream.status === 503 ? 'overloaded' : 'response')
+      }
+    } finally { log.mockRestore() }
+  })
+  it('distinguishes policy blocks from provider HTTP failures', async () => {
+    for (const body of [{ promptFeedback: { blockReason: 'SAFETY' } }, { candidates: [{ finishReason: 'SAFETY' }] }]) {
+      const response = await createHandler(env, vi.fn<typeof fetch>().mockResolvedValue(Response.json(body)))(request())
+      expect(response.status).toBe(422)
+      expect((await response.json()).error).toContain('content policies')
+    }
+  })
   it('focuses guidance on the biome while preserving creative dimensions', () => {
     expect(biomeGuidance('Open Meadow')).toContain('128x128m')
     expect(biomeGuidance('A misty woodland')).toContain('40 trees')

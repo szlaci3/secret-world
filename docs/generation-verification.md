@@ -1,5 +1,27 @@
 # Compact worlds and biome generation verification
 
+## Diagnosing provider failures
+
+The local handler now distinguishes unsuccessful Gemini HTTP responses from
+content-policy blocks, unreadable JSON responses, and the server deadline.
+An unsuccessful provider request returns `providerStatus`, an optional
+`providerCode` (for example `INVALID_ARGUMENT` or `UNAVAILABLE`), and a
+`diagnosticId` alongside the user-facing `error`. The API still maps most
+provider HTTP failures to HTTP 502; the original status is in `providerStatus`.
+Provider HTTP 429 remains HTTP 429.
+
+For a failed deployed request, inspect `/api/create-world` in the browser
+Network panel, then find its `diagnosticId` in the Netlify function logs under
+`world-generation-provider-error`. That entry includes the configured model,
+original HTTP status, provider error code, and up to 1,200 characters of the
+provider message with the configured API key redacted. Raw provider messages
+and response bodies are not returned to the browser. HTML/non-JSON provider
+errors still report the original HTTP status without logging their body.
+
+These diagnostics require deployment. They cannot recover provider bodies
+discarded by earlier versions, and a successful local request cannot explain
+an earlier intermittent production failure.
+
 Verified locally on 2026-10-25. Existing world JSON files were left unchanged.
 All nine built-ins load through the same validation boundary and persistent canvas.
 
